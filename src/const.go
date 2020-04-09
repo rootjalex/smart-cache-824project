@@ -3,4 +3,4 @@ package cache
 // import (
 // )
 
-const CACHE_SIZE = 1000
+const CACHE_SIZE = 10
