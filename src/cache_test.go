@@ -32,7 +32,7 @@ func TestHelloBadCache(t *testing.T) {
 
 // assumes CACHE_SIZE <= 100
 func TestBasicLRUFail(t *testing.T) {
-	fmt.Printf("TestbasicLRUFail ...\n")
+	fmt.Printf("TestBasicLRUFail ...\n")
 	failed := false
 	misses := 0
 	if CACHE_SIZE > 100 {
@@ -77,7 +77,7 @@ func TestBasicLRUFail(t *testing.T) {
 
 // assumes CACHE_SIZE <= 100
 func TestBasicLRUSuccess(t *testing.T) {
-	fmt.Printf("TestbasicLRUSuccess ...\n")
+	fmt.Printf("TestBasicLRUSuccess ...\n")
 	failed := false
 	misses := 0
 	if CACHE_SIZE > 100 {
