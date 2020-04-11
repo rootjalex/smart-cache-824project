@@ -23,7 +23,7 @@ type LRUCache struct {
 	cache		map[string]*os.File
 	heap		MinHeap
 	timestamp	int64 // for controlling LRU heap
-	cacheSize 	int 
+	cacheSize	int
 }
 
 
