@@ -27,10 +27,11 @@ type LRUCache struct {
 
 func (c *LRUCache) Fetch(name string) (*os.File, error) {
 	c.checkSize()
+
+    c.mu.Lock()
 	file, ok := c.cache[name]
 	var err error
 
-    c.mu.Lock()
 	if ok {
 		c.hits++
 		err = nil
