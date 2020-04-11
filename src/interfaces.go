@@ -5,7 +5,7 @@ import (
 )
 
 type Cache interface {
-	Init() 
+	Init(cacheSize int) 
 	Fetch(name string) (*os.File, error)
 	Report() (int, int) // Cache hits, cache misses
 }

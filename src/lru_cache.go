@@ -2,7 +2,7 @@ package cache
 
 import (
 	"os"
-	"log"
+	"sync"
 )
 
 /********************************
@@ -23,12 +23,14 @@ type LRUCache struct {
 	cache		map[string]*os.File
 	heap		MinHeap
 	timestamp	int64 // for controlling LRU heap
+	cacheSize 	int 
 }
 
-func (c *LRUCache) Fetch(name string) (*os.File, error) {
-	c.checkSize()
 
-    c.mu.Lock()
+func (c *LRUCache) Fetch(name string) (*os.File, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	file, ok := c.cache[name]
 	var err error
 
@@ -42,56 +44,35 @@ func (c *LRUCache) Fetch(name string) (*os.File, error) {
 		c.misses++
 	}
 	c.timestamp++
-    c.mu.Unlock()
-	c.checkSize()
 	return file, err
-}
-
-func HandleRequests(c *LRUCache) {
-    // TODO: listen on a channel for data requests?
 }
 
 
 func (c *LRUCache) Report() (int, int) {
-	c.checkSize()
     c.mu.Lock()
     defer c.mu.Unlock()
 	return c.hits, c.misses
 }
 
-func Make(cacheSize int) *LRUCache {
-	c := &LRUCache{}
-    //lc.Init()
-    //Init(lc)
-    return c
-}
 
-// Is there a reason these are RPC handler functions and not regular functions?
-func (c *LRUCache) Init(cacheSize int) {
+func (c *LRUCache) Init(cacheSize int) *LRUCache {
 	c.misses = 0
 	c.hits = 0
     c.cacheSize = cacheSize
 	c.cache = make(map[string]*os.File)
 	c.timestamp = 0
 	c.heap.Init()
-	c.checkSize()
-    go HandleRequests(c)
+    return c
 }
 
+
+// assumes mu is Locked
 func (c *LRUCache) replace(name string, file *os.File) {
-	c.checkSize()
 	c.cache[name] = file
 	c.heap.Insert(name, c.timestamp)
 	if c.heap.n > c.cacheSize {
 		// must evict
 		evict := c.heap.ExtractMin()
 		delete(c.cache, evict)
-	}
-}
-
-// sanity check
-func (c *LRUCache) checkSize() {
-	if c.heap.n != len(c.cache) {
-		log.Fatalf("Sizes don't match, heap size: %d and cache size: %d", c.heap.n, len(c.cache))
 	}
 }
