@@ -2,6 +2,9 @@
 
 Final project for [Meia Alsup](https://www.linkedin.com/in/meiaalsup/) and [Alexander Root](https://rootjalex.github.io) for our [Distributed Systems](https://pdos.csail.mit.edu/6.824/) class. We are implementing a smart caching system, for use in large distributed databases, when there are patterns in the data accesses.
 
+## Paper
+Report describing Smart-Cache
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
@@ -76,6 +79,7 @@ Example
 ## Authors
 
 * **Alexander Root** - *Literally just the README so far* - [site](https://rootjalex.github.io)
+* **Meia Alsup** - [site](https://meiaalsup.github.io)
 
 ## License
 
