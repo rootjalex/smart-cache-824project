@@ -16,7 +16,7 @@ c.Report() (hits, misses)
 
 *********************************/
 
-type LRUCache struct {
+type Cache struct {
 	mu          sync.Mutex          // Lock to protect shared access to cache
 	misses		int
 	hits		int
@@ -27,7 +27,7 @@ type LRUCache struct {
 }
 
 
-func (c *LRUCache) Fetch(name string) (*os.File, error) {
+func (c *Cache) Fetch(name string) (*os.File, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -48,14 +48,14 @@ func (c *LRUCache) Fetch(name string) (*os.File, error) {
 }
 
 
-func (c *LRUCache) Report() (int, int) {
+func (c *Cache) Report() (int, int) {
     c.mu.Lock()
     defer c.mu.Unlock()
 	return c.hits, c.misses
 }
 
 
-func (c *LRUCache) Init(cacheSize int) *LRUCache {
+func (c *Cache) Init(cacheSize int) *Cache {
 	c.misses = 0
 	c.hits = 0
     c.cacheSize = cacheSize
@@ -67,7 +67,7 @@ func (c *LRUCache) Init(cacheSize int) *LRUCache {
 
 
 // assumes mu is Locked
-func (c *LRUCache) replace(name string, file *os.File) {
+func (c *Cache) replace(name string, file *os.File) {
 	c.cache[name] = file
 	c.heap.Insert(name, c.timestamp)
 	if c.heap.n > c.cacheSize {

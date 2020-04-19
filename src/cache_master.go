@@ -3,9 +3,9 @@ package cache
 /************************************************
 Cache Master supports
 
-m = Make()
-    Initialize a cache master
-m.Get(filename string)
+m = Make(caches Cache)
+    Initialize a cache master with a list of caches
+
 
 
 *************************************************/
@@ -16,7 +16,7 @@ type CacheMaster {
 }
 
 
-func (m *CacheMaster) Make {
+func (m *CacheMaster) Make(caches []Cache) {
 
 }
 
