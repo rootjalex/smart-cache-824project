@@ -1,14 +1,14 @@
-package cache 
+package cache
 
 type HeapItem struct {
-	label 	string 
-	key 	int64
+	label	string
+	key	    int64
 }
 
 type MinHeap struct {
-	items 	[]HeapItem
+	items	[]HeapItem
 	labels  map[string]int
-	n 		int
+	n		int
 }
 
 func (h *MinHeap) Init() {
@@ -20,7 +20,7 @@ func (h *MinHeap) MinHeapifyUp(c int) {
 	if c == 0 {
 		return
 	}
-	p := (c - 1) / 2 
+	p := (c - 1) / 2
 	if h.items[p].key > h.items[c].key {
 		// swap terms
 		h.Swap(p, c)
@@ -39,16 +39,16 @@ func (h *MinHeap) MinHeapifyDown(p int) {
 	l := 2 * p + 1
 	r := 2 * p + 2
 	if l >= h.n {
-		l = p 
+		l = p
 	}
 	if r >= h.n {
-		r = p 
+		r = p
 	}
 
 	// set child pointer
 	var c int
 	if h.items[r].key > h.items[l].key {
-		c = l 
+		c = l
 	} else {
 		c = r
 	}
@@ -63,9 +63,9 @@ func (h *MinHeap) MinHeapifyDown(p int) {
 }
 
 func (h *MinHeap) Insert(label string, key int64) {
-	var i HeapItem 
-	i.label = label 
-	i.key = key 
+	var i HeapItem
+	i.label = label
+	i.key = key
 	h.items = append(h.items, i)
 	h.labels[label] = h.n
 	h.n++
@@ -91,10 +91,10 @@ func (h *MinHeap) ChangeKey(label string, key int64) {
 	index, ok := h.labels[label]
 	if ok {
 		if key < h.items[index].key {
-			h.items[index].key = key 
+			h.items[index].key = key
 			h.MinHeapifyUp(index)
 		} else {
-			h.items[index].key = key 
+			h.items[index].key = key
 			h.MinHeapifyDown(index)
 		}
 	}
@@ -105,7 +105,7 @@ func (h *MinHeap) Swap(i int, j int) {
 	DPrintf("With %d, %s", h.items[j].key, h.items[j].label)
 	temp := h.items[i]
 	h.items[i] = h.items[j]
-	h.items[j] = temp 
+	h.items[j] = temp
 	DPrintf("Finished: %d, %s", h.items[i].key, h.items[i].label)
 	DPrintf("With %d, %s\n", h.items[j].key, h.items[j].label)
 }
