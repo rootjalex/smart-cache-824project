@@ -1,6 +1,6 @@
 # 6.824 Final Project
 
-Final project for [Meia Alsup](https://www.linkedin.com/in/meiaalsup/) and [Alexander Root](https://rootjalex.github.io) for our [Distributed Systems](https://pdos.csail.mit.edu/6.824/) class. We are implementing a smart caching system, for use in large distributed databases, when there are patterns in the data accesses.
+Final project for [Meia Alsup](https://www.linkedin.com/in/meiaalsup/), Amir Farhat [Alexander Root](https://rootjalex.github.io) for our [Distributed Systems](https://pdos.csail.mit.edu/6.824/) class. We are implementing a smart caching system, for use in large distributed databases, when there are patterns in the data accesses.
 
 ## Paper
 Report describing Smart-Cache
@@ -80,6 +80,7 @@ Example
 
 * **Alexander Root** - *Literally just the README so far* - [site](https://rootjalex.github.io)
 * **Meia Alsup** - [site](https://meiaalsup.github.io)
+* **Amir Farhat**
 
 ## License
 
