@@ -2,6 +2,7 @@ package cache
 
 import (
     "sync"
+    "os"
 )
 /************************************************
 DataStore API
@@ -15,11 +16,11 @@ Size()
 
 type DataStore struct {
     mu     sync.Mutex
-    data   []interface{}
+    data   []*os.File
     n      int
 }
 
-func MakeDataStore(data []interface{}) *DataStore {
+func MakeDataStore(data []*os.File) *DataStore {
     d := &DataStore{}
     d.data = data
     d.n = len(data)
