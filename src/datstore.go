@@ -3,6 +3,15 @@ package cache
 import (
     "sync"
 )
+/************************************************
+DataStore API
+
+Make(data)
+ - intializes a datastore storing the inut data
+
+Size()
+ - returns the size (number of files) in the datastore
+************************************************/
 
 type DataStore struct {
     mu     sync.Mutex
