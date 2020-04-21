@@ -8,15 +8,15 @@ import (
 /********************************
 LRU Cache supports the following external API to users
 
-c = Make()
-    Initializes a LRUCache
+c.Init(cacheSize int)
+    Initializes a cache with LRU eviction policy and no prefetching
 c.Report() (hits, misses)
     Get a report of the hits and misses  TODO: Do we want a version number or
     timestamp mechanism of any form here?
 
 *********************************/
 
-type Cache struct {
+type LRUCache struct {
 	mu          sync.Mutex          // Lock to protect shared access to cache
 	misses		int
 	hits		int
@@ -27,7 +27,7 @@ type Cache struct {
 }
 
 
-func (c *Cache) Fetch(name string) (*os.File, error) {
+func (c *LRUCache) Fetch(name string) (*os.File, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -48,26 +48,25 @@ func (c *Cache) Fetch(name string) (*os.File, error) {
 }
 
 
-func (c *Cache) Report() (int, int) {
+func (c *LRUCache) Report() (int, int) {
     c.mu.Lock()
     defer c.mu.Unlock()
 	return c.hits, c.misses
 }
 
 
-func (c *Cache) Init(cacheSize int) *Cache {
+func (c *LRUCache) Init(cacheSize int){
 	c.misses = 0
 	c.hits = 0
     c.cacheSize = cacheSize
 	c.cache = make(map[string]*os.File)
 	c.timestamp = 0
 	c.heap.Init()
-    return c
 }
 
 
 // assumes mu is Locked
-func (c *Cache) replace(name string, file *os.File) {
+func (c *LRUCache) replace(name string, file *os.File) {
 	c.cache[name] = file
 	c.heap.Insert(name, c.timestamp)
 	if c.heap.n > c.cacheSize {

@@ -1,5 +1,8 @@
 package cache
 
+import (
+    "sync"
+)
 /************************************************
 Cache Master supports
 
@@ -13,7 +16,7 @@ m = StartTask(clients []Client, caches []Cache, r int)
 *************************************************/
 
 
-type CacheMaster {
+type CacheMaster struct {
     mu       sync.Mutex
     clients  []Client
     caches   []Cache
@@ -31,8 +34,7 @@ const (
 
 
 func StartTask(clients []Client, k int, r int, cacheType CacheType) *CacheMaster {
-    m := CacheMaster{}
-    m
+    m := &CacheMaster{}
 
     return m
 }

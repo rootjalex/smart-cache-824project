@@ -1,7 +1,7 @@
 package cache
 
 import (
-
+	"os"
 )
 
 // master -> cache (Request param)
@@ -23,11 +23,11 @@ type ModelParamUpdateReply struct {
 }
 
 // client -> cache (Request a file)
-type RequestFileArgs {
+type RequestFileArgs struct {
 	Filename 	string
 }
 
-type RequestFileReply {
+type RequestFileReply struct {
 	File 		*os.File 
 	Hit 		bool 
 }
