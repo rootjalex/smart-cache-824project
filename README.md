@@ -80,7 +80,7 @@ Example
 
 * **Alexander Root** - *Literally just the README so far* - [site](https://rootjalex.github.io)
 * **Meia Alsup** - [site](https://meiaalsup.github.io)
-* **Amir Farhat** [site](https://github.com/amirfarhat)
+* **Amir Farhat** - [site](https://github.com/amirfarhat)
 
 ## License
 
