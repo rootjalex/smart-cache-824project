@@ -52,7 +52,6 @@ func TestBasicLRUSuccess(t *testing.T) {
 	fmt.Printf("TestBasicLRUSuccess ...\n")
 	failed := false
 	misses := 0
-	
 	data := datastore.MakeDataStore()
 
 	// add files to datastore
@@ -63,6 +62,10 @@ func TestBasicLRUSuccess(t *testing.T) {
 
 	var cache Cache
 	cache.Init(CACHE_SIZE, LRU, data)
+	if CACHE_SIZE > 100 {
+		fmt.Printf("\tignoring, CACHE_SIZE too big\n")
+		return
+	}
 
 	for i := 0; i < 2; i++ {
 		for j := 0; j < CACHE_SIZE; j++ {
