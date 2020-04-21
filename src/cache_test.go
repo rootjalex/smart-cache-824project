@@ -40,7 +40,7 @@ func TestBasicLRUFail(t *testing.T) {
 		return
 	}
 
-	var cache LRUCache
+	var cache Cache
 	cache.Init(CACHE_SIZE)
 
 	for i := 0; i < 2; i++ {
@@ -84,8 +84,8 @@ func TestBasicLRUSuccess(t *testing.T) {
 		fmt.Printf("\tignoring, CACHE_SIZE too big\n")
 		return
 	}
-	
-	var cache LRUCache
+
+	var cache Cache
 	cache.Init(CACHE_SIZE)
 
 	for i := 0; i < 2; i++ {
