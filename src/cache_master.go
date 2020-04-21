@@ -4,12 +4,17 @@ import (
     "sync"
 )
 /************************************************
-Cache Master supports
+Cache Master API
 
-m = StartTask(clients []Client, caches []Cache, r int)
-    Initialize a cache master with a cache list, client list, and replication factor (r)
-
-
+Initialization: 
+    m = StartTask(
+            clients []Client,
+            cacheType CacheType - specification for prefetch and eviction policies
+            k int - number of cache machines to use
+            r int - replication factor
+            datastore Datastore
+        )
+    Initialize a cache master with client list, and replication factor (r)
 
 
 
@@ -17,9 +22,15 @@ m = StartTask(clients []Client, caches []Cache, r int)
 
 
 type CacheMaster struct {
-    mu       sync.Mutex
-    clients  []Client
-    caches   []Cache
+    mu          sync.Mutex
+    clients     []Client
+    caches      []*Cache
+    cacheType   CacheType
+    r           int // replication factor
+    k           int // number of caches
+    n           int // number of pieces of data
+    datastore   *DataStore
+    hash        *Hash
 
 }
 
@@ -33,10 +44,26 @@ const (
 )
 
 
-func StartTask(clients []Client, k int, r int, cacheType CacheType) *CacheMaster {
+func StartTask(clients []Client, cacheType CacheType, cacheSize int, k int, r int,
+               datastore *DataStore) ([]*Cache, *Hash) {
+    // k: number of caches
+    // r: replication factor for data desired
+    // this is trivial (can store everything) if cacheSize >= nr/k (where n is
+    // size of datastore)
     m := &CacheMaster{}
-
-    return m
+    m.clients = clients
+    m.k = k
+    m.r = r
+    m.n = datastore.Size()
+    m.datastore = datastore
+    m.caches = []*Cache{}
+    for i := 0; i < k; i++ {
+        c := &Cache{}
+        c.Init(cacheSize, cacheType)
+        m.caches[i] = c
+    }
+    m.hash = MakeHash(k, m.n)
+    return m.caches, m.hash
 }
 
 

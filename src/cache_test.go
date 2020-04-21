@@ -40,8 +40,13 @@ func TestBasicLRUFail(t *testing.T) {
 		return
 	}
 
+<<<<<<< HEAD
 	var cache LRUCache
 	cache.Init(CACHE_SIZE)
+=======
+	var cache Cache
+	cache.Init(CACHE_SIZE, LRU)
+>>>>>>> basic cache master and hash function api scaffolding
 
 	for i := 0; i < 2; i++ {
 		for j := 0; j < (CACHE_SIZE + 1); j++ {
@@ -84,9 +89,8 @@ func TestBasicLRUSuccess(t *testing.T) {
 		fmt.Printf("\tignoring, CACHE_SIZE too big\n")
 		return
 	}
-	
-	var cache LRUCache
-	cache.Init(CACHE_SIZE)
+	var cache Cache
+	cache.Init(CACHE_SIZE, LRU)
 
 	for i := 0; i < 2; i++ {
 		for j := 0; j < CACHE_SIZE; j++ {
