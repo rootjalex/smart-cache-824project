@@ -9,6 +9,6 @@ jobs:
       - run: 
           name: RunTests
           command: |
-            cd src && go test
+            cd src && go test ./...
 
 
