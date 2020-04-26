@@ -22,7 +22,7 @@ type Node struct {
 
 // creates empty node for the given name
 func MakeNode(name string) *Node {
-	node := &Node{name: name, size: 0, adjacencies:make([]Edge, 0), neighbors: make(map[string]int)}
+	node := &Node{name: name, size: 0, adjacencies:make([]Edge, 0), neighbors: make(map[string]int), best: nil}
 	return node
 }
 
@@ -71,7 +71,7 @@ func (n *Node) MakeAccess(filename string) {
 		neighbor = n.neighbors[filename]
 	}
 
-	if n.adjacencies[neighbor].count > n.best.count {
+	if n.best == nil || n.adjacencies[neighbor].count > n.best.count {
 		n.best = &n.adjacencies[neighbor]
 	}
 }
