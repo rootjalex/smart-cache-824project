@@ -2,6 +2,7 @@ package cache
 
 import (
 	"os"
+	"./markov"
 )
 
 // master -> cache (Request param)
@@ -10,12 +11,12 @@ type ModelParamArgs struct {
 }
 
 type ModelParamReply struct {
-	Chain 		MarkovChain
+	Chain 		markov.MarkovChain
 }
 
 // master -> cache (Communicate update)
 type ModelParamUpdateArgs struct {
-	Chain 		MarkovChain // update
+	Chain 		markov.MarkovChain // update
 }
 
 type ModelParamUpdateReply struct {

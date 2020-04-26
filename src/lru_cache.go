@@ -3,6 +3,7 @@ package cache
 import (
 	"os"
 	"sync"
+	"./heap"
 )
 
 /********************************
@@ -21,7 +22,7 @@ type LRUCache struct {
 	misses		int
 	hits		int
 	cache		map[string]*os.File
-	heap		MinHeap
+	heap		heap.MinHeap
 	timestamp	int64 // for controlling LRU heap
 	cacheSize	int
 }
@@ -69,7 +70,7 @@ func (c *LRUCache) Init(cacheSize int){
 func (c *LRUCache) replace(name string, file *os.File) {
 	c.cache[name] = file
 	c.heap.Insert(name, c.timestamp)
-	if c.heap.n > c.cacheSize {
+	if c.heap.Size > c.cacheSize {
 		// must evict
 		evict := c.heap.ExtractMin()
 		delete(c.cache, evict)

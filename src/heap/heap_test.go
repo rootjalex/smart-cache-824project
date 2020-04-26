@@ -1,4 +1,4 @@
-package cache
+package heap
 
 import (
 	"testing"
@@ -49,8 +49,8 @@ func TestBasicHeap(t *testing.T) {
 		t.Errorf("Expected 'last', got %s", label)
 		failed = true
 	}
-	if heap.n != 0 {
-		t.Errorf("Expected 0 items left, got %d items", heap.n)
+	if heap.Size != 0 {
+		t.Errorf("Expected 0 items left, got %d items", heap.Size)
 		failed = true
 	}
 
