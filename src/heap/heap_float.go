@@ -1,22 +1,22 @@
-package cache
+package heap
 
-type HeapItem struct {
+type HeapItemFloat struct {
 	label	string
-	key	    int64
+	key	    float64
 }
 
-type MinHeap struct {
-	items	[]HeapItem
-	labels  map[string]int
-	n		int
+type MinHeapFloat struct {
+	items		[]HeapItemFloat
+	labels  	map[string]int
+	Size		int
 }
 
-func (h *MinHeap) Init() {
-	h.items = make([]HeapItem, 0)
+func (h *MinHeapFloat) Init() {
+	h.items = make([]HeapItemFloat, 0)
 	h.labels = make(map[string]int)
 }
 
-func (h *MinHeap) MinHeapifyUp(c int) {
+func (h *MinHeapFloat) MinHeapifyUp(c int) {
 	if c == 0 {
 		return
 	}
@@ -30,18 +30,18 @@ func (h *MinHeap) MinHeapifyUp(c int) {
 	}
 }
 
-func (h *MinHeap) MinHeapifyDown(p int) {
-	if p >= h.n {
+func (h *MinHeapFloat) MinHeapifyDown(p int) {
+	if p >= h.Size {
 		return
 	}
 
 	// check children
 	l := 2 * p + 1
 	r := 2 * p + 2
-	if l >= h.n {
+	if l >= h.Size {
 		l = p
 	}
-	if r >= h.n {
+	if r >= h.Size {
 		r = p
 	}
 
@@ -62,32 +62,29 @@ func (h *MinHeap) MinHeapifyDown(p int) {
 	}
 }
 
-func (h *MinHeap) Insert(label string, key int64) {
-	var i HeapItem
+func (h *MinHeapFloat) Insert(label string, key float64) {
+	var i HeapItemFloat
 	i.label = label
 	i.key = key
 	h.items = append(h.items, i)
-	h.labels[label] = h.n
-	h.n++
-	DPrintf("Inserting item %d, %s", key, label)
-	DPrintf("Resultant: %v", h.items)
+	h.labels[label] = h.Size
+	h.Size++
 	h.MinHeapifyUp(h.labels[label])
 }
 
-func (h *MinHeap) ExtractMin() string {
+func (h *MinHeapFloat) ExtractMin() string {
 	// swap first and last terms
-	h.Swap(0, h.n - 1)
+	h.Swap(0, h.Size - 1)
 	h.labels[h.items[0].label] = 0
-	delete(h.labels, h.items[h.n - 1].label)
-	DPrintf("Removing item %d, %s", h.items[h.n - 1].key, h.items[h.n - 1].label)
-	label := h.items[h.n - 1].label
-	h.items = h.items[:(h.n - 1)]
-	h.n--
+	delete(h.labels, h.items[h.Size - 1].label)
+	label := h.items[h.Size - 1].label
+	h.items = h.items[:(h.Size - 1)]
+	h.Size--
 	h.MinHeapifyDown(0)
 	return label
 }
 
-func (h *MinHeap) ChangeKey(label string, key int64) {
+func (h *MinHeapFloat) ChangeKey(label string, key float64) {
 	index, ok := h.labels[label]
 	if ok {
 		if key < h.items[index].key {
@@ -100,12 +97,21 @@ func (h *MinHeap) ChangeKey(label string, key int64) {
 	}
 }
 
-func (h *MinHeap) Swap(i int, j int) {
-	DPrintf("Swap %d, %s", h.items[i].key, h.items[i].label)
-	DPrintf("With %d, %s", h.items[j].key, h.items[j].label)
+func (h *MinHeapFloat) Swap(i int, j int) {
 	temp := h.items[i]
 	h.items[i] = h.items[j]
 	h.items[j] = temp
-	DPrintf("Finished: %d, %s", h.items[i].key, h.items[i].label)
-	DPrintf("With %d, %s\n", h.items[j].key, h.items[j].label)
+}
+
+func (h *MinHeapFloat) Contains(key string) bool {
+	_, ok := h.labels[key]
+	return ok
+}
+
+func (h *MinHeapFloat) GetKeyList() []string {
+	li := make([]string, len(h.items))
+	for i, v := range h.items {
+		li[i] = v.label
+	}
+	return li
 }
