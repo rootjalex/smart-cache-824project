@@ -43,15 +43,6 @@ func (m *MarkovChain) Predict(filename string, n int) []string {
 		log.Fatalf("AJ hasn't implemented fetching %d files yet :/", n)
 	} 
 	return m.longPaths(filename, n)
-	// if n != 1 {
-	// 	log.Fatalf("AJ hasn't implemented fetching %d files yet :/", n)
-	// } 
-	// if node, ok := m.nodes[filename]; ok {
-	// 	next, _ := node.GetMaxNeighbor() 
-	// 	return append(make([]string, 0), next)
-	// } else {
-	// 	return make([]string, 0)
-	// }
 }
 
 // Find highest probabilities from source
