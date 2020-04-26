@@ -115,3 +115,12 @@ func (h *MinHeap) GetKeyList() []string {
 	}
 	return li
 }
+
+func (h *MinHeap) GetKey(name string) int64 {
+	index, ok := h.labels[name]
+	if ok {
+		return h.items[index].key
+	} else {
+		return 0
+	}
+}

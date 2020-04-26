@@ -115,3 +115,12 @@ func (h *MinHeapFloat) GetKeyList() []string {
 	}
 	return li
 }
+
+func (h *MinHeapFloat) GetKey(name string) float64 {
+	index, ok := h.labels[name]
+	if ok {
+		return h.items[index].key
+	} else {
+		return 0.0
+	}
+}
