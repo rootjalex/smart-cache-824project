@@ -27,13 +27,13 @@ func MakeNode(name string) *Node {
 }
 
 // returns the neighbor with highest probability 
-func (n *Node) GetMaxNeighbor() (string, float32) {
+func (n *Node) GetMaxNeighbor() (string, float64) {
 	n.mu.Lock()
 	defer n.mu.Unlock()
 	if n.size == 0 {
 		return "", 0.0
 	} else {
-		return n.best.name, (float32(n.best.count) / float32(n.size))
+		return n.best.name, (float64(n.best.count) / float64(n.size))
 	}
 }
 
