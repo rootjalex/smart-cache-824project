@@ -35,18 +35,6 @@ func (n *Node) GetMaxNeighbor() (string, float32) {
 	} else {
 		return n.best.name, (float32(n.best.count) / float32(n.size))
 	}
-
-	// maxFreq := 0
-	// maxName := ""
-
-	// // find max neighbor
-	// for _, node := range n.adjacencies {
-	// 	if node.count > maxFreq {
-	// 		maxFreq = node.count 
-	// 		maxName = node.name
-	// 	}
-	// }
-	// return maxName, (float32(maxFreq) / float32(n.size))
 }
 
 func (n *Node) MakeAccess(filename string) {
