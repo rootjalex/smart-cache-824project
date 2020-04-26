@@ -2,25 +2,27 @@ package cache
 
 import (
     "sync"
-    "os"
 )
-/************************************************
+/********************************************************
 DataStore API
 
-Make(data)
+Make(data string)
  - intializes a datastore storing the inut data
 
 Size()
  - returns the size (number of files) in the datastore
-************************************************/
+
+Get(file string)
+ - returns the datastore in the file for the corresponding key
+********************************************************/
 
 type DataStore struct {
     mu     sync.Mutex
-    data   []*os.File
+    data   map[string]string
     n      int
 }
 
-func MakeDataStore(data []*os.File) *DataStore {
+func MakeDataStore(data map[string]string) *DataStore {
     d := &DataStore{}
     d.data = data
     d.n = len(data)
@@ -29,5 +31,9 @@ func MakeDataStore(data []*os.File) *DataStore {
 
 func (d *DataStore) Size() int {
     return d.n
+}
+
+func (d *DataStore) Get(f string) string {
+    return d.data[f]
 }
 
