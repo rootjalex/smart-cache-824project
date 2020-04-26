@@ -56,10 +56,10 @@ func (m *MarkovChain) Predict(filename string, n int) []string {
 
 // Find highest probabilities from source
 // assumes source is in m.nodes
+// CAN predict source as likely to be fetched again
 func (m *MarkovChain) longPaths(source string, n int) []string {
 	// set up min weights
 	prob_log := make(map[string]float64)
-	prob_log[source] = 0.0
 
 	// store removed nodes so we can fetch the closest values and check if something has been removed
 	var removed heap.MinHeapFloat
@@ -68,15 +68,23 @@ func (m *MarkovChain) longPaths(source string, n int) []string {
 	// store current guesses
 	var heap heap.MinHeapFloat
 	heap.Init()
-	heap.Insert(source, 1.0)
 
+	// relax all edges from source
+	src_node := m.nodes[source] 
+	
+	for _, neighbor := range src_node.adjacencies {
+		weight := -math.Log((float64(neighbor.count) / float64(src_node.size)))
+		// not seen before, set probability estimate and insert into heap
+		prob_log[neighbor.name] = weight
+		heap.Insert(neighbor.name, weight)
+	}
+
+	// now run Dijkstra's
 	for heap.Size > 0 && removed.Size < n {
 		name := heap.ExtractMin()
 		node := m.nodes[name]
 		estimate := prob_log[name]
-		if name != source {
-			removed.Insert(name, estimate)
-		}
+		removed.Insert(name, estimate)
 		for _, neighbor := range node.adjacencies {
 			if _, ok := prob_log[neighbor.name]; !ok {
 				// not seen before, set probability estimate and insert into heap
@@ -90,9 +98,11 @@ func (m *MarkovChain) longPaths(source string, n int) []string {
 					// then relax this edge
 					prob_log[neighbor.name] = (weight + estimate)
 					heap.ChangeKey(neighbor.name, (weight + estimate))
+					
 				}
 			}
 		}
 	}
-	return removed.GetKeyList()
+	closest := removed.GetKeyList()
+	return closest
 }
