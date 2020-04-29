@@ -6,8 +6,6 @@ Client supports
 * gets back a cache master / hash function?
 *************************************************/
 
-
 // placeholder for client struct during development
 type Client struct {
-
 }

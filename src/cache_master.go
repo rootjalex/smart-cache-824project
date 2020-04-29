@@ -1,8 +1,9 @@
 package cache
 
 import (
-    "sync"
+	"sync"
 )
+
 /************************************************
 Cache Master supports
 
@@ -15,29 +16,23 @@ m = StartTask(clients []Client, caches []Cache, r int)
 
 *************************************************/
 
-
 type CacheMaster struct {
-    mu       sync.Mutex
-    clients  []Client
-    caches   []Cache
-
+	mu      sync.Mutex
+	clients []Client
+	caches  []Cache
 }
 
 type CacheType int
-const (
-    LRU            CacheType = 0
-    MarkovPrefetch CacheType = 1
-    MarkovEviction CacheType = 2
-    MarkovBoth     CacheType = 3
 
+const (
+	LRU            CacheType = 0
+	MarkovPrefetch CacheType = 1
+	MarkovEviction CacheType = 2
+	MarkovBoth     CacheType = 3
 )
 
-
 func StartTask(clients []Client, k int, r int, cacheType CacheType) *CacheMaster {
-    m := &CacheMaster{}
+	m := &CacheMaster{}
 
-    return m
+	return m
 }
-
-
-
