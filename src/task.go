@@ -11,16 +11,23 @@ type AbstractBaseTask struct {
 	master  *CacheMaster
 }
 
-func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, cacheType CacheType, files []*os.File) *AbstractBaseTask {
+// TODO: datastore instead of files
+func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, cacheType CacheType, cacheSize int, files []*os.File) *AbstractBaseTask {
 	// make clients
 	clients := make([]Client, numClients)
 	for i := range clients {
 		// TODO: implement and call Client constructor
 		clients[i] = Client{}
+		// TODO: set their workloads somehow
 	}
 
 	// make cache master
 	cacheMaster := StartTask(clients, numCaches, replicationFactor, cacheType)
+
+	// TODO: add chache size
+
+	// ends := cacheMaster.getCacheEnds()
+	// assign end e for each client c
 
 	return &AbstractBaseTask{
 		clients: clients,
@@ -29,11 +36,7 @@ func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, c
 	}
 }
 
-func (w *AbstractBaseTask) Init() {
-
-}
-
-func (w *AbstractBaseTask) registerWithMaster() {
+func (w *AbstractBaseTask) Launch() {
 
 }
 
@@ -48,3 +51,5 @@ func NewMLTask(clients []Client, files []*os.File) *MLTask {
 	ml.aw = NewAbstractBaseTask(clients, files)
 	return ml
 }
+
+// ML
