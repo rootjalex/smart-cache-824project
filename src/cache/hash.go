@@ -19,7 +19,7 @@ type Hash struct {
     cacheIDs        []int
 }
 
-func MakeHash(numCaches int, numFiles int) *Hash {
+func MakeHash(numCaches int, numFiles int, replication int) *Hash {
     h := &Hash{}
     // TODO: actual initilization
     return h
