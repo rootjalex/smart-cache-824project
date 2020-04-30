@@ -8,10 +8,54 @@ import (
 	"net/rpc"
 	"os"
 	"strconv"
+	"time"
+
 	"./cache"
 	"./client"
-	"time"
 )
+
+type CacheNet struct {
+	registeredCacheMaster bool
+	registeredCache       bool
+}
+
+func (cn *CacheNet) startCacheRPCServer(c *cache.Cache) string {
+	if !cn.registeredCache {
+		rpc.Register(c)
+		cn.registeredCache = true
+		rpc.HandleHTTP()
+	}
+	//l, e := net.Listen("tcp", ":1234")
+	sockname := cacheSock(time.Now().String())
+	fmt.Printf("SOCKNAME: %v\n", sockname)
+
+	os.Remove(sockname)
+	l, e := net.Listen("unix", sockname)
+	if e != nil {
+		log.Fatal("listen error:", e)
+	}
+	go http.Serve(l, nil)
+	return sockname
+}
+
+func (cn *CacheNet) startCacheMasterRPCServer(cm *client.CacheMaster) string {
+	if !cn.registeredCacheMaster {
+		rpc.Register(cm)
+		cn.registeredCacheMaster = true
+		rpc.HandleHTTP()
+	}
+	//l, e := net.Listen("tcp", ":1234")
+	sockname := cacheSock(time.Now().String())
+	fmt.Printf("SOCKNAME: %v\n", sockname)
+
+	os.Remove(sockname)
+	l, e := net.Listen("unix", sockname)
+	if e != nil {
+		log.Fatal("listen error:", e)
+	}
+	go http.Serve(l, nil)
+	return sockname
+}
 
 // ---------------------------------- CACHE MASTER
 
