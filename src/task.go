@@ -48,7 +48,7 @@ type MLTask struct {
 
 func NewMLTask(clients []Client, files []*os.File) *MLTask {
 	ml := &MLTask{}
-	ml.aw = NewAbstractBaseTask(clients, files)
+	// ml.aw = NewAbstractBaseTask(clients, files)
 	return ml
 }
 
