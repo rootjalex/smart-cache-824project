@@ -3,7 +3,7 @@ package cache
 import (
 	"os"
 	"sync"
-	"./heap"
+	"../heap"
 )
 
 /********************************

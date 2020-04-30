@@ -10,7 +10,7 @@ import (
 func TestHelloBadCache(t *testing.T) {
 	fmt.Printf("TestHelloBadCache ...\n")
 	failed := false
-	want := "input/hello.txt"
+	want := "../input/hello.txt"
 	var cache BadCache
 	_, err := cache.Fetch(want)
 	if err != nil {
@@ -45,7 +45,7 @@ func TestBasicLRUFail(t *testing.T) {
 
 	for i := 0; i < 2; i++ {
 		for j := 0; j < (CACHE_SIZE + 1); j++ {
-			filename := "input/" + strconv.Itoa(j) + ".txt"
+			filename := "../input/" + strconv.Itoa(j) + ".txt"
 			f, _ := os.Create(filename) // ignore error if already exists
 			f.Close()
 			_, err := cache.Fetch(filename)
@@ -90,7 +90,7 @@ func TestBasicLRUSuccess(t *testing.T) {
 
 	for i := 0; i < 2; i++ {
 		for j := 0; j < CACHE_SIZE; j++ {
-			filename := "input/" + strconv.Itoa(j) + ".txt"
+			filename := "../input/" + strconv.Itoa(j) + ".txt"
 			f, _ := os.Create(filename) // ignore error if already exists
 			f.Close()
 			_, err := cache.Fetch(filename)

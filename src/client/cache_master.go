@@ -1,7 +1,8 @@
-package cache
+package client
 
 import (
     "sync"
+    "../cache"
 )
 /************************************************
 Cache Master supports
@@ -19,7 +20,7 @@ m = StartTask(clients []Client, caches []Cache, r int)
 type CacheMaster struct {
     mu       sync.Mutex
     clients  []Client
-    caches   []Cache
+    caches   []cache.Cache
 
 }
 
