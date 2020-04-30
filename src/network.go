@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"./cache"
 	"./client"
+	"time"
 )
 
 // ---------------------------------- CACHE MASTER
@@ -42,17 +43,20 @@ func cacheSock(cacheUID string) string {
 	return s
 }
 
-func startCacheRPCServer(c *cache.Cache) {
+func startCacheRPCServer(c *cache.Cache) string {
 	rpc.Register(c)
 	rpc.HandleHTTP()
 	//l, e := net.Listen("tcp", ":1234")
-	sockname := cacheMasterSock()
+	sockname := cacheSock(time.Now().String())
+	fmt.Printf("SOCKNAME: %v\n", sockname)
+
 	os.Remove(sockname)
 	l, e := net.Listen("unix", sockname)
 	if e != nil {
 		log.Fatal("listen error:", e)
 	}
 	go http.Serve(l, nil)
+	return sockname
 }
 
 // ---------------------------------- SENDING

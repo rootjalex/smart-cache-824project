@@ -1,8 +1,6 @@
 package cache
 
 import (
-	"os"
-
 	"./markov"
 )
 
@@ -21,14 +19,4 @@ type ModelParamUpdateArgs struct {
 
 type ModelParamUpdateReply struct {
 	Success bool
-}
-
-// client -> cache (Request a file)
-type RequestFileArgs struct {
-	Filename string
-}
-
-type RequestFileReply struct {
-	File *os.File
-	Hit  bool
 }

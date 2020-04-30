@@ -33,6 +33,15 @@ type Cache struct {
 	data 		*datastore.DataStore
 }
 
+// client -> cache (Request a file)
+type RequestFileArgs struct {
+	Filename string
+}
+
+type RequestFileReply struct {
+	File 	datastore.DataType
+}
+
 // copies underlying datastore
 func (c *Cache) Init(cacheSize int, cacheType CacheType, data *datastore.DataStore) {
 	c.cacheType = cacheType
@@ -128,4 +137,11 @@ func (c *Cache) AddToCache(filename string) bool {
 		return err
 	}
 	return ok
+}
+
+
+func (c *Cache) FetchRPC(args *RequestFileArgs, reply *RequestFileReply) error {
+	var err error
+	reply.File, err = c.Fetch(args.Filename)
+	return err
 }
