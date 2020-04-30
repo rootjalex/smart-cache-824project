@@ -24,17 +24,8 @@ type CacheMaster struct {
 
 }
 
-type CacheType int
-const (
-    LRU            CacheType = 0
-    MarkovPrefetch CacheType = 1
-    MarkovEviction CacheType = 2
-    MarkovBoth     CacheType = 3
 
-)
-
-
-func StartTask(clients []Client, k int, r int, cacheType CacheType) *CacheMaster {
+func StartTask(clients []Client, k int, r int, cacheType cache.CacheType) *CacheMaster {
     m := &CacheMaster{}
 
     return m

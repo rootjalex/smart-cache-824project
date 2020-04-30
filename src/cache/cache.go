@@ -2,6 +2,9 @@ package cache
 
 import (
 	"os"
+	"sync"
+	"../heap"
+	"../markov"
 )
 
 /********************************
@@ -15,8 +18,104 @@ c.Report() (hits, misses)
 c.Fetch(name string) (*os.File, error)
 
 *********************************/
-type Cache interface {
-	Init(cacheSize int)
-	Fetch(name string) (*os.File, error)
-	Report() (int, int) // Cache hits, cache misses
+type Cache struct {
+	mu          sync.Mutex          // Lock to protect shared access to cache
+	misses		int
+	hits		int
+	cache		map[string]*os.File
+	heap		heap.MinHeap
+	timestamp	int64 // for controlling LRU heap
+	cacheSize	int
+	chain 		*markov.MarkovChain
+	cacheType	CacheType
+}
+
+
+func (c *Cache) Init(cacheSize int, cacheType CacheType) {
+	c.cacheType = cacheType
+	c.misses = 0
+	c.hits = 0
+    c.cacheSize = cacheSize
+	c.cache = make(map[string]*os.File)
+	c.timestamp = 0
+	
+	if cacheType == LRU || cacheType == MarkovEviction {
+		// only LRU caches should use heap
+		c.heap.Init()
+	}
+	if cacheType != LRU {
+		// all other caches need a MarkovChain
+		c.chain = markov.MakeMarkovChain()
+	}
+}
+
+func (c *Cache) Fetch(name string) (*os.File, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	file, ok := c.cache[name]
+	var err error
+
+	if ok {
+		c.hits++
+		err = nil
+
+		// TODO: THIS IS BAAD PRACTICE BUT WILL SUFFICE FOR NOW
+		if c.cacheType == LRU || c.cacheType == MarkovEviction {
+			// only LRU caches should use heap
+			c.heap.ChangeKey(name, c.timestamp)
+		}
+		if c.cacheType != LRU {
+			// all other caches need a MarkovChain
+			c.chain.Access(name)
+		}
+	} else {
+		c.AddToCache(name)
+		c.misses++
+	}
+	c.timestamp++
+
+	go c.Prefetch(name)
+	return file, err
+}
+
+
+func (c *Cache) Report() (int, int) {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+	return c.hits, c.misses
+}
+
+// TODO: REPLACEMENT POLICY FOR MARKOV CHAIN
+// assumes mu is Locked
+func (c *Cache) replace(name string, file *os.File) {
+	c.cache[name] = file
+	c.heap.Insert(name, c.timestamp)
+	if c.heap.Size > c.cacheSize {
+		// must evict
+		evict := c.heap.ExtractMin()
+		delete(c.cache, evict)
+	}
+}
+
+func (c *Cache) Prefetch(filename string) {
+    c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.cacheType == MarkovPrefetch || c.cacheType == MarkovBoth {
+		files := c.chain.Predict(filename, PREFETCH_SIZE)
+		for _, file :=  range files {
+			c.AddToCache(file)
+		}
+	}
+}
+
+func (c *Cache) AddToCache(filename string) bool {
+	// assumes c.mu is held
+	_, ok := c.cache[filename]
+
+	if !ok {
+		file, _ := os.Open(filename)
+		c.replace(filename, file) // handles insertion into heap
+	}
+	return ok
 }
