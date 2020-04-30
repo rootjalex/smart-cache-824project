@@ -24,10 +24,10 @@ type DataStore struct {
     n      int
 }
 
-func MakeDataStore(data map[string]DataType) *DataStore {
+func MakeDataStore() *DataStore {
     d := &DataStore{}
-    d.data = data
-    d.n = len(data)
+    d.data = make(map[string]DataType)
+    d.n = 0
     return d
 }
 
@@ -35,9 +35,10 @@ func (d *DataStore) Size() int {
     return d.n
 }
 
-func (d *DataStore) Get(filename string) DataType {
+func (d *DataStore) Get(filename string) (DataType, bool) {
     // TODO: add time.Sleep for approx time of fetching from underlying datastore
-    return d.data[filename]
+    data, ok := d.data[filename]
+    return data, ok
 }
 
 func (d *DataStore) Make(filename string) {
@@ -48,4 +49,13 @@ func (d *DataStore) Make(filename string) {
 
     // TODO: comment out if DataType is *os.File
     d.data[filename] = "good"
+
+    d.n = len(d.data)
+}
+
+func (d *DataStore) Copy() *DataStore {
+    c := &DataStore{}
+    c.data = make(map[string]DataType)
+    c.n = 0
+    return c
 }
