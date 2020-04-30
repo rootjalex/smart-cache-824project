@@ -9,8 +9,7 @@ func TestBasicHeap(t *testing.T) {
 	fmt.Printf("TestBasicHeap ...\n")
 	failed := false
 
-	var heap MinHeap
-	heap.Init()
+	heap := MakeMinHeapInt64()
 
 	heap.Insert("first", -1)
 	heap.Insert("fourth", 5)

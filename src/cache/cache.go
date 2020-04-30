@@ -25,7 +25,7 @@ type Cache struct {
 	misses		int
 	hits		int
 	cache		map[string]datastore.DataType
-	heap		heap.MinHeap
+	heap		*heap.MinHeapInt64
 	timestamp	int64 // for controlling LRU heap
 	cacheSize	int
 	chain 		*markov.MarkovChain
@@ -45,7 +45,7 @@ func (c *Cache) Init(cacheSize int, cacheType CacheType, data *datastore.DataSto
 	
 	if cacheType == LRU || cacheType == MarkovEviction {
 		// only LRU caches should use heap
-		c.heap.Init()
+		c.heap = heap.MakeMinHeapInt64()
 	}
 	if cacheType != LRU {
 		// all other caches need a MarkovChain
