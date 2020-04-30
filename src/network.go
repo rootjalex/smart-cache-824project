@@ -8,6 +8,8 @@ import (
 	"net/rpc"
 	"os"
 	"strconv"
+	"./cache"
+	"./client"
 )
 
 // ---------------------------------- CACHE MASTER
@@ -19,7 +21,7 @@ func cacheMasterSock() string {
 	return s
 }
 
-func startCacheMasterRPCServer(m *CacheMaster) {
+func startCacheMasterRPCServer(m *client.CacheMaster) {
 	rpc.Register(m)
 	rpc.HandleHTTP()
 	//l, e := net.Listen("tcp", ":1234")
@@ -40,7 +42,7 @@ func cacheSock(cacheUID string) string {
 	return s
 }
 
-func startCacheRPCServer(c *Cache) {
+func startCacheRPCServer(c *cache.Cache) {
 	rpc.Register(c)
 	rpc.HandleHTTP()
 	//l, e := net.Listen("tcp", ":1234")
