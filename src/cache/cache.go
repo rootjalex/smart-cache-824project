@@ -28,9 +28,9 @@ type Cache struct {
 	heap		*heap.MinHeapInt64
 	timestamp	int64 // for controlling LRU heap
 	cacheSize	int
-	chain 		*markov.MarkovChain
+	chain		*markov.MarkovChain
 	cacheType	CacheType
-	data 		*datastore.DataStore
+	data		*datastore.DataStore
 }
 
 // copies underlying datastore
@@ -116,6 +116,23 @@ func (c *Cache) Prefetch(filename string) {
 			c.AddToCache(file)
 		}
 	}
+}
+
+func (c *Cache) GetState(args *GetCacheStateArgs, reply *GetCacheStateReply) bool {
+    // TODO: Need some if statements around cache type here
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    reply.State = c.chain
+    return true
+}
+
+func (c *Cache) UpdateState(args *UpdateCacheArgs, reply *UpdateCacheReply) bool {
+    // TODO: Need some if statements around cache type here
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    c.chain = args.State
+    reply.Success = true
+    return reply.Success
 }
 
 func (c *Cache) AddToCache(filename string) bool {
