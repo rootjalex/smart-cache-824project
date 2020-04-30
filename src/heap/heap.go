@@ -5,18 +5,20 @@ type HeapItem struct {
 	key	    int64
 }
 
-type MinHeap struct {
+type MinHeapInt64 struct {
 	items		[]HeapItem
 	labels  	map[string]int
 	Size		int
 }
 
-func (h *MinHeap) Init() {
+func MakeMinHeapInt64() *MinHeapInt64 {
+	h := &MinHeapInt64{}
 	h.items = make([]HeapItem, 0)
 	h.labels = make(map[string]int)
+	return h
 }
 
-func (h *MinHeap) MinHeapifyUp(c int) {
+func (h *MinHeapInt64) MinHeapifyUp(c int) {
 	if c == 0 {
 		return
 	}
@@ -30,7 +32,7 @@ func (h *MinHeap) MinHeapifyUp(c int) {
 	}
 }
 
-func (h *MinHeap) MinHeapifyDown(p int) {
+func (h *MinHeapInt64) MinHeapifyDown(p int) {
 	if p >= h.Size {
 		return
 	}
@@ -62,7 +64,7 @@ func (h *MinHeap) MinHeapifyDown(p int) {
 	}
 }
 
-func (h *MinHeap) Insert(label string, key int64) {
+func (h *MinHeapInt64) Insert(label string, key int64) {
 	var i HeapItem
 	i.label = label
 	i.key = key
@@ -72,7 +74,7 @@ func (h *MinHeap) Insert(label string, key int64) {
 	h.MinHeapifyUp(h.labels[label])
 }
 
-func (h *MinHeap) ExtractMin() string {
+func (h *MinHeapInt64) ExtractMin() string {
 	// swap first and last terms
 	h.Swap(0, h.Size - 1)
 	h.labels[h.items[0].label] = 0
@@ -84,7 +86,7 @@ func (h *MinHeap) ExtractMin() string {
 	return label
 }
 
-func (h *MinHeap) ChangeKey(label string, key int64) {
+func (h *MinHeapInt64) ChangeKey(label string, key int64) {
 	index, ok := h.labels[label]
 	if ok {
 		if key < h.items[index].key {
@@ -97,18 +99,18 @@ func (h *MinHeap) ChangeKey(label string, key int64) {
 	}
 }
 
-func (h *MinHeap) Swap(i int, j int) {
+func (h *MinHeapInt64) Swap(i int, j int) {
 	temp := h.items[i]
 	h.items[i] = h.items[j]
 	h.items[j] = temp
 }
 
-func (h *MinHeap) Contains(key string) bool {
+func (h *MinHeapInt64) Contains(key string) bool {
 	_, ok := h.labels[key]
 	return ok
 }
 
-func (h *MinHeap) GetKeyList() []string {
+func (h *MinHeapInt64) GetKeyList() []string {
 	li := make([]string, len(h.items))
 	for i, v := range h.items {
 		li[i] = v.label
@@ -116,7 +118,7 @@ func (h *MinHeap) GetKeyList() []string {
 	return li
 }
 
-func (h *MinHeap) GetKey(name string) int64 {
+func (h *MinHeapInt64) GetKey(name string) int64 {
 	index, ok := h.labels[name]
 	if ok {
 		return h.items[index].key

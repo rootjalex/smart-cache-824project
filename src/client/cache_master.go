@@ -1,7 +1,8 @@
-package cache
+package client
 
 import (
     "sync"
+    "../cache"
 )
 /************************************************
 Cache Master supports
@@ -19,21 +20,12 @@ m = StartTask(clients []Client, caches []Cache, r int)
 type CacheMaster struct {
     mu       sync.Mutex
     clients  []Client
-    caches   []Cache
+    caches   []cache.Cache
 
 }
 
-type CacheType int
-const (
-    LRU            CacheType = 0
-    MarkovPrefetch CacheType = 1
-    MarkovEviction CacheType = 2
-    MarkovBoth     CacheType = 3
 
-)
-
-
-func StartTask(clients []Client, k int, r int, cacheType CacheType) *CacheMaster {
+func StartTask(clients []Client, k int, r int, cacheType cache.CacheType) *CacheMaster {
     m := &CacheMaster{}
 
     return m
