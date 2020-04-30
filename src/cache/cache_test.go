@@ -58,7 +58,7 @@ func TestBasicLRUFail(t *testing.T) {
 
 	// clear up created files 
 	for j := 0; j < (CACHE_SIZE + 1); j++ {
-		filename := "input/" + strconv.Itoa(j) + ".txt"
+		filename := "../input/" + strconv.Itoa(j) + ".txt"
 		os.Remove(filename)
 	}
 
@@ -103,7 +103,7 @@ func TestBasicLRUSuccess(t *testing.T) {
 
 	// clear up created files 
 	for j := 0; j < CACHE_SIZE; j++ {
-		filename := "input/" + strconv.Itoa(j) + ".txt"
+		filename := "../input/" + strconv.Itoa(j) + ".txt"
 		os.Remove(filename)
 	}
 
