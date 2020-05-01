@@ -9,6 +9,71 @@ import (
     "../client"
 )
 
+func TestArraySetsEqual(t *testing.T) {
+    fmt.Printf("TestArraySetsEqualFail ...\n")
+    failed := false
+
+    // case 1
+    a := []int{1, 1, 1, 1}
+    b := []int{1, 0, 1, 1}
+    got := IntArraySetsEqual(a, b)
+    expected := false
+    if got != expected {
+        failed = true
+        t.Errorf("got %v but expected %v for equality of %v and %v", got, expected, a, b)
+    }
+
+    // case 1
+    a = []int{1, 1, 1, 0}
+    b = []int{1, 0, 1, 1}
+    got = IntArraySetsEqual(a, b)
+    expected = true
+    if got != expected {
+        failed = true
+        t.Errorf("got %v but expected %v for equality of %v and %v", got, expected, a, b)
+    }
+
+	if failed {
+		fmt.Printf("\t... FAILED\n")
+	} else {
+		fmt.Printf("\t... PASSED\n")
+	}
+}
+
+
+func TestGetIntCounts(t *testing.T) {
+    fmt.Printf("TestGetIntCountsFail ...\n")
+    failed := false
+
+    // case 1
+    a := []int{1, 1, 1, 1}
+    got := getIntCounts(a)
+    expected := map[int]int{}
+    expected[1] = 4
+    if !reflect.DeepEqual(expected, got) {
+        failed = true
+        t.Errorf("got %v but expected %v for original array %v", got, expected, a)
+    }
+
+    // case 2
+    a = []int{1, 2, 1, 4}
+    got = getIntCounts(a)
+    expected = map[int]int{}
+    expected[1] = 2
+    expected[2] = 1
+    expected[4] = 1
+    if !reflect.DeepEqual(expected, got) {
+        failed = true
+        t.Errorf("got %v but expected %v for original array %v", got, expected, a)
+    }
+
+	if failed {
+		fmt.Printf("\t... FAILED\n")
+	} else {
+		fmt.Printf("\t... PASSED\n")
+	}
+}
+
 func TestBasicLRUFail(t *testing.T) {
 	fmt.Printf("TestBasicLRUFail ...\n")
 	failed := false
@@ -278,90 +343,35 @@ func TestHashEndToEnd(t *testing.T) {
     hash := MakeHash(numCaches, filenames, len(filenames), replication, clients)
 
     file := "a"
-    clientId := 0
-    got := hash.GetCaches(file, clientId)
-    expected := []int{4, 5}
-    if !IntArrayEqual(expected, got) {
+    first := hash.GetCaches(file, 0)
+    second := hash.GetCaches(file, 1)
+    third := hash.GetCaches(file, 2)
+    fourth := hash.GetCaches(file, 3)
+
+    if !IntArraySetsEqual(first, second) || !IntArraySetsEqual(first, third) || !IntArraySetsEqual(first, fourth) {
         failed = true
-        t.Errorf("Got %v but expected %v for file: %v and clientId: %v", got, expected, file, clientId)
+        t.Errorf("Expected same cache id sets for each client id, but got: %v, %v, %v, and %v for file %v", first, second, third, fourth, file)
     }
 
-    file = "a"
-    clientId = 1
-    got = hash.GetCaches(file, clientId)
-    expected = []int{4, 5}
-    if !IntArrayEqual(expected, got) {
+    if len(first) < replication || len(first) > replication + 1 {
         failed = true
-        t.Errorf("Got %v but expected %v for file: %v and clientId: %v", got, expected, file, clientId)
-    }
-
-    file = "a"
-    clientId = 2
-    got = hash.GetCaches(file, clientId)
-    expected = []int{5, 4}
-    if !IntArrayEqual(expected, got) {
-        failed = true
-        t.Errorf("Got %v but expected %v for file: %v and clientId: %v", got, expected, file, clientId)
-    }
-
-    file = "a"
-    clientId = 3
-    got = hash.GetCaches(file, clientId)
-    expected = []int{5, 4}
-    if !IntArrayEqual(expected, got) {
-        failed = true
-        t.Errorf("Got %v but expected %v for file: %v and clientId: %v", got, expected, file, clientId)
+        t.Errorf("Got bad replication group size: %v when numcaches is %v and replication is %v", len(first), numCaches, replication)
     }
 
     file = "b"
-    clientId = 3
-    got = hash.GetCaches(file, clientId)
-    expected = []int{1, 6, 0}
-    if !IntArrayEqual(expected, got) {
+    first = hash.GetCaches(file, 0)
+    second = hash.GetCaches(file, 1)
+    third = hash.GetCaches(file, 2)
+    fourth = hash.GetCaches(file, 3)
+
+    if !IntArraySetsEqual(first, second) || !IntArraySetsEqual(first, third) || !IntArraySetsEqual(first, fourth) {
         failed = true
-        t.Errorf("Got %v but expected %v for file: %v and clientId: %v", got, expected, file, clientId)
-    }
-    file = "c"
-    clientId = 3
-    got = hash.GetCaches(file, clientId)
-    expected = []int{4, 5}
-    if !IntArrayEqual(expected, got) {
-        failed = true
-        t.Errorf("Got %v but expected %v for file: %v and clientId: %v", got, expected, file, clientId)
-    }
-    file = "d"
-    clientId = 3
-    got = hash.GetCaches(file, clientId)
-    expected = []int{0, 1, 6}
-    if !IntArrayEqual(expected, got) {
-        failed = true
-        t.Errorf("Got %v but expected %v for file: %v and clientId: %v", got, expected, file, clientId)
-    }
-    file = "e"
-    clientId = 3
-    got = hash.GetCaches(file, clientId)
-    expected = []int{5, 4}
-    if !IntArrayEqual(expected, got) {
-        failed = true
-        t.Errorf("Got %v but expected %v for file: %v and clientId: %v", got, expected, file, clientId)
+        t.Errorf("Expected same cache id sets for each client id, but got: %v, %v, %v, and %v for file %v", first, second, third, fourth, file)
     }
 
-    file = "h"
-    clientId = 2
-    got = hash.GetCaches(file, clientId)
-    expected = []int{2,3}
-    if !IntArrayEqual(expected, got) {
+    if len(first) < replication || len(first) > replication + 1 {
         failed = true
-        t.Errorf("Got %v but expected %v for file: %v and clientId: %v", got, expected, file, clientId)
-    }
-
-    file = "h"
-    clientId = 1
-    got = hash.GetCaches(file, clientId)
-    expected = []int{3, 2}
-    if !IntArrayEqual(expected, got) {
-        failed = true
-        t.Errorf("Got %v but expected %v for file: %v and clientId: %v", got, expected, file, clientId)
+        t.Errorf("Got bad replication group size: %v when numcaches is %v and replication is %v", len(first), numCaches, replication)
     }
 
     if failed {
