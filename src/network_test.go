@@ -69,7 +69,7 @@ func TestDoubleNetworkCall(t *testing.T) {
 	socknameFirst := CONFIG.cn.startCacheRPCServer(&lruCacheFirst)
 
 	var lruCacheSecond cache.Cache
-	lruCacheSecond.Init(1, cache.CACHE_SIZE, cache.LRU, data)
+	lruCacheSecond.Init(2, cache.CACHE_SIZE, cache.LRU, data)
 	socknameSecond := CONFIG.cn.startCacheRPCServer(&lruCacheSecond)
 
 	for j := 0; j < 5; j++ {
