@@ -1,5 +1,8 @@
 package cache
 
+import (
+    "reflect"
+)
 
 func countValues(a []int, i int) int {
     count := 0
@@ -36,6 +39,27 @@ func IntArrayEqual(a, b []int) bool {
         }
     }
     return true
+}
+
+func getIntCounts(a []int) map[int]int {
+    aCounts := map[int]int{}
+    for _, v := range a {
+        if _, ok := aCounts[v]; !ok {
+            aCounts[v] = 0
+        }
+        aCounts[v] ++
+    }
+    return aCounts
+}
+
+// Checks if two Arrays contain same elements
+func IntArraySetsEqual(a, b []int) bool {
+    if len(a) != len(b) {
+        return false
+    }
+    aCounts := getIntCounts(a)
+    bCounts := getIntCounts(b)
+    return reflect.DeepEqual(aCounts, bCounts)
 }
 
 
