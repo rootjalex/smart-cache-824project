@@ -9,5 +9,16 @@ Client supports
 
 // placeholder for client struct during development
 type Client struct {
+    id   int
 
+}
+
+func Init(id int) *Client {
+    c := &Client{}
+    c.id = id
+    return c
+}
+
+func (c *Client) GetID() int {
+    return c.id
 }

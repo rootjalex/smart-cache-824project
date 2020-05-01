@@ -22,6 +22,7 @@ c.Fetch(name string) (datastore.DataType, error)
 *********************************/
 type Cache struct {
 	mu          sync.Mutex          // Lock to protect shared access to cache
+    id          int
 	misses		int
 	hits		int
 	cache		map[string]datastore.DataType
@@ -34,15 +35,16 @@ type Cache struct {
 }
 
 // copies underlying datastore
-func (c *Cache) Init(cacheSize int, cacheType CacheType, data *datastore.DataStore) {
+func (c *Cache) Init(id int, cacheSize int, cacheType CacheType, data *datastore.DataStore) {
 	c.cacheType = cacheType
+    c.id = id
 	c.misses = 0
 	c.hits = 0
     c.cacheSize = cacheSize
 	c.cache = make(map[string]datastore.DataType)
 	c.timestamp = 0
 	c.data = data.Copy()
-	
+
 	if cacheType == LRU || cacheType == MarkovEviction {
 		// only LRU caches should use heap
 		c.heap = heap.MakeMinHeapInt64()
