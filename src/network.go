@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"./cache"
-	"./client"
 )
 
 type CacheNet struct {
@@ -38,7 +37,7 @@ func (cn *CacheNet) startCacheRPCServer(c *cache.Cache) string {
 	return sockname
 }
 
-func (cn *CacheNet) startCacheMasterRPCServer(cm *client.CacheMaster) string {
+func (cn *CacheNet) startCacheMasterRPCServer(cm *cache.CacheMaster) string {
 	if !cn.registeredCacheMaster {
 		rpc.Register(cm)
 		cn.registeredCacheMaster = true
@@ -66,7 +65,7 @@ func cacheMasterSock() string {
 	return s
 }
 
-func startCacheMasterRPCServer(m *CacheMaster) {
+func startCacheMasterRPCServer(m *cache.CacheMaster) {
 	rpc.Register(m)
 	rpc.HandleHTTP()
 	//l, e := net.Listen("tcp", ":1234")
