@@ -6,18 +6,18 @@ import (
 // Individual edge in the markov graph
 // count represents frequency
 type Edge struct {
-	count 			int
-	name  			string
+	count			int
+	name			string
 }
 
 // sparse representation of adjacencies. double space for efficient lookups + iteration
 type Node struct {
-	name 			string
-	size 			int
-	adjacencies 	[]Edge			// fast iterator 
-	neighbors		map[string]int 	// filename -> index in adjacencies. fast lookup
-	mu 				sync.Mutex 		// for when the chain should be concurrent
-	best 			*Edge
+	name			string
+	size			int
+	adjacencies	    []Edge			// fast iterator 
+	neighbors		map[string]int	// filename -> index in adjacencies. fast lookup
+	mu				sync.Mutex		// for when the chain should be concurrent
+	best			*Edge
 }
 
 // creates empty node for the given name
@@ -48,12 +48,12 @@ func (n *Node) MakeAccess(filename string) {
 	if ok {
 		n.adjacencies[neighbor].count++
 	} else {
-		var e Edge 
+		var e Edge
 		e.count = 1
 		e.name = filename
 
 		// set index in map and append to end of list
-		n.neighbors[filename] = len(n.adjacencies) 
+		n.neighbors[filename] = len(n.adjacencies)
 		n.adjacencies = append(n.adjacencies, e)
 
 		neighbor = n.neighbors[filename]
