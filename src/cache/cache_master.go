@@ -55,10 +55,10 @@ func StartTask(clients []*client.Client, cacheType CacheType, cacheSize int, num
     m.caches = []*Cache{}
     for i := 0; i < m.numCaches; i++ {
         c := Cache{}
-        c.Init(cacheSize, cacheType, m.datastore)
+        c.Init(i, cacheSize, cacheType, m.datastore)
         m.caches[i] = &c
     }
-    m.hash = MakeHash(m.numCaches, m.n, m.replication)
+    m.hash = MakeHash(m.numCaches, m.datastore.GetFileNames(), m.n, m.replication, m.clients)
 
     go m.syncCaches(ms)
 
