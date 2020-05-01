@@ -30,7 +30,7 @@ func TestBasicNetworkCall(t *testing.T) {
 
 	// this copies data, so can't adjust later
 	var lruCache cache.Cache
-	lruCache.Init(cache.CACHE_SIZE, cache.LRU, data)
+	lruCache.Init(1, cache.CACHE_SIZE, cache.LRU, data)
 	sockname := CONFIG.cn.startCacheRPCServer(&lruCache)
 
 	for j := 0; j < 5; j++ {
@@ -65,11 +65,11 @@ func TestDoubleNetworkCall(t *testing.T) {
 
 	// this copies data, so can't adjust later
 	var lruCacheFirst cache.Cache
-	lruCacheFirst.Init(cache.CACHE_SIZE, cache.LRU, data)
+	lruCacheFirst.Init(1, cache.CACHE_SIZE, cache.LRU, data)
 	socknameFirst := CONFIG.cn.startCacheRPCServer(&lruCacheFirst)
 
 	var lruCacheSecond cache.Cache
-	lruCacheSecond.Init(cache.CACHE_SIZE, cache.LRU, data)
+	lruCacheSecond.Init(1, cache.CACHE_SIZE, cache.LRU, data)
 	socknameSecond := CONFIG.cn.startCacheRPCServer(&lruCacheSecond)
 
 	for j := 0; j < 5; j++ {

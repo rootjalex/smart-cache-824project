@@ -35,7 +35,7 @@ type CacheMaster struct {
     n           int // number of pieces of data
     datastore   *datastore.DataStore
     hash        *Hash
-    ms          int
+    ms          int // how often caches are synced
 
 }
 

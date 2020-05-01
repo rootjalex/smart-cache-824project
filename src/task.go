@@ -1,28 +1,33 @@
 package cache
 
-import "os"
+import (
+    "os"
+	"./client"
+	"./cache"
+    "./datastore"
+)
 
 // ------------------------------ Abstract Base Task
 
 // no need for mutex since only task runs at a time
 type AbstractBaseTask struct {
-	clients []Client
-	files   []*os.File
-	master  *CacheMaster
+	clients    []*client.Client
+	datastore  *datastore.DataStore
+	master     *cache.CacheMaster
 }
 
 // TODO: datastore instead of files
-func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, cacheType CacheType, cacheSize int, files []*os.File) *AbstractBaseTask {
+func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, cacheType cache.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *AbstractBaseTask {
 	// make clients
-	clients := make([]Client, numClients)
+	clients := make([]*client.Client, numClients)
 	for i := range clients {
 		// TODO: implement and call Client constructor
-		clients[i] = Client{}
+		clients[i] = &client.Client{}
 		// TODO: set their workloads somehow
 	}
 
 	// make cache master
-	cacheMaster := StartTask(clients, numCaches, replicationFactor, cacheType)
+	cacheMaster := cache.StartTask(clients, cacheType, cacheSize, numCaches, replicationFactor, datastore, ms)
 
 	// TODO: add chache size
 
@@ -31,7 +36,7 @@ func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, c
 
 	return &AbstractBaseTask{
 		clients: clients,
-		files:   files,
+		datastore:   datastore,
 		master:  cacheMaster,
 	}
 }
@@ -46,7 +51,7 @@ type MLTask struct {
 	t *AbstractBaseTask
 }
 
-func NewMLTask(clients []Client, files []*os.File) *MLTask {
+func NewMLTask(clients []client.Client, files []*os.File) *MLTask {
 	ml := &MLTask{}
 	// ml.aw = NewAbstractBaseTask(clients, files)
 	return ml
