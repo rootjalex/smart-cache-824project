@@ -8,7 +8,6 @@ Client supports
 
 type Client struct {
     id   int
-
 }
 
 func Init(id int) *Client {

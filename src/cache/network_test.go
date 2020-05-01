@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"testing"
-
-	"./cache"
-	"./datastore"
+	"../datastore"
 )
 
 type NetTestConfig struct {
@@ -29,14 +27,14 @@ func TestBasicNetworkCall(t *testing.T) {
 	}
 
 	// this copies data, so can't adjust later
-	var lruCache cache.Cache
-	lruCache.Init(1, cache.CACHE_SIZE, cache.LRU, data)
+	var lruCache Cache
+	lruCache.Init(1, CACHE_SIZE, LRU, data)
 	sockname := CONFIG.cn.startCacheRPCServer(&lruCache)
 
 	for j := 0; j < 5; j++ {
 		filename := "fake_" + strconv.Itoa(j) + ".txt"
-		args := cache.RequestFileArgs{Filename: filename}
-		reply := cache.RequestFileReply{}
+		args := RequestFileArgs{Filename: filename}
+		reply := RequestFileReply{}
 
 		ok := call(sockname, "Cache.FetchRPC", &args, &reply)
 		if !ok {
@@ -64,18 +62,18 @@ func TestDoubleNetworkCall(t *testing.T) {
 	}
 
 	// this copies data, so can't adjust later
-	var lruCacheFirst cache.Cache
-	lruCacheFirst.Init(1, cache.CACHE_SIZE, cache.LRU, data)
+	var lruCacheFirst Cache
+	lruCacheFirst.Init(1, CACHE_SIZE, LRU, data)
 	socknameFirst := CONFIG.cn.startCacheRPCServer(&lruCacheFirst)
 
-	var lruCacheSecond cache.Cache
-	lruCacheSecond.Init(2, cache.CACHE_SIZE, cache.LRU, data)
+	var lruCacheSecond Cache
+	lruCacheSecond.Init(2, CACHE_SIZE, LRU, data)
 	socknameSecond := CONFIG.cn.startCacheRPCServer(&lruCacheSecond)
 
 	for j := 0; j < 5; j++ {
 		filename := "fake_" + strconv.Itoa(j) + ".txt"
-		args := cache.RequestFileArgs{Filename: filename}
-		reply := cache.RequestFileReply{}
+		args := RequestFileArgs{Filename: filename}
+		reply := RequestFileReply{}
 
 		// first cache
 		okFirst := call(socknameFirst, "Cache.FetchRPC", &args, &reply)

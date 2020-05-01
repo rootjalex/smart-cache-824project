@@ -32,6 +32,7 @@ type Cache struct {
 	chain		*markov.MarkovChain
 	cacheType	CacheType
 	data		*datastore.DataStore
+    alive       bool
 }
 
 // client -> cache (Request a file)
@@ -40,7 +41,7 @@ type RequestFileArgs struct {
 }
 
 type RequestFileReply struct {
-	File 	datastore.DataType
+	File	datastore.DataType
 }
 
 // copies underlying datastore
@@ -62,6 +63,10 @@ func (c *Cache) Init(id int, cacheSize int, cacheType CacheType, data *datastore
 		// all other caches need a MarkovChain
 		c.chain = markov.MakeMarkovChain()
 	}
+}
+
+func (c *Cache) GetId() int {
+    return c.id
 }
 
 func (c *Cache) Fetch(name string) (datastore.DataType, error) {

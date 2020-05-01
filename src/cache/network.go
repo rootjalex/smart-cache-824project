@@ -9,8 +9,6 @@ import (
 	"os"
 	"strconv"
 	"time"
-
-	"./cache"
 )
 
 type CacheNet struct {
@@ -18,14 +16,14 @@ type CacheNet struct {
 	registeredCache       bool
 }
 
-func (cn *CacheNet) startCacheRPCServer(c *cache.Cache) string {
+func (cn *CacheNet) startCacheRPCServer(c *Cache) string {
 	if !cn.registeredCache {
 		rpc.Register(c)
 		cn.registeredCache = true
 		rpc.HandleHTTP()
 	}
 	//l, e := net.Listen("tcp", ":1234")
-	sockname := cacheSock(time.Now().String())
+	sockname := cacheSock(string(c.id))
 	fmt.Printf("SOCKNAME: %v\n", sockname)
 
 	os.Remove(sockname)
@@ -37,7 +35,7 @@ func (cn *CacheNet) startCacheRPCServer(c *cache.Cache) string {
 	return sockname
 }
 
-func (cn *CacheNet) startCacheMasterRPCServer(cm *cache.CacheMaster) string {
+func (cn *CacheNet) startCacheMasterRPCServer(cm *CacheMaster) string {
 	if !cn.registeredCacheMaster {
 		rpc.Register(cm)
 		cn.registeredCacheMaster = true
@@ -65,7 +63,7 @@ func cacheMasterSock() string {
 	return s
 }
 
-func startCacheMasterRPCServer(m *cache.CacheMaster) {
+func startCacheMasterRPCServer(m *CacheMaster) {
 	rpc.Register(m)
 	rpc.HandleHTTP()
 	//l, e := net.Listen("tcp", ":1234")
@@ -86,7 +84,7 @@ func cacheSock(cacheUID string) string {
 	return s
 }
 
-func startCacheRPCServer(c *cache.Cache) string {
+func startCacheRPCServer(c *Cache) string {
 	rpc.Register(c)
 	rpc.HandleHTTP()
 	//l, e := net.Listen("tcp", ":1234")
