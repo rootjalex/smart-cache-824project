@@ -7,72 +7,8 @@ import (
     "reflect"
 	"../datastore"
     "../client"
+    "../utils"
 )
-
-func TestArraySetsEqual(t *testing.T) {
-    fmt.Printf("TestArraySetsEqualFail ...\n")
-    failed := false
-
-    // case 1
-    a := []int{1, 1, 1, 1}
-    b := []int{1, 0, 1, 1}
-    got := IntArraySetsEqual(a, b)
-    expected := false
-    if got != expected {
-        failed = true
-        t.Errorf("got %v but expected %v for equality of %v and %v", got, expected, a, b)
-    }
-
-    // case 1
-    a = []int{1, 1, 1, 0}
-    b = []int{1, 0, 1, 1}
-    got = IntArraySetsEqual(a, b)
-    expected = true
-    if got != expected {
-        failed = true
-        t.Errorf("got %v but expected %v for equality of %v and %v", got, expected, a, b)
-    }
-
-	if failed {
-		fmt.Printf("\t... FAILED\n")
-	} else {
-		fmt.Printf("\t... PASSED\n")
-	}
-}
-
-
-func TestGetIntCounts(t *testing.T) {
-    fmt.Printf("TestGetIntCountsFail ...\n")
-    failed := false
-
-    // case 1
-    a := []int{1, 1, 1, 1}
-    got := getIntCounts(a)
-    expected := map[int]int{}
-    expected[1] = 4
-    if !reflect.DeepEqual(expected, got) {
-        failed = true
-        t.Errorf("got %v but expected %v for original array %v", got, expected, a)
-    }
-
-    // case 2
-    a = []int{1, 2, 1, 4}
-    got = getIntCounts(a)
-    expected = map[int]int{}
-    expected[1] = 2
-    expected[2] = 1
-    expected[4] = 1
-    if !reflect.DeepEqual(expected, got) {
-        failed = true
-        t.Errorf("got %v but expected %v for original array %v", got, expected, a)
-    }
-
-	if failed {
-		fmt.Printf("\t... FAILED\n")
-	} else {
-		fmt.Printf("\t... PASSED\n")
-	}
-}
 
 func TestBasicLRUFail(t *testing.T) {
 	fmt.Printf("TestBasicLRUFail ...\n")
@@ -174,7 +110,7 @@ func TestHashSplitAmongstGroups(t *testing.T) {
     expected[2] = 1
     expected[3] = 1
 
-    if !IntArrayEqual(expected, groups) {
+    if !utils.IntArrayEqual(expected, groups) {
         failed = true
 		t.Errorf("Got %v but expected %v with n: %v and numGroups: %v", groups, expected, n, groups)
     }
@@ -190,7 +126,7 @@ func TestHashSplitAmongstGroups(t *testing.T) {
     expected[3] = 1
     expected[4] = 0
 
-    if !IntArrayEqual(expected, groups) {
+    if !utils.IntArrayEqual(expected, groups) {
         failed = true
 		t.Errorf("Got %v but expected %v with n: %v and numGroups: %v", groups, expected, n, groups)
     }
@@ -205,7 +141,7 @@ func TestHashSplitAmongstGroups(t *testing.T) {
     expected[2] = 2
     expected[3] = 0
 
-    if !IntArrayEqual(expected, groups) {
+    if !utils.IntArrayEqual(expected, groups) {
         failed = true
 		t.Errorf("Got %v but expected %v with n: %v and numGroups: %v", groups, expected, n, groups)
     }
@@ -225,7 +161,7 @@ func TestHashSplitAmongstGroups(t *testing.T) {
     expected[7] = 2
     expected[8] = 2
 
-    if !IntArrayEqual(expected, groups) {
+    if !utils.IntArrayEqual(expected, groups) {
         failed = true
 		t.Errorf("Got %v but expected %v with n: %v and numGroups: %v", groups, expected, n, groups)
     }
@@ -247,7 +183,7 @@ func TestHashSplitAmongstGroups(t *testing.T) {
     expected[9] = 0
     expected[10] = 1
 
-    if !IntArrayEqual(expected, groups) {
+    if !utils.IntArrayEqual(expected, groups) {
         failed = true
 		t.Errorf("Got %v but expected %v with n: %v and numGroups: %v", groups, expected, n, groups)
     }
@@ -262,7 +198,7 @@ func TestHashSplitAmongstGroups(t *testing.T) {
     expected[2] = 2
     expected[3] = 3
 
-    if !IntArrayEqual(expected, groups) {
+    if !utils.IntArrayEqual(expected, groups) {
         failed = true
 		t.Errorf("Got %v but expected %v with n: %v and numGroups: %v", groups, expected, n, groups)
     }
@@ -348,7 +284,7 @@ func TestHashEndToEnd(t *testing.T) {
     third := hash.GetCaches(file, 2)
     fourth := hash.GetCaches(file, 3)
 
-    if !IntArraySetsEqual(first, second) || !IntArraySetsEqual(first, third) || !IntArraySetsEqual(first, fourth) {
+    if !utils.IntArraySetsEqual(first, second) || !utils.IntArraySetsEqual(first, third) || !utils.IntArraySetsEqual(first, fourth) {
         failed = true
         t.Errorf("Expected same cache id sets for each client id, but got: %v, %v, %v, and %v for file %v", first, second, third, fourth, file)
     }
@@ -364,7 +300,7 @@ func TestHashEndToEnd(t *testing.T) {
     third = hash.GetCaches(file, 2)
     fourth = hash.GetCaches(file, 3)
 
-    if !IntArraySetsEqual(first, second) || !IntArraySetsEqual(first, third) || !IntArraySetsEqual(first, fourth) {
+    if !utils.IntArraySetsEqual(first, second) || !utils.IntArraySetsEqual(first, third) || !utils.IntArraySetsEqual(first, fourth) {
         failed = true
         t.Errorf("Expected same cache id sets for each client id, but got: %v, %v, %v, and %v for file %v", first, second, third, fourth, file)
     }

@@ -1,10 +1,10 @@
-package cache
+package utils
 
 import (
     "reflect"
 )
 
-func countValues(a []int, i int) int {
+func CountValues(a []int, i int) int {
     count := 0
     for _, val := range a {
         if val == i {
@@ -15,7 +15,7 @@ func countValues(a []int, i int) int {
 }
 
 // JOIN
-func joinInts(a []int, b []int) []int {
+func JoinInts(a []int, b []int) []int {
     var res []int
     for _, val := range a {
         res = append(res, val)
@@ -41,7 +41,7 @@ func IntArrayEqual(a, b []int) bool {
     return true
 }
 
-func getIntCounts(a []int) map[int]int {
+func GetIntCounts(a []int) map[int]int {
     aCounts := map[int]int{}
     for _, v := range a {
         if _, ok := aCounts[v]; !ok {
@@ -57,20 +57,20 @@ func IntArraySetsEqual(a, b []int) bool {
     if len(a) != len(b) {
         return false
     }
-    aCounts := getIntCounts(a)
-    bCounts := getIntCounts(b)
+    aCounts := GetIntCounts(a)
+    bCounts := GetIntCounts(b)
     return reflect.DeepEqual(aCounts, bCounts)
 }
 
 
-func max(a int, b int) int {
+func Max(a int, b int) int {
     if a > b {
         return a
     }
     return b
 }
 
-func min(a int, b int) int {
+func Min(a int, b int) int {
     if a < b {
         return a
     }
