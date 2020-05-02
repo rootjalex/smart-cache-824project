@@ -8,9 +8,9 @@ import (
 )
 
 type MarkovChain struct {
-	nodes 			map[string]*Node  // filename -> Node (with adjacencies)
+	nodes			map[string]*Node  // filename -> Node (with adjacencies)
 	lastAccess		string
-	mu 				sync.Mutex
+	mu				sync.Mutex
 }
 
 
@@ -153,7 +153,7 @@ func ChainSub(m1 *MarkovChain, m2 *MarkovChain) *MarkovChain {
 func (m *MarkovChain) Copy() *MarkovChain {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	// empty chain
 	cpy := MakeMarkovChain()
 
