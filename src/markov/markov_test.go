@@ -5,6 +5,57 @@ import (
 	"fmt"
 )
 
+
+func TestNodeAddSimple(t *testing.T) {
+	fmt.Printf("TestNodeAddSimple ...\n")
+	failed := false
+
+	node1 := MakeNode("test")
+	node1.MakeAccess("A.txt")
+	node1.MakeAccess("B.txt")
+	node1.MakeAccess("C.txt")
+	node1.MakeAccess("A.txt")
+	node1.MakeAccess("B.txt")
+	node1.MakeAccess("C.txt")
+	node1.MakeAccess("E.txt")
+	// node1: A: 2, B: 2, C:2, E:1
+
+	node2 := MakeNode("test")
+	node2.MakeAccess("D.txt")
+	node2.MakeAccess("B.txt")
+	node2.MakeAccess("A.txt")
+	node2.MakeAccess("C.txt")
+	node2.MakeAccess("B.txt")
+	// node2: A: 1, B: 2, C:1, D:1
+
+	node := NodeAdd(node1, node2)
+	// should be: A: 3, B: 4, C:3, D:1, E:1
+
+	// expected value
+	size := 12
+	expected := make(map[string]int)
+	expected["A.txt"] = 3
+	expected["B.txt"] = 4
+	expected["C.txt"] = 3
+	expected["D.txt"] = 1
+	expected["E.txt"] = 1
+
+	for key, value := range expected {
+		received, total := node.GetTransProb(key)
+		if received != value {
+			t.Errorf("Expected VALUE: %v, got: %v, for filename %v", value, received, key)
+		}
+		if total != size {
+			t.Errorf("Expected TOTAL: %v, got: %v, for filename %v", size, total, key)
+		}
+	}
+	if failed {
+		fmt.Printf("\t... FAILED\n")
+	} else {
+		fmt.Printf("\t... PASSED\n")
+	}
+}
+
 func TestSimpleMarkovPredict(t *testing.T) {
 	fmt.Printf("TestSimpleMarkovPredict ...\n")
 	failed := false
