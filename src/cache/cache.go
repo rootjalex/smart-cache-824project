@@ -134,21 +134,21 @@ func (c *Cache) Prefetch(filename string) {
 	}
 }
 
-func (c *Cache) GetState(args *GetCacheStateArgs, reply *GetCacheStateReply) bool {
+func (c *Cache) GetState(prevChain markov.Chain) markov.Chain {
     // TODO: Need some if statements around cache type here
+    // TODO: also need a copy function on the chain
     c.mu.Lock()
     defer c.mu.Unlock()
-    reply.State = c.chain
-    return true
+    return markov.ChainSubtract(c.chain, prevChain)
 }
 
-func (c *Cache) UpdateState(args *UpdateCacheArgs, reply *UpdateCacheReply) bool {
+func (c *Cache) UpdateState(chain markov.Chain) bool {
     // TODO: Need some if statements around cache type here
+    // TODO: also need a copy function on the chain
     c.mu.Lock()
     defer c.mu.Unlock()
-    c.chain = args.State
-    reply.Success = true
-    return reply.Success
+    c.chain = chain
+    return true
 }
 
 func (c *Cache) AddToCache(filename string) bool {
