@@ -18,3 +18,9 @@ const (
     MarkovEviction CacheType = 2
     MarkovBoth     CacheType = 3
 )
+
+
+
+// latency stuff?
+
+

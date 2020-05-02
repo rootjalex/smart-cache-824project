@@ -40,7 +40,7 @@ type CacheMaster struct {
 }
 
 
-func StartTask(cn *CacheNet, clients []*client.Client, cacheType CacheType, cacheSize int, numCaches int, replication int, datastore *datastore.DataStore, ms int) (*CacheMaster) {
+func StartTask(clients []*client.Client, cacheType CacheType, cacheSize int, numCaches int, replication int, datastore *datastore.DataStore, ms int) (*CacheMaster) {
     // k: number of caches
     // r: replication factor for data desired
     // this is trivial (can store everything) if cacheSize >= nr/k (where n is
@@ -56,7 +56,6 @@ func StartTask(cn *CacheNet, clients []*client.Client, cacheType CacheType, cach
     for i := 0; i < m.numCaches; i++ {
         c := Cache{}
         c.Init(i, cacheSize, cacheType, m.datastore)
-        cn.startCacheRPCServer(&c)
         m.caches[i] = &c
     }
     m.hash = MakeHash(m.numCaches, m.datastore.GetFileNames(), m.n, m.replication, m.clients)
