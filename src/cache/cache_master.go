@@ -3,8 +3,8 @@ package cache
 import (
 	"sync"
 	"time"
-
 	"../datastore"
+    "../markov"
 )
 
 /************************************************
@@ -20,7 +20,7 @@ Initialization:
         )
     Initialize a cache master with client list, and replication factor (r)
 
-syncCaches:
+syncCaches
 
 
 *************************************************/
@@ -64,29 +64,23 @@ func StartTask(clients []*Client, cacheType CacheType, cacheSize int, numCaches 
 	return m.caches, m.hash
 }
 
-func (m *CacheMaster) requestCacheState(cacheId int, args *GetCacheStateArgs, reply *GetCacheStateReply) bool {
-	//ok := m.caches[cacheId].Call("Cache.GetState", args, reply)
-	ok := m.caches[cacheId].GetState(args, reply)
-	return ok
-}
 
-func (m *CacheMaster) updateCacheState(cacheId int, args *UpdateCacheArgs, reply *UpdateCacheReply) bool {
-	//ok := m.caches[cacheId].Call("Cache.UpdateState", args, reply)
-	ok := m.caches[cacheId].UpdateState(args, reply)
-	return ok
+func (m *CacheMaster) syncGroup(groupID int) {
+    cacheIDs = m.hash.GetGroupToCacheIDs
+    for i := 0; i < m.numCaches; i++ {
+        m.requestCacheState(i, &args, &reply)
+    }
 }
 
 func (m *CacheMaster) syncCaches(ms int) {
-	for {
-		// for group := range(m.hash.getGroups()){
-		// }
-		for i := 0; i < m.numCaches; i++ {
-			args := GetCacheStateArgs{}
-			reply := GetCacheStateReply{}
-			m.requestCacheState(i, &args, &reply)
-		}
+    for {
+        // for group := range(m.hash.getGroups()){
+        // }
+        for groupID := 0; groupId < m.hash.numGroups; groupId++ {
+            go m.syncGroup(groupId)
+        }
 
-		// cast int to duration for multiplication to work
-		time.Sleep(time.Duration(ms) * time.Millisecond)
-	}
+        // cast int to duration for multiplication to work
+        time.Sleep(time.Duration(ms)*time.Millisecond)
+    }
 }
