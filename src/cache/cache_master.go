@@ -28,7 +28,7 @@ syncCaches:
 type CacheMaster struct {
 	mu          sync.Mutex
 	clients     []*Client
-	caches      []*Cache
+	caches      map[int]*Cache
 	cacheType   CacheType
 	replication int // replication factor
 	numCaches   int // number of caches
@@ -39,7 +39,7 @@ type CacheMaster struct {
 
 }
 
-func StartTask(clients []*Client, cacheType CacheType, cacheSize int, numCaches int, replication int, datastore *datastore.DataStore, ms int) *CacheMaster {
+func StartTask(clients []*Client, cacheType CacheType, cacheSize int, numCaches int, replication int, datastore *datastore.DataStore, ms int) (map[int]*Cache, *Hash) {
 	// k: number of caches
 	// r: replication factor for data desired
 	// this is trivial (can store everything) if cacheSize >= nr/k (where n is
@@ -51,7 +51,7 @@ func StartTask(clients []*Client, cacheType CacheType, cacheSize int, numCaches 
 	m.datastore = datastore
 	m.n = datastore.Size()
 	m.ms = ms
-	m.caches = []*Cache{}
+	m.caches = map[int]*Cache{}
 	for i := 0; i < m.numCaches; i++ {
 		c := Cache{}
 		c.Init(i, cacheSize, cacheType, m.datastore)
@@ -61,7 +61,7 @@ func StartTask(clients []*Client, cacheType CacheType, cacheSize int, numCaches 
 
 	go m.syncCaches(ms)
 
-	return m
+	return m.caches, m.hash
 }
 
 func (m *CacheMaster) requestCacheState(cacheId int, args *GetCacheStateArgs, reply *GetCacheStateReply) bool {
@@ -89,12 +89,4 @@ func (m *CacheMaster) syncCaches(ms int) {
 		// cast int to duration for multiplication to work
 		time.Sleep(time.Duration(ms) * time.Millisecond)
 	}
-}
-
-func (m *CacheMaster) Hash() *Hash {
-	return m.hash
-}
-
-func (m *CacheMaster) GetCaches() []*Cache {
-	return m.caches
 }
