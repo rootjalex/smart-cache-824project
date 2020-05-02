@@ -103,18 +103,21 @@ func NodeAdd(n1 *Node, n2 *Node) *Node {
 
 	index := 0
 
+	total := 0
+
 	for key1, index1 := range n1.neighbors {
 		var edge Edge
 		edge1 := n1.adjacencies[index1]
 		index2, ok := n2.neighbors[key1]
 		if ok {
 			// add these two edges
-			edge2 := n1.adjacencies[index2]
+			edge2 := n2.adjacencies[index2]
 			edge = EdgeAdd(&edge1, &edge2)
 		} else {
 			edge = edge1.Copy()
 		}
 
+		total += edge.count
 		node.neighbors[edge.name] = index
 		node.adjacencies = append(node.adjacencies, edge)
 		index++
@@ -124,15 +127,16 @@ func NodeAdd(n1 *Node, n2 *Node) *Node {
 		_, skip := node.neighbors[key2]
 		if !skip {
 			// this was not found above
-			edge2 := n1.adjacencies[index2]
+			edge2 := n2.adjacencies[index2]
 			edge := edge2.Copy()
 			node.neighbors[edge.name] = index
 			node.adjacencies = append(node.adjacencies, edge)
 			index++
+			total += edge.count
 		}
 	}
 
-	node.size = index
+	node.size = total
 	return node
 }
 
