@@ -157,14 +157,14 @@ func TestBasicLRUSuccess(t *testing.T) {
 	}
 }
 
-func TestHashSplitAmongstGroups(t *testing.T) {
-	fmt.Printf("TestHashSplitAmongstGroups ...\n")
+func TestHashsplitAmongstGroups(t *testing.T) {
+	fmt.Printf("TestHashsplitAmongstGroups ...\n")
 	failed := false
 
 	// case 0
 	n := 4
 	numGroups := 2
-	groups := SplitAmongstGroups(n, numGroups)
+	groups := splitAmongstGroups(n, numGroups)
 	expected := make([]int, n)
 	expected[0] = 0
 	expected[1] = 0
@@ -179,7 +179,7 @@ func TestHashSplitAmongstGroups(t *testing.T) {
 	// case 1
 	n = 5
 	numGroups = 2
-	groups = SplitAmongstGroups(n, numGroups)
+	groups = splitAmongstGroups(n, numGroups)
 	expected = make([]int, n)
 	expected[0] = 0
 	expected[1] = 0
@@ -195,7 +195,7 @@ func TestHashSplitAmongstGroups(t *testing.T) {
 	// case 2
 	n = 4
 	numGroups = 3
-	groups = SplitAmongstGroups(n, numGroups)
+	groups = splitAmongstGroups(n, numGroups)
 	expected = make([]int, n)
 	expected[0] = 0
 	expected[1] = 1
@@ -210,7 +210,7 @@ func TestHashSplitAmongstGroups(t *testing.T) {
 	// case 3
 	n = 9
 	numGroups = 3
-	groups = SplitAmongstGroups(n, numGroups)
+	groups = splitAmongstGroups(n, numGroups)
 	expected = make([]int, n)
 	expected[0] = 0
 	expected[1] = 0
@@ -230,7 +230,7 @@ func TestHashSplitAmongstGroups(t *testing.T) {
 	// case 4
 	n = 11
 	numGroups = 3
-	groups = SplitAmongstGroups(n, numGroups)
+	groups = splitAmongstGroups(n, numGroups)
 	expected = make([]int, n)
 	expected[0] = 0
 	expected[1] = 0
@@ -252,7 +252,7 @@ func TestHashSplitAmongstGroups(t *testing.T) {
 	// case 5
 	n = 4
 	numGroups = 5
-	groups = SplitAmongstGroups(n, numGroups)
+	groups = splitAmongstGroups(n, numGroups)
 	expected = make([]int, n)
 	expected[0] = 0
 	expected[1] = 1
@@ -270,14 +270,14 @@ func TestHashSplitAmongstGroups(t *testing.T) {
 	}
 }
 
-func TestHashMakeFileGroups(t *testing.T) {
-	fmt.Printf("TestHashMakeFileGroups ...\n")
+func TestHashmakeFileGroups(t *testing.T) {
+	fmt.Printf("TestHashmakeFileGroups ...\n")
 	failed := false
 
 	// case 0
 	filenames := []string{"a", "b", "c", "d"}
 	numGroups := 2
-	groups := MakeFileGroups(filenames, len(filenames), numGroups, 1)
+	groups := makeFileGroups(filenames, len(filenames), numGroups, 1)
 	expected := make(map[string]int)
 	expected["a"] = 0
 	expected["b"] = 0
@@ -292,7 +292,7 @@ func TestHashMakeFileGroups(t *testing.T) {
 	// case 1
 	filenames = []string{"a", "b", "c", "d"}
 	numGroups = 3
-	groups = MakeFileGroups(filenames, len(filenames), numGroups, 1)
+	groups = makeFileGroups(filenames, len(filenames), numGroups, 1)
 	expected = make(map[string]int)
 	expected["a"] = 0
 	expected["b"] = 1
@@ -302,7 +302,7 @@ func TestHashMakeFileGroups(t *testing.T) {
 	// case 1
 	filenames = []string{"ab", "b", "c", "d"}
 	numGroups = 3
-	groups = MakeFileGroups(filenames, len(filenames), numGroups, 1)
+	groups = makeFileGroups(filenames, len(filenames), numGroups, 1)
 	expected = make(map[string]int)
 	expected["ab"] = 0
 	expected["b"] = 1
@@ -321,7 +321,7 @@ func TestHashMakeFileGroups(t *testing.T) {
 }
 
 func TestHashEndToEnd(t *testing.T) {
-	fmt.Printf("TestHashMakeFileGroups ...\n")
+	fmt.Printf("TestHashmakeFileGroups ...\n")
 	failed := false
 
 	// case 0

@@ -41,7 +41,7 @@ func (h *Hash) GetCaches(file string, clientID int) []int {
 /************************************************************
 API Useful to Cache Master
 *************************************************************/
-func MakeHash(numCaches int, filenames []string, n int, replication int, clients []*client.Client) *Hash {
+func MakeHash(numCaches int, filenames []string, n int, replication int, clients []*Client) *Hash {
     h := &Hash{}
     h.initializeClientIDs(clients)
     h.numGroups = numCaches / replication // number of "columns"
@@ -52,7 +52,7 @@ func MakeHash(numCaches int, filenames []string, n int, replication int, clients
 }
 
 func (h *Hash) GetCachesInGroup(groupID int) []int {
-    return groupToCacheIDs[groupID]
+    return h.groupToCacheIDs[groupID]
 }
 
 /*
@@ -122,7 +122,7 @@ func splitAmongstGroups(n int, numGroups int) []int {
 
 func shuffle(slice []int, seed int) []int {
     rand.Seed(int64(seed))
-    rand.shuffle(len(slice), func(i, j int) {
+    rand.Shuffle(len(slice), func(i, j int) {
         slice[i], slice[j] = slice[j], slice[i]
     })
     return slice

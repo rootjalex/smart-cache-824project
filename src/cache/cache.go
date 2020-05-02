@@ -134,19 +134,18 @@ func (c *Cache) Prefetch(filename string) {
 	}
 }
 
-func (c *Cache) GetState(prevChain markov.Chain) markov.Chain {
+func (c *Cache) GetState(prevChain *markov.MarkovChain) *markov.MarkovChain {
     // TODO: Need some if statements around cache type here
     c.mu.Lock()
     defer c.mu.Unlock()
-    return markov.ChainSubtract(c.chain, prevChain)
+    return markov.ChainSub(c.chain, prevChain)
 }
 
-func (c *Cache) UpdateState(chain markov.Chain) bool {
+func (c *Cache) UpdateState(chain *markov.MarkovChain) {
     // TODO: Need some if statements around cache type here
     c.mu.Lock()
     defer c.mu.Unlock()
     c.chain = chain.Copy()
-    return true
 }
 
 func (c *Cache) AddToCache(filename string) bool {
