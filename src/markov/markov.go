@@ -140,12 +140,24 @@ func ChainAdd(m1 *MarkovChain, m2 *MarkovChain) *MarkovChain {
 
 // subtract m2 from m1 -> return m1 - m2
 // IMPORTANT: assumes all keys in m2 are in m1
+// if m2 contains a key not in m1, does NOTHING for that node
 func ChainSub(m1 *MarkovChain, m2 *MarkovChain) *MarkovChain {
 	m1.mu.Lock()
 	m2.mu.Lock()
 	defer m1.mu.Unlock()
 	defer m2.mu.Unlock()
 	mDiff := MakeMarkovChain()
+
+	for key, value := range m1.nodes {
+		mDiff.nodes[key] = value.Copy()
+	}
+
+	for key, value := range m2.nodes {
+		node, ok := mDiff.nodes[key]
+		if ok {
+			mDiff.nodes[key] = NodeSub(node, value)
+		}
+	}
 
 	return mDiff
 }
