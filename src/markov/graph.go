@@ -21,6 +21,11 @@ type Node struct {
 	mu				sync.Mutex		// for when the chain should be concurrent
 }
 
+type Transition struct {
+	value 	int
+	total 	int
+}
+
 // creates empty node for the given name
 func MakeNode(name string) *Node {
 	node := &Node{name: name, size: 0, adjacencies:make([]Edge, 0), neighbors: make(map[string]int)}
@@ -141,17 +146,17 @@ func NodeAdd(n1 *Node, n2 *Node) *Node {
 }
 
 // returns accessCount, totalCount
-func (n *Node) GetTransProb(filename string) (int, int) {
+func (n *Node) GetTransProb(filename string) Transition {
 	n.mu.Lock()
 	defer n.mu.Unlock()
 	if n.size == 0 {
-		return 0, n.size
+		return Transition{value:0, total:n.size}
 	} else {
 		index, ok := n.neighbors[filename]
 		if !ok {
-			return 0, n.size
+			return Transition{value:0, total:n.size}
 		} else {
-			return n.adjacencies[index].count, n.size
+			return Transition{value:n.adjacencies[index].count, total:n.size}
 		}
 	}
 }

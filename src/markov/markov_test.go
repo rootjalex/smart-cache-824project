@@ -5,6 +5,11 @@ import (
 	"fmt"
 )
 
+func MakeAccesses(m *MarkovChain, files []string) {
+	for _, file := range files {
+		m.Access(file)
+	}
+}
 
 func TestNodeAddSimple(t *testing.T) {
 	fmt.Printf("TestNodeAddSimple ...\n")
@@ -41,14 +46,68 @@ func TestNodeAddSimple(t *testing.T) {
 	expected["E.txt"] = 1
 
 	for key, value := range expected {
-		received, total := node.GetTransProb(key)
-		if received != value {
-			t.Errorf("Expected VALUE: %v, got: %v, for filename %v", value, received, key)
+		transition := node.GetTransProb(key)
+		if transition.value != value {
+			t.Errorf("Expected VALUE: %v, got: %v, for filename %v", value, transition.value, key)
 		}
-		if total != size {
-			t.Errorf("Expected TOTAL: %v, got: %v, for filename %v", size, total, key)
+		if transition.total != size {
+			t.Errorf("Expected TOTAL: %v, got: %v, for filename %v", size, transition.total, key)
 		}
 	}
+	if failed {
+		fmt.Printf("\t... FAILED\n")
+	} else {
+		fmt.Printf("\t... PASSED\n")
+	}
+}
+
+func TestChainAddSimple(t *testing.T) {
+	fmt.Printf("TestChainAddSimple ...\n")
+	failed := false
+
+	chain1 := MakeMarkovChain()
+	filenames1 := []string{"A.txt", "B.txt", "C.txt", "A.txt", "B.txt", "C.txt"}
+	MakeAccesses(chain1, filenames1)
+
+	chain2 := MakeMarkovChain()
+	filenames2 := []string{"B.txt", "A.txt", "B.txt", "A.txt", "B.txt", "A.txt"}
+	MakeAccesses(chain2, filenames2)
+
+	chain := ChainAdd(chain1, chain2)
+
+	files := []string{"A.txt", "B.txt","C.txt"}
+	expecteds := make(map[string]Transition)
+
+	// neither of the above examples transition files to themselves
+	expecteds["A.txtA.txt"] = Transition{0, 4}
+	expecteds["B.txtB.txt"] = Transition{0, 5}
+	expecteds["C.txtC.txt"] = Transition{0, 1}
+
+	// transitions made above (A)
+	expecteds["A.txtB.txt"] = Transition{4, 4}
+	expecteds["A.txtC.txt"] = Transition{0, 4}
+
+	// transitions made above (B)
+	expecteds["B.txtA.txt"] = Transition{3, 5}
+	expecteds["B.txtC.txt"] = Transition{2, 5}
+
+	// transitions made above (C)
+	expecteds["C.txtA.txt"] = Transition{1, 1}
+	expecteds["C.txtB.txt"] = Transition{0, 1}
+
+	// check all possible transition
+	for _, file1 := range files {
+		for _, file2 := range files {
+			path := file1 + file2
+			expected := expecteds[path]
+			received := chain.GetTransProb(file1, file2)
+			if expected.value != received.value || expected.total != received.total {
+				t.Errorf("FAILED Transition: %v -> %v", file1, file2)
+				t.Errorf("Expected: %v, Received: %v", expected, received)
+			}
+		}
+	}
+
 	if failed {
 		fmt.Printf("\t... FAILED\n")
 	} else {
