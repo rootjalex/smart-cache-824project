@@ -1,8 +1,6 @@
 package cache
 
 import (
-	"os"
-
 	"./cache"
 	"./datastore"
 )
@@ -13,7 +11,8 @@ import (
 type AbstractBaseTask struct {
 	clients   []*cache.Client
 	datastore *datastore.DataStore
-	master    *cache.CacheMaster
+	caches    map[int]*cache.Cache
+	hash      *cache.Hash
 }
 
 // TODO: datastore instead of files
@@ -27,7 +26,7 @@ func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, c
 	}
 
 	// make cache master
-	// caches, hash := cache.StartTask(clients, cacheType, cacheSize, numCaches, replicationFactor, datastore, ms)
+	caches, hash := cache.StartTask(clients, cacheType, cacheSize, numCaches, replicationFactor, datastore, ms)
 
 	// TODO: add chache size
 
@@ -37,6 +36,8 @@ func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, c
 	return &AbstractBaseTask{
 		clients:   clients,
 		datastore: datastore,
+		caches:    caches,
+		hash:      hash,
 	}
 }
 
@@ -46,14 +47,14 @@ func (w *AbstractBaseTask) Launch() {
 
 // ------------------------------ ML Task
 
-type MLTask struct {
-	t *AbstractBaseTask
-}
+// type MLTask struct {
+// 	t *AbstractBaseTask
+// }
 
-func NewMLTask(clients []cache.Client, files []*os.File) *MLTask {
-	ml := &MLTask{}
-	// ml.aw = NewAbstractBaseTask(clients, files)
-	return ml
-}
+// func NewMLTask(clients []*Client, files []*os.File) *MLTask {
+// 	ml := &MLTask{}
+// 	// ml.aw = NewAbstractBaseTask(clients, files)
+// 	return ml
+// }
 
 // ML
