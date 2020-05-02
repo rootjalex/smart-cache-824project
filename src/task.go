@@ -13,7 +13,8 @@ import (
 type AbstractBaseTask struct {
 	clients    []*client.Client
 	datastore  *datastore.DataStore
-	master     *cache.CacheMaster
+	caches     map[int]*cache.Cache
+    hash       *cache.Hash
 }
 
 // TODO: datastore instead of files
@@ -27,7 +28,7 @@ func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, c
 	}
 
 	// make cache master
-	cacheMaster := cache.StartTask(clients, cacheType, cacheSize, numCaches, replicationFactor, datastore, ms)
+	caches, hash := cache.StartTask(clients, cacheType, cacheSize, numCaches, replicationFactor, datastore, ms)
 
 	// TODO: add chache size
 
@@ -36,8 +37,9 @@ func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, c
 
 	return &AbstractBaseTask{
 		clients: clients,
-		datastore:   datastore,
-		master:  cacheMaster,
+		datastore: datastore,
+		caches: caches,
+        hash: hash,
 	}
 }
 
