@@ -141,6 +141,7 @@ func ChainAdd(m1 *MarkovChain, m2 *MarkovChain) *MarkovChain {
 // subtract m2 from m1 -> return m1 - m2
 // IMPORTANT: assumes all keys in m2 are in m1
 // if m2 contains a key not in m1, does NOTHING for that node
+// ASSUMES m2 is a prefix of m1
 func ChainSub(m1 *MarkovChain, m2 *MarkovChain) *MarkovChain {
 	m1.mu.Lock()
 	m2.mu.Lock()
