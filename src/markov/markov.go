@@ -120,7 +120,7 @@ func ChainAdd(m1 *MarkovChain, m2 *MarkovChain) *MarkovChain {
 	m2.mu.Lock()
 	defer m1.mu.Unlock()
 	defer m2.mu.Unlock()
-	mSum := &MarkovChain{lastAccess: "", nodes: make(map[string]*Node)}
+	mSum := MakeMarkovChain()
 
 
 	for key, value := range m1.nodes {
@@ -145,9 +145,25 @@ func ChainSub(m1 *MarkovChain, m2 *MarkovChain) *MarkovChain {
 	m2.mu.Lock()
 	defer m1.mu.Unlock()
 	defer m2.mu.Unlock()
-	mDiff := &MarkovChain{lastAccess: "", nodes: make(map[string]*Node)}
-
-
+	mDiff := MakeMarkovChain()
 
 	return mDiff
+}
+
+func (m *MarkovChain) Copy() *MarkovChain {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	
+	// empty chain
+	cpy := MakeMarkovChain()
+
+	// deep copy nodes and transitions
+	for filename, node := range m.nodes {
+		cpy.nodes[filename] = node.Copy()
+	}
+
+	// copy last access
+	cpy.lastAccess = m.lastAccess
+
+	return cpy
 }
