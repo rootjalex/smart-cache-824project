@@ -1,33 +1,32 @@
 package cache
 
 import (
-    "os"
-	"./client"
 	"./cache"
-    "./datastore"
+	"./datastore"
 )
 
 // ------------------------------ Abstract Base Task
 
 // no need for mutex since only task runs at a time
 type AbstractBaseTask struct {
-	clients    []*client.Client
-	datastore  *datastore.DataStore
-	master     *cache.CacheMaster
+	clients   []*cache.Client
+	datastore *datastore.DataStore
+	caches    map[int]*cache.Cache
+	hash      *cache.Hash
 }
 
 // TODO: datastore instead of files
 func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, cacheType cache.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *AbstractBaseTask {
 	// make clients
-	clients := make([]*client.Client, numClients)
+	clients := make([]*cache.Client, numClients)
 	for i := range clients {
 		// TODO: implement and call Client constructor
-		clients[i] = &client.Client{}
+		clients[i] = &cache.Client{}
 		// TODO: set their workloads somehow
 	}
 
 	// make cache master
-	cacheMaster := cache.StartTask(clients, cacheType, cacheSize, numCaches, replicationFactor, datastore, ms)
+	caches, hash := cache.StartTask(clients, cacheType, cacheSize, numCaches, replicationFactor, datastore, ms)
 
 	// TODO: add chache size
 
@@ -35,9 +34,10 @@ func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, c
 	// assign end e for each client c
 
 	return &AbstractBaseTask{
-		clients: clients,
-		datastore:   datastore,
-		master:  cacheMaster,
+		clients:   clients,
+		datastore: datastore,
+		caches:    caches,
+		hash:      hash,
 	}
 }
 
@@ -47,14 +47,14 @@ func (w *AbstractBaseTask) Launch() {
 
 // ------------------------------ ML Task
 
-type MLTask struct {
-	t *AbstractBaseTask
-}
+// type MLTask struct {
+// 	t *AbstractBaseTask
+// }
 
-func NewMLTask(clients []client.Client, files []*os.File) *MLTask {
-	ml := &MLTask{}
-	// ml.aw = NewAbstractBaseTask(clients, files)
-	return ml
-}
+// func NewMLTask(clients []*Client, files []*os.File) *MLTask {
+// 	ml := &MLTask{}
+// 	// ml.aw = NewAbstractBaseTask(clients, files)
+// 	return ml
+// }
 
 // ML
