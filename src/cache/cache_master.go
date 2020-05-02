@@ -36,6 +36,7 @@ type CacheMaster struct {
 	datastore   *datastore.DataStore
 	hash        *Hash
 	ms          int // how often caches are synced
+    chain       *markov.Chain
 
 }
 
@@ -50,6 +51,7 @@ func StartTask(clients []*Client, cacheType CacheType, cacheSize int, numCaches 
 	m.replication = replication
 	m.datastore = datastore
 	m.n = datastore.Size()
+    m.chain = markov.MakeMarkovChain()
 	m.ms = ms
 	m.caches = map[int]*Cache{}
 	for i := 0; i < m.numCaches; i++ {
@@ -66,9 +68,15 @@ func StartTask(clients []*Client, cacheType CacheType, cacheSize int, numCaches 
 
 
 func (m *CacheMaster) syncGroup(groupID int) {
-    cacheIDs = m.hash.GetGroupToCacheIDs
-    for i := 0; i < m.numCaches; i++ {
-        m.requestCacheState(i, &args, &reply)
+    cacheIDs = m.hash.GetCachesInGroup(groupID)
+    newChain := m.chain.Copy()
+    for _, id := range cacheIDs {
+        newChain = markov.ChainAdd(newChain, m.caches[id].GetState(m.chain))
+    }
+    m.chain = newChain
+
+    for _, id := range cacheIDs {
+        m.caches[id].UpdateState(m.chain)
     }
 }
 
@@ -84,3 +92,5 @@ func (m *CacheMaster) syncCaches(ms int) {
         time.Sleep(time.Duration(ms)*time.Millisecond)
     }
 }
+
+

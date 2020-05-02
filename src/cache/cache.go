@@ -136,7 +136,6 @@ func (c *Cache) Prefetch(filename string) {
 
 func (c *Cache) GetState(prevChain markov.Chain) markov.Chain {
     // TODO: Need some if statements around cache type here
-    // TODO: also need a copy function on the chain
     c.mu.Lock()
     defer c.mu.Unlock()
     return markov.ChainSubtract(c.chain, prevChain)
@@ -144,10 +143,9 @@ func (c *Cache) GetState(prevChain markov.Chain) markov.Chain {
 
 func (c *Cache) UpdateState(chain markov.Chain) bool {
     // TODO: Need some if statements around cache type here
-    // TODO: also need a copy function on the chain
     c.mu.Lock()
     defer c.mu.Unlock()
-    c.chain = chain
+    c.chain = chain.Copy()
     return true
 }
 
