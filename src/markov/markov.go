@@ -97,3 +97,57 @@ func (m *MarkovChain) longPaths(source string, n int) []string {
 	closest := removed.GetKeyList()
 	return closest
 }
+
+// returns accessCount, totalCount
+func (m *MarkovChain) GetTransProb(filename string, next string) Transition {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if len(m.nodes) == 0 {
+		return Transition{value:0, total:0}
+	} else {
+		node, ok := m.nodes[filename]
+		if ok {
+			return node.GetTransProb(next)
+		} else {
+			return Transition{value:0, total:0}
+		}
+	}
+}
+
+// add m1 and m2 -> return m1 + m2
+func ChainAdd(m1 *MarkovChain, m2 *MarkovChain) *MarkovChain {
+	m1.mu.Lock()
+	m2.mu.Lock()
+	defer m1.mu.Unlock()
+	defer m2.mu.Unlock()
+	mSum := &MarkovChain{lastAccess: "", nodes: make(map[string]*Node)}
+
+
+	for key, value := range m1.nodes {
+		mSum.nodes[key] = value.Copy()
+	}
+
+	for key, value := range m2.nodes {
+		node, ok := mSum.nodes[key]
+		if ok {
+			mSum.nodes[key] = NodeAdd(node, value)
+		} else {
+			mSum.nodes[key] = value.Copy()
+		}
+	}
+	return mSum
+}
+
+// subtract m2 from m1 -> return m1 - m2
+// IMPORTANT: assumes all keys in m2 are in m1
+func ChainSub(m1 *MarkovChain, m2 *MarkovChain) *MarkovChain {
+	m1.mu.Lock()
+	m2.mu.Lock()
+	defer m1.mu.Unlock()
+	defer m2.mu.Unlock()
+	mDiff := &MarkovChain{lastAccess: "", nodes: make(map[string]*Node)}
+
+
+
+	return mDiff
+}
