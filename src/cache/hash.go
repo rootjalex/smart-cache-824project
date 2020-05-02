@@ -7,11 +7,15 @@ import (
 /************************************************
 Hash Function API
 
-Initialization:
-    h = Make()
+* To Client:
+    GetCaches(file string, clientID int) []int
+        Return which cache(s) a client should talk to for a particular file
 
-GetCaches(file string, clientID int) []int
-    return which cache(s) a client should talk to for a particular file
+* To CacheMaster:
+    MakeHash()
+        initiliazation of hash object
+    GetCachesInGroup(groupID)
+        Get the cache ids that are in a particular group
 
 ************************************************/
 
@@ -25,13 +29,18 @@ type Hash struct {
 	cacheIDs        []int
 }
 
-/************************************************************
 
+/************************************************************
+API Useful to Client
 *************************************************************/
 func (h *Hash) GetCaches(file string, clientID int) []int {
 	return h.replicaOrder[file][clientID]
 }
 
+
+/************************************************************
+API Useful to Cache Master
+*************************************************************/
 func MakeHash(numCaches int, filenames []string, n int, replication int, clients []*client.Client) *Hash {
     h := &Hash{}
     h.initializeClientIDs(clients)
@@ -42,7 +51,9 @@ func MakeHash(numCaches int, filenames []string, n int, replication int, clients
     return h
 }
 
-
+func (h *Hash) GetCachesInGroup(groupID int) []int {
+    return groupToCacheIDs[groupID]
+}
 
 /*
 Internal Usage in hash creation and initialization
