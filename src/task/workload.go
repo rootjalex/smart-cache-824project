@@ -28,7 +28,9 @@ func NewMLWorkload(itemNames []string, batchSize int, numIterations int) Workloa
 		for i < len(itemNames) {
 			batch := []int{}
 			for k := i; k <= j; k++ {
-				batch = append(batch, k)
+				if k < len(itemNames) {
+					batch = append(batch, k)
+				}
 			}
 			i += batchSize
 			j += batchSize

@@ -54,7 +54,7 @@ func TestBasicMLWorkloadSmallBatchSmallIters(t *testing.T) {
 func TestBasicMLWorkloadLargeBatchLargeIters(t *testing.T) {
 	fmt.Println("TestBasicMLWorkloadLargeBatchLargeIters ...")
 
-	numFiles := 50
+	numFiles := 51
 	batchSize := 10
 	numIterations := 10
 
@@ -75,6 +75,8 @@ func TestBasicMLWorkloadLargeBatchLargeIters(t *testing.T) {
 		assertWorkloadHasNextItemGroup(t, &w, []string{"imagenet-31", "imagenet-32", "imagenet-33", "imagenet-34", "imagenet-35", "imagenet-36", "imagenet-37", "imagenet-38", "imagenet-39", "imagenet-40"})
 		// 41-50
 		assertWorkloadHasNextItemGroup(t, &w, []string{"imagenet-41", "imagenet-42", "imagenet-43", "imagenet-44", "imagenet-45", "imagenet-46", "imagenet-47", "imagenet-48", "imagenet-49", "imagenet-50"})
+		// 51
+		assertWorkloadHasNextItemGroup(t, &w, []string{"imagenet-51"})
 	}
 
 	// check that there are no more item groups
