@@ -25,7 +25,7 @@ type DataStore struct {
 }
 
 func (d *DataStore) GetFileNames() []string {
-    filenames := make([]string, 0, len(d.data))
+    filenames := make([]string, len(d.data))
     i := 0
     for f, _ := range d.data {
         filenames[i] = f
