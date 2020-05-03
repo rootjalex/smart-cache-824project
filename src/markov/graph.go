@@ -3,6 +3,7 @@ package markov
 import (
 	"sync"
 	"log"
+	"../utils"
 )
 
 // Individual edge in the markov graph
@@ -85,6 +86,15 @@ func EdgeAdd(e1 *Edge, e2 *Edge) Edge {
 	return edge
 }
 
+// subtract e2 from e1 -> return e1 - e2 (or 0 if e2 > e1)
+func EdgeSub(e1 *Edge, e2 *Edge) Edge {
+	if e1.name != e2.name {
+		log.Fatalf("Attempt to add two Edges with different names %v and %v", e1, e2)
+	}
+	edge := Edge{name: e1.name, count: utils.Max(e1.count - e2.count, 0)}
+	return edge
+}
+
 // add n1 and n2 -> return n1 + n2
 func NodeAdd(n1 *Node, n2 *Node) *Node {
 	n1.mu.Lock()
@@ -94,6 +104,8 @@ func NodeAdd(n1 *Node, n2 *Node) *Node {
 	if n1.name != n2.name {
 		log.Fatalf("Attempt to add two Nodes with different names %v and %v", n1, n2)
 	}
+
+	// base cases
 	if (n1.size == 0) {
 		return n2.Copy()
 	} else if (n2.size == 0) {
@@ -139,6 +151,55 @@ func NodeAdd(n1 *Node, n2 *Node) *Node {
 			index++
 			total += edge.count
 		}
+	}
+
+	node.size = total
+	return node
+}
+
+// subtract n2 from n1 -> return n1 - n2
+// ONLY subtracts transitions in n1, no negative weights
+func NodeSub(n1 *Node, n2 *Node) *Node {
+	n1.mu.Lock()
+	n2.mu.Lock()
+	defer n1.mu.Unlock()
+	defer n2.mu.Unlock()
+	if n1.name != n2.name {
+		log.Fatalf("Attempt to subtract two Nodes with different names %v and %v", n1, n2)
+	}
+
+	// base cases
+	if (n1.size == 0) || (n2.size == 0) {
+		return n1.Copy()
+	}
+
+	node := &Node{}
+	node.name = n1.name
+	node.size = 0
+	node.adjacencies = make([]Edge, 0)
+	node.neighbors = make(map[string]int)
+
+	index := 0
+	total := 0
+
+	for key1, index1 := range n1.neighbors {
+
+		var edge Edge
+		edge1 := n1.adjacencies[index1]
+		index2, ok := n2.neighbors[key1]
+		if ok {
+			// add these two edges
+			edge2 := n2.adjacencies[index2]
+			edge = EdgeSub(&edge1, &edge2)
+		} else {
+			edge = edge1.Copy()
+		}
+
+		
+		total += edge.count
+		node.neighbors[edge.name] = index
+		node.adjacencies = append(node.adjacencies, edge)
+		index++
 	}
 
 	node.size = total
