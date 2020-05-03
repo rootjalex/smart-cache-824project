@@ -115,6 +115,63 @@ func TestChainAddSimple(t *testing.T) {
 	}
 }
 
+func TestChainSubSimple(t *testing.T) {
+	fmt.Printf("TestChainAddSimple ...\n")
+	failed := false
+
+	chain1 := MakeMarkovChain()
+	filenames1 := []string{"A.txt", "B.txt", "C.txt", "A.txt", "B.txt", "C.txt"}
+	MakeAccesses(chain1, filenames1)
+
+	chain2 := chain1.Copy()
+	filenames2 := []string{"B.txt", "A.txt", "B.txt", "A.txt", "B.txt", "A.txt"}
+	MakeAccesses(chain2, filenames2)
+	// expected: C->B: 1, B->A: 3, A->B: 2
+
+	chain := ChainSub(chain2, chain1)
+
+	files := []string{"A.txt", "B.txt","C.txt"}
+	expecteds := make(map[string]Transition)
+
+	// neither of the above examples transition files to themselves
+	expecteds["A.txtA.txt"] = Transition{0, 2}
+	expecteds["B.txtB.txt"] = Transition{0, 3}
+	expecteds["C.txtC.txt"] = Transition{0, 1}
+
+	// transitions made above (A)
+	expecteds["A.txtB.txt"] = Transition{2, 2}
+	expecteds["A.txtC.txt"] = Transition{0, 2}
+
+	// transitions made above (B)
+	expecteds["B.txtA.txt"] = Transition{3, 3}
+	expecteds["B.txtC.txt"] = Transition{0, 3}
+
+	// transitions made above (C)
+	expecteds["C.txtA.txt"] = Transition{0, 1}
+	expecteds["C.txtB.txt"] = Transition{1, 1}
+
+	// check all possible transition
+	for _, file1 := range files {
+		for _, file2 := range files {
+			path := file1 + file2
+			expected := expecteds[path]
+			received := chain.GetTransProb(file1, file2)
+			if expected.value != received.value || expected.total != received.total {
+				t.Errorf("FAILED Transition: %v -> %v", file1, file2)
+				t.Errorf("Expected: %v, Received: %v", expected, received)
+				t.Errorf("Original: %v", chain1.GetTransProb(file1, file2))
+				t.Errorf("Update: %v", chain2.GetTransProb(file1, file2))
+			}
+		}
+	}
+
+	if failed {
+		fmt.Printf("\t... FAILED\n")
+	} else {
+		fmt.Printf("\t... PASSED\n")
+	}
+}
+
 func TestSimpleMarkovPredict(t *testing.T) {
 	fmt.Printf("TestSimpleMarkovPredict ...\n")
 	failed := false
