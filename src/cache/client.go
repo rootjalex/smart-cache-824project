@@ -75,7 +75,7 @@ func (c *Client) fetchItemGroup(itemGroup []string) []datastore.DataType {
 func (c *Client) fetchItem(itemName string) datastore.DataType {
 	for _, cacheID := range c.hash.GetCaches(itemName, c.id) {
 		item, err := c.cachedIDMap[cacheID].Fetch(itemName)
-		if err != nil {
+		if err == nil {
 			// utils.DPrintf("Fetched %+v-->%+v")
 			return item
 		}
