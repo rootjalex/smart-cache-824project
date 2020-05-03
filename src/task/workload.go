@@ -1,7 +1,5 @@
 package task
 
-import "log"
-
 type Workload struct {
 	ItemNames        []string
 	ItemGroupIndices [][]int // slice of sequence of indices representing item names to access
@@ -45,7 +43,6 @@ func NewMLWorkload(itemNames []string, batchSize int, numIterations int) Workloa
 				allBatches = append(allBatches, b)
 			}
 		}
-		log.Println(allBatches)
 	}
 
 	// shuffle the batches
