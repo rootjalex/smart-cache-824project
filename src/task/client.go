@@ -7,7 +7,7 @@ import (
 	"../cache"
 	"../config"
     "log"
-    "../utils"
+    // "../utils"
 )
 
 /************************************************
@@ -56,14 +56,13 @@ func (c *Client) GetID() int {
 
 func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
 	var wg sync.WaitGroup
-	items := make([]config.DataType, len(itemGroup))
+	items := make([]config.DataType, 0)
 
 	// fetch each item in the group asynchronously
 	for _, itemName := range itemGroup {
 		wg.Add(1)
 		go func(item string) {
 			res := c.fetchItem(item)
-            log.Printf("result of fetch: %v", res)
 			c.mu.Lock()
 			items = append(items, res)
 			c.mu.Unlock()
@@ -77,13 +76,11 @@ func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
 
 func (c *Client) fetchItem(itemName string) config.DataType {
     cacheIds := c.hash.GetCaches(itemName, c.id)
-    log.Printf("inside fetchItem %v can look at cacheIds: %v", itemName, cacheIds)
 	for _, cacheID := range cacheIds {
         cache := c.cachedIDMap[cacheID]
         log.Printf("cache: %v", cache)
 		item, err := cache.Fetch(itemName)
 		if err == nil {
-            utils.DPrintf("Fetched %+v-->%+v", itemName, item)
 			return item
 		}
 	}

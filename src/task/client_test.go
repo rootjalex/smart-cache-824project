@@ -26,7 +26,7 @@ func TestClientSimpleWorkload(t *testing.T) {
 	data := datastore.MakeDataStore()
 	for i := 0; i < numFiles; i++ {
 		filename := "fake_" + strconv.Itoa(i) + ".txt"
-		data.Make(filename)
+		data.Make(filename, config.DataType(filename))
 		v, _ := data.Get(filename)
 		files = append(files, v)
 	}
@@ -59,7 +59,7 @@ func TestClientSimpleWorkload(t *testing.T) {
 	for _, c := range clients {
 		fetched := c.Run()
 		if !utils.DataTypeArraySetsEqual(fetched, files) {
-		    log.Printf("expected: %v, but got: %v", files, fetched)
+			log.Printf("expected: %v, but got: %v", files, fetched)
 			t.Error("FAILED")
 		}
 	}
