@@ -3,8 +3,9 @@ package task
 import (
 	"sync"
 	"time"
-	"../config"
+
 	"../cache"
+	"../config"
 )
 
 /************************************************
