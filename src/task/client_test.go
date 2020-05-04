@@ -9,6 +9,7 @@ import (
 	"../config"
 	"../datastore"
 	"../utils"
+    "log"
 )
 
 func TestClientSimpleWorkload(t *testing.T) {
@@ -49,18 +50,18 @@ func TestClientSimpleWorkload(t *testing.T) {
 	}
 	cachedIDMap, hash := StartTask(clientIds, config.LRU, config.CACHE_SIZE, numCaches, replicationFactor, data, syncCachesEveryMS)
 	for i := 0; i < numClients; i++ {
-		clients[i].BootstrapClient(cachedIDMap, *hash, w)
+		clients[i].BootstrapClient(cachedIDMap, hash, w)
 	}
 
 	// ERROR IS HERE
-	// for _, c := range clients {
-	// 	fetched := c.Run()
-	// 	log.Println(fetched)
-	// 	log.Println(files)
-	// 	if !utils.DataTypeArraySetsEqual(fetched, files) {
-	// 		t.Error("no")
-	// 	}
-	// }
+	for _, c := range clients {
+		fetched := c.Run()
+		log.Println(fetched)
+		log.Println(files)
+		if !utils.DataTypeArraySetsEqual(fetched, files) {
+			t.Error("no")
+		}
+	}
 }
 
 func TestHashEndToEnd(t *testing.T) {

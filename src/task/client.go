@@ -16,13 +16,13 @@ Client supports
 type Client struct {
 	mu          sync.Mutex
 	cachedIDMap map[int]*cache.Cache
-	hash        cache.Hash
+	hash        *cache.Hash
 	workload    *Workload
 	id          int
 	startTime   time.Time
 }
 
-func (c *Client) BootstrapClient(cachedIDMap map[int]*cache.Cache, hash cache.Hash, workload *Workload) {
+func (c *Client) BootstrapClient(cachedIDMap map[int]*cache.Cache, hash *cache.Hash, workload *Workload) {
 	c.cachedIDMap = cachedIDMap
 	c.hash = hash
 	c.workload = workload
