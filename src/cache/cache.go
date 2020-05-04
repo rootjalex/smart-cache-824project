@@ -2,10 +2,11 @@ package cache
 
 import (
 	"sync"
+	"errors"
 	"../heap"
 	"../markov"
 	"../datastore"
-	"errors"
+	"../config"
 )
 
 /********************************
@@ -17,7 +18,7 @@ c.Init(cacheSize int, cacheType CacheType, data *datastore.DataStore)
 c.Report() (hits, misses)
     Get a report of the hits and misses  TODO: Do we want a version number or
     timestamp mechanism of any form here?
-c.Fetch(name string) (datastore.DataType, error)
+c.Fetch(name string) (config.DataType, error)
 
 *********************************/
 type Cache struct {
@@ -25,12 +26,12 @@ type Cache struct {
     id          int
 	misses		int
 	hits		int
-	cache		map[string]datastore.DataType
+	cache		map[string]config.DataType
 	heap		*heap.MinHeapInt64
 	timestamp	int64 // for controlling LRU heap
 	cacheSize	int
 	chain		*markov.MarkovChain
-	cacheType	CacheType
+	cacheType	config.CacheType
 	data		*datastore.DataStore
     alive       bool
 }
@@ -41,25 +42,25 @@ type RequestFileArgs struct {
 }
 
 type RequestFileReply struct {
-	File	datastore.DataType
+	File	config.DataType
 }
 
 // copies underlying datastore
-func (c *Cache) Init(id int, cacheSize int, cacheType CacheType, data *datastore.DataStore) {
+func (c *Cache) Init(id int, cacheSize int, cacheType config.CacheType, data *datastore.DataStore) {
 	c.cacheType = cacheType
     c.id = id
 	c.misses = 0
 	c.hits = 0
     c.cacheSize = cacheSize
-	c.cache = make(map[string]datastore.DataType)
+	c.cache = make(map[string]config.DataType)
 	c.timestamp = 0
 	c.data = data.Copy()
 
-	if cacheType == LRU || cacheType == MarkovEviction {
+	if cacheType == config.LRU || cacheType == config.MarkovEviction {
 		// only LRU caches should use heap
 		c.heap = heap.MakeMinHeapInt64()
 	}
-	if cacheType != LRU {
+	if cacheType != config.LRU {
 		// all other caches need a MarkovChain
 		c.chain = markov.MakeMarkovChain()
 	}
@@ -69,7 +70,7 @@ func (c *Cache) GetId() int {
     return c.id
 }
 
-func (c *Cache) Fetch(name string) (datastore.DataType, error) {
+func (c *Cache) Fetch(name string) (config.DataType, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -81,11 +82,11 @@ func (c *Cache) Fetch(name string) (datastore.DataType, error) {
 		err = nil
 
 		// TODO: THIS IS BAAD PRACTICE BUT WILL SUFFICE FOR NOW
-		if c.cacheType == LRU || c.cacheType == MarkovEviction {
+		if c.cacheType == config.LRU || c.cacheType == config.MarkovEviction {
 			// only LRU caches should use heap
 			c.heap.ChangeKey(name, c.timestamp)
 		}
-		if c.cacheType != LRU {
+		if c.cacheType != config.LRU {
 			// all other caches need a MarkovChain
 			c.chain.Access(name)
 		}
@@ -113,7 +114,7 @@ func (c *Cache) Report() (int, int) {
 
 // TODO: REPLACEMENT POLICY FOR MARKOV CHAIN
 // assumes mu is Locked
-func (c *Cache) replace(name string, file datastore.DataType) {
+func (c *Cache) replace(name string, file config.DataType) {
 	c.cache[name] = file
 	c.heap.Insert(name, c.timestamp)
 	if c.heap.Size > c.cacheSize {
@@ -126,8 +127,8 @@ func (c *Cache) replace(name string, file datastore.DataType) {
 func (c *Cache) Prefetch(filename string) {
     c.mu.Lock()
 	defer c.mu.Unlock()
-	if c.cacheType == MarkovPrefetch || c.cacheType == MarkovBoth {
-		files := c.chain.Predict(filename, PREFETCH_SIZE)
+	if c.cacheType == config.MarkovPrefetch || c.cacheType == config.MarkovBoth {
+		files := c.chain.Predict(filename, config.PREFETCH_SIZE)
 		for _, file :=  range files {
 			c.AddToCache(file)
 		}

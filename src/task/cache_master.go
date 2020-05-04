@@ -1,10 +1,12 @@
-package cache
+package task
 
 import (
 	"sync"
 	"time"
 	"../datastore"
-    "../markov"
+	"../markov"
+	"../config"
+	"../cache"
 )
 
 /************************************************
@@ -28,19 +30,20 @@ syncCaches
 type CacheMaster struct {
 	mu          sync.Mutex
 	clients     []*Client
-	caches      map[int]*Cache
-	cacheType   CacheType
+	caches      map[int]*cache.Cache
+	cacheType   config.CacheType
 	replication int // replication factor
 	numCaches   int // number of caches
 	n           int // number of pieces of data
 	datastore   *datastore.DataStore
-	hash        *Hash
+	hash        *cache.Hash
 	ms          int // how often caches are synced
     chain       *markov.MarkovChain
 
 }
 
-func StartTask(clients []*Client, cacheType CacheType, cacheSize int, numCaches int, replication int, datastore *datastore.DataStore, ms int) (map[int]*Cache, *Hash) {
+func StartTask(clients []*Client, cacheType config.CacheType, cacheSize int, numCaches int, 
+	replication int, datastore *datastore.DataStore, ms int) (map[int]*cache.Cache, *cache.Hash) {
 	// k: number of caches
 	// r: replication factor for data desired
 	// this is trivial (can store everything) if cacheSize >= nr/k (where n is
@@ -53,15 +56,21 @@ func StartTask(clients []*Client, cacheType CacheType, cacheSize int, numCaches 
 	m.n = datastore.Size()
     m.chain = markov.MakeMarkovChain()
 	m.ms = ms
-	m.caches = map[int]*Cache{}
+	m.caches = map[int]*cache.Cache{}
 	for i := 0; i < m.numCaches; i++ {
-		c := Cache{}
+		c := cache.Cache{}
 		c.Init(i, cacheSize, cacheType, m.datastore)
 		m.caches[i] = &c
 	}
-	m.hash = MakeHash(m.numCaches, m.datastore.GetFileNames(), m.n, m.replication, m.clients)
 
-    if !(cacheType==LRU) {
+	ids := make([]int, len(clients))
+	for i := 0; i < len(clients); i++ {
+		ids[i] = clients[i].GetID()
+	}
+
+	m.hash = cache.MakeHash(m.numCaches, m.datastore.GetFileNames(), m.n, m.replication, ids)
+
+    if (cacheType != config.LRU) {
         go m.syncCaches(ms)
     }
 
@@ -86,7 +95,7 @@ func (m *CacheMaster) syncCaches(ms int) {
     for {
         // for group := range(m.hash.getGroups()){
         // }
-        for groupId := 0; groupId < m.hash.numGroups; groupId++ {
+        for groupId := 0; groupId < m.hash.NumGroups; groupId++ {
             go m.syncGroup(groupId)
         }
 

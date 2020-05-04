@@ -1,32 +1,33 @@
-package cache
+package task
 
 import (
-	"./cache"
-	"./datastore"
+	"../cache"
+	"../datastore"
+	"../config"
 )
 
 // ------------------------------ Abstract Base Task
 
 // no need for mutex since only task runs at a time
 type AbstractBaseTask struct {
-	clients   []*cache.Client
+	clients   []*Client
 	datastore *datastore.DataStore
 	caches    map[int]*cache.Cache
 	hash      *cache.Hash
 }
 
 // TODO: datastore instead of files
-func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, cacheType cache.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *AbstractBaseTask {
+func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, cacheType config.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *AbstractBaseTask {
 	// make clients
-	clients := make([]*cache.Client, numClients)
+	clients := make([]*Client, numClients)
 	for i := range clients {
 		// TODO: implement and call Client constructor
-		clients[i] = &cache.Client{}
+		clients[i] = &Client{}
 		// TODO: set their workloads somehow
 	}
 
 	// make cache master
-	caches, hash := cache.StartTask(clients, cacheType, cacheSize, numCaches, replicationFactor, datastore, ms)
+	caches, hash := StartTask(clients, cacheType, cacheSize, numCaches, replicationFactor, datastore, ms)
 
 	// TODO: add chache size
 
