@@ -40,7 +40,11 @@ func TestClientSimpleWorkload(t *testing.T) {
 	for i := 0; i < numClients; i++ {
 		clients[i] = Init(i)
 	}
-	cachedIDMap, hash := StartTask(clients, config.LRU, config.CACHE_SIZE, numCaches, replicationFactor, data, syncCachesEveryMS)
+	clientIds := make([]int, len(clients))
+	for i := 0; i < len(clients); i++ {
+		clientIds[i] = clients[i].GetID()
+	}
+	cachedIDMap, hash := StartTask(clientIds, config.LRU, config.CACHE_SIZE, numCaches, replicationFactor, data, syncCachesEveryMS)
 	for i := 0; i < numClients; i++ {
 		clients[i].BootstrapClient(cachedIDMap, *hash, w)
 	}
