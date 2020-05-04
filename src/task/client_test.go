@@ -2,13 +2,13 @@ package task
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"testing"
-	"../datastore"
-	"../config"
-	"../utils"
+
 	"../cache"
+	"../config"
+	"../datastore"
+	"../utils"
 )
 
 func TestClientSimpleWorkload(t *testing.T) {
@@ -21,10 +21,13 @@ func TestClientSimpleWorkload(t *testing.T) {
 	replicationFactor := 1
 
 	// make datastore
+	files := []config.DataType{}
 	data := datastore.MakeDataStore()
 	for i := 0; i < numFiles; i++ {
 		filename := "fake_" + strconv.Itoa(i) + ".txt"
 		data.Make(filename)
+		v, _ := data.Get(filename)
+		files = append(files, v)
 	}
 
 	// make basic workload
@@ -49,11 +52,16 @@ func TestClientSimpleWorkload(t *testing.T) {
 		clients[i].BootstrapClient(cachedIDMap, *hash, w)
 	}
 
-	for _, c := range clients {
-		log.Println(c.Run())
-	}
+	// ERROR IS HERE
+	// for _, c := range clients {
+	// 	fetched := c.Run()
+	// 	log.Println(fetched)
+	// 	log.Println(files)
+	// 	if !utils.DataTypeArraySetsEqual(fetched, files) {
+	// 		t.Error("no")
+	// 	}
+	// }
 }
-
 
 func TestHashEndToEnd(t *testing.T) {
 	fmt.Printf("TestHashmakeFileGroups ...\n")
@@ -72,7 +80,7 @@ func TestHashEndToEnd(t *testing.T) {
 		clients[i] = Init(i)
 		ids[i] = i
 	}
-	
+
 	hash := cache.MakeHash(numCaches, filenames, len(filenames), replication, ids)
 
 	file := "a"

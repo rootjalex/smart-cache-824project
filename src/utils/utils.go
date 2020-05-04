@@ -3,6 +3,8 @@ package utils
 import (
 	"log"
 	"reflect"
+
+	"../config"
 )
 
 const Debug int = 1
@@ -60,6 +62,17 @@ func GetIntCounts(a []int) map[int]int {
 	return aCounts
 }
 
+func GetDataTypeCounts(a []config.DataType) map[config.DataType]int {
+	aCounts := map[config.DataType]int{}
+	for _, v := range a {
+		if _, ok := aCounts[v]; !ok {
+			aCounts[v] = 0
+		}
+		aCounts[v]++
+	}
+	return aCounts
+}
+
 // Checks if two Arrays contain same elements
 func IntArraySetsEqual(a, b []int) bool {
 	if len(a) != len(b) {
@@ -67,6 +80,16 @@ func IntArraySetsEqual(a, b []int) bool {
 	}
 	aCounts := GetIntCounts(a)
 	bCounts := GetIntCounts(b)
+	return reflect.DeepEqual(aCounts, bCounts)
+}
+
+// Checks if two Arrays contain same elements
+func DataTypeArraySetsEqual(a, b []config.DataType) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	aCounts := GetDataTypeCounts(a)
+	bCounts := GetDataTypeCounts(b)
 	return reflect.DeepEqual(aCounts, bCounts)
 }
 
