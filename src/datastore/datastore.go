@@ -3,6 +3,7 @@ package datastore
 import (
     "sync"
     "../config"
+    "log"
 )
 /********************************************************
 DataStore API
@@ -47,24 +48,29 @@ func (d *DataStore) Size() int {
 func (d *DataStore) Get(filename string) (config.DataType, bool) {
     // TODO: add time.Sleep for approx time of fetching from underlying datastore
     data, ok := d.data[filename]
+    log.Printf("retriveing data inside datastore, got %v for filename %v", data, filename)
     return data, ok
 }
 
-func (d *DataStore) Make(filename string) {
+func (d *DataStore) Make(filename string, content config.DataType) {
     // TODO: uncomment if DataType is *os.File
     // f, _ := os.Create(filename) // ignore error if already exists
 	// f.Close()
     // d.data[filename], _ = os.Open(filename)
 
     // TODO: comment out if DataType is *os.File
-    d.data[filename] = "good"
-
+    d.mu.Lock()
+    d.data[filename] = content
     d.n = len(d.data)
+    d.mu.Unlock()
 }
 
 func (d *DataStore) Copy() *DataStore {
     c := &DataStore{}
     c.data = make(map[string]config.DataType)
-    c.n = 0
+    for filename, content := range d.data {
+        c.data[filename] = content
+    }
+    c.n = len(c.data)
     return c
 }

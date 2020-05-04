@@ -7,6 +7,7 @@ import (
 	"../markov"
 	"../datastore"
 	"../config"
+    "log"
 )
 
 /********************************
@@ -26,7 +27,7 @@ type Cache struct {
     id          int
 	misses		int
 	hits		int
-	cache		map[string]config.DataType
+    cache	    map[string]config.DataType
 	heap		*heap.MinHeapInt64
 	timestamp	int64 // for controlling LRU heap
 	cacheSize	int
@@ -77,7 +78,9 @@ func (c *Cache) Fetch(name string) (config.DataType, error) {
 	file, ok := c.cache[name]
 	var err error
 
+    log.Printf("Fetch called on file %v", name)
 	if ok {
+        log.Printf("Fetch called and file found in cache: %v", name)
 		c.hits++
 		err = nil
 
@@ -91,12 +94,14 @@ func (c *Cache) Fetch(name string) (config.DataType, error) {
 			c.chain.Access(name)
 		}
 	} else {
+        log.Printf("File not found in cache: %v", name)
 		c.AddToCache(name)
 		c.misses++
 		file, ok = c.cache[name]
 		if !ok {
 			// failed again - should not happen
 			err = errors.New("failed")
+            log.Printf("Cache failed again - should not happen")
 		}
 	}
 	c.timestamp++
@@ -155,7 +160,9 @@ func (c *Cache) AddToCache(filename string) bool {
 
 	if !ok {
 		file, err := c.data.Get(filename)
+        log.Printf("filename: %v, file: %v are added to the cache", filename, file)
 		c.replace(filename, file) // handles insertion into heap
+        log.Printf("in cache for %v we have: %v", file, c.cache[filename])
 		return err
 	}
 	return ok

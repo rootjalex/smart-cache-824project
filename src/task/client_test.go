@@ -15,10 +15,10 @@ import (
 func TestClientSimpleWorkload(t *testing.T) {
 	fmt.Println("TestClientSimpleWorkload ...")
 
-	numFiles := 100
+	numFiles := 3
 	numClients := 1
 	numCaches := 1
-	syncCachesEveryMS := 100
+    syncCachesEveryMS := 100000
 	replicationFactor := 1
 
 	// make datastore
@@ -44,10 +44,12 @@ func TestClientSimpleWorkload(t *testing.T) {
 	for i := 0; i < numClients; i++ {
 		clients[i] = Init(i)
 	}
+
 	clientIds := make([]int, len(clients))
 	for i := 0; i < len(clients); i++ {
 		clientIds[i] = clients[i].GetID()
 	}
+
 	cachedIDMap, hash := StartTask(clientIds, config.LRU, config.CACHE_SIZE, numCaches, replicationFactor, data, syncCachesEveryMS)
 	for i := 0; i < numClients; i++ {
 		clients[i].BootstrapClient(cachedIDMap, hash, w)
@@ -56,10 +58,9 @@ func TestClientSimpleWorkload(t *testing.T) {
 	// ERROR IS HERE
 	for _, c := range clients {
 		fetched := c.Run()
-		log.Println(fetched)
-		log.Println(files)
 		if !utils.DataTypeArraySetsEqual(fetched, files) {
-			t.Error("no")
+		    log.Printf("expected: %v, but got: %v", files, fetched)
+			t.Error("FAILED")
 		}
 	}
 }
