@@ -27,7 +27,11 @@ func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, c
 	}
 
 	// make cache master
-	caches, hash := StartTask(clients, cacheType, cacheSize, numCaches, replicationFactor, datastore, ms)
+	clientIds := make([]int, len(clients))
+	for i := 0; i < len(clients); i++ {
+		clientIds[i] = clients[i].GetID()
+	}
+	caches, hash := StartTask(clientIds, cacheType, cacheSize, numCaches, replicationFactor, datastore, ms)
 
 	// TODO: add chache size
 

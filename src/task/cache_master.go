@@ -14,7 +14,7 @@ Cache Master API
 
 Initialization:
     m = StartTask(
-            clients      []Client
+            clientIds       []int
             cacheType   CacheType - specification for prefetch and eviction policies
             numCaches         int - number of cache machines to use
             replication       int - replication factor
@@ -29,7 +29,7 @@ syncCaches
 
 type CacheMaster struct {
 	mu          sync.Mutex
-	clients     []*Client
+	clientIds   []int
 	caches      map[int]*cache.Cache
 	cacheType   config.CacheType
 	replication int // replication factor
@@ -42,14 +42,14 @@ type CacheMaster struct {
 
 }
 
-func StartTask(clients []*Client, cacheType config.CacheType, cacheSize int, numCaches int, 
+func StartTask(clientIds []int, cacheType config.CacheType, cacheSize int, numCaches int,
 	replication int, datastore *datastore.DataStore, ms int) (map[int]*cache.Cache, *cache.Hash) {
 	// k: number of caches
 	// r: replication factor for data desired
 	// this is trivial (can store everything) if cacheSize >= nr/k (where n is
 	// size of datastore)
 	m := &CacheMaster{}
-	m.clients = clients
+	m.clientIds = clientIds
 	m.numCaches = numCaches
 	m.replication = replication
 	m.datastore = datastore
@@ -63,12 +63,8 @@ func StartTask(clients []*Client, cacheType config.CacheType, cacheSize int, num
 		m.caches[i] = &c
 	}
 
-	ids := make([]int, len(clients))
-	for i := 0; i < len(clients); i++ {
-		ids[i] = clients[i].GetID()
-	}
 
-	m.hash = cache.MakeHash(m.numCaches, m.datastore.GetFileNames(), m.n, m.replication, ids)
+	m.hash = cache.MakeHash(m.numCaches, m.datastore.GetFileNames(), m.n, m.replication, m.clientIds)
 
     if (cacheType != config.LRU) {
         go m.syncCaches(ms)
