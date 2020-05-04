@@ -61,7 +61,9 @@ func StartTask(clients []*Client, cacheType CacheType, cacheSize int, numCaches 
 	}
 	m.hash = MakeHash(m.numCaches, m.datastore.GetFileNames(), m.n, m.replication, m.clients)
 
-	go m.syncCaches(ms)
+    if !(cacheType==LRU) {
+        go m.syncCaches(ms)
+    }
 
 	return m.caches, m.hash
 }

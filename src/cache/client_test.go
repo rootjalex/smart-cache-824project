@@ -2,6 +2,7 @@ package cache
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"testing"
 
@@ -41,5 +42,9 @@ func TestClientSimpleWorkload(t *testing.T) {
 	cachedIDMap, hash := StartTask(clients, LRU, CACHE_SIZE, numCaches, replicationFactor, data, syncCachesEveryMS)
 	for i := 0; i < numClients; i++ {
 		clients[i].BootstrapClient(cachedIDMap, *hash, w)
+	}
+
+	for _, c := range clients {
+		log.Println(c.Run())
 	}
 }
