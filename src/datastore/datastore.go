@@ -2,6 +2,7 @@ package datastore
 
 import (
     "sync"
+    "../config"
 )
 /********************************************************
 DataStore API
@@ -16,11 +17,9 @@ Get(file string)
  - returns the datastore in the file for the corresponding key
 ********************************************************/
 
-type DataType string
-
 type DataStore struct {
     mu     sync.Mutex
-    data   map[string]DataType
+    data   map[string]config.DataType
     n      int
 }
 
@@ -36,7 +35,7 @@ func (d *DataStore) GetFileNames() []string {
 
 func MakeDataStore() *DataStore {
     d := &DataStore{}
-    d.data = make(map[string]DataType)
+    d.data = make(map[string]config.DataType)
     d.n = 0
     return d
 }
@@ -45,7 +44,7 @@ func (d *DataStore) Size() int {
     return d.n
 }
 
-func (d *DataStore) Get(filename string) (DataType, bool) {
+func (d *DataStore) Get(filename string) (config.DataType, bool) {
     // TODO: add time.Sleep for approx time of fetching from underlying datastore
     data, ok := d.data[filename]
     return data, ok
@@ -65,7 +64,7 @@ func (d *DataStore) Make(filename string) {
 
 func (d *DataStore) Copy() *DataStore {
     c := &DataStore{}
-    c.data = make(map[string]DataType)
+    c.data = make(map[string]config.DataType)
     c.n = 0
     return c
 }

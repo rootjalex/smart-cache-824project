@@ -1,4 +1,4 @@
-package cache
+package config
 
 import (
 //    "time"
@@ -18,6 +18,8 @@ const (
     MarkovEviction CacheType = 2
     MarkovBoth     CacheType = 3
 )
+
+type DataType string
 
 
 

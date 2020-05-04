@@ -1,7 +1,8 @@
 package cache
 
 import (
-	"math/rand"
+    "math/rand"
+    "../config"
 )
 
 /************************************************
@@ -20,7 +21,7 @@ Hash Function API
 ************************************************/
 
 type Hash struct {
-	numGroups       int
+	NumGroups       int
 	clientIds       []int
 	fileGroups      map[string]int // map of file to column group
 	cacheIdToGroup  map[int]int
@@ -41,12 +42,12 @@ func (h *Hash) GetCaches(file string, clientID int) []int {
 /************************************************************
 API Useful to Cache Master
 *************************************************************/
-func MakeHash(numCaches int, filenames []string, n int, replication int, clients []*Client) *Hash {
+func MakeHash(numCaches int, filenames []string, n int, replication int, clients []int) *Hash {
     h := &Hash{}
     h.initializeClientIDs(clients)
-    h.numGroups = numCaches / replication // number of "columns"
-    h.fileGroups = makeFileGroups(filenames, n, h.numGroups, SEED)
-    h.cacheIdToGroupInit(numCaches, h.numGroups)
+    h.NumGroups = numCaches / replication // number of "columns"
+    h.fileGroups = makeFileGroups(filenames, n, h.NumGroups, config.SEED)
+    h.cacheIdToGroupInit(numCaches, h.NumGroups)
     h.makeCacheOrderings(filenames)
     return h
 }
@@ -66,10 +67,10 @@ func (h *Hash) makeCacheOrderings(filenames []string) {
     h.replicaOrder = replicaOrder
 }
 
-func (h *Hash) initializeClientIDs(clients []*Client) {
+func (h *Hash) initializeClientIDs(clients []int) {
 	ids := make([]int, len(clients))
 	for i, client := range clients {
-		ids[i] = client.GetID()
+		ids[i] = client
 	}
 	h.clientIds = ids
 }

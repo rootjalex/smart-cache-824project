@@ -6,7 +6,8 @@ import (
 	"strconv"
 	"testing"
 	"../datastore"
-    "../utils"
+	"../utils"
+	"../config"
 )
 
 func TestBasicLRUFail(t *testing.T) {
@@ -17,17 +18,17 @@ func TestBasicLRUFail(t *testing.T) {
 	data := datastore.MakeDataStore()
 
 	// add files to datastore
-	for j := 0; j < (CACHE_SIZE + 1); j++ {
+	for j := 0; j < (config.CACHE_SIZE + 1); j++ {
 		filename := "fake_" + strconv.Itoa(j) + ".txt"
 		data.Make(filename)
 	}
 
 	// this copies data, so can't adjust later
 	var cache Cache
-	cache.Init(1, CACHE_SIZE, LRU, data)
+	cache.Init(1, config.CACHE_SIZE, config.LRU, data)
 
 	for i := 0; i < 2; i++ {
-		for j := 0; j < (CACHE_SIZE + 1); j++ {
+		for j := 0; j < (config.CACHE_SIZE + 1); j++ {
 			filename := "fake_" + strconv.Itoa(j) + ".txt"
 			_, err := cache.Fetch(filename)
 			if err != nil {
@@ -38,8 +39,8 @@ func TestBasicLRUFail(t *testing.T) {
 	}
 
 	hits, misses := cache.Report()
-	if hits != 0 || misses != (2*CACHE_SIZE+2) {
-		t.Errorf("Expected 0 hits and %d miss, got %d hits and %d misses.", (2*CACHE_SIZE + 2), hits, misses)
+	if hits != 0 || misses != (2*config.CACHE_SIZE+2) {
+		t.Errorf("Expected 0 hits and %d miss, got %d hits and %d misses.", (2*config.CACHE_SIZE + 2), hits, misses)
 		failed = true
 	}
 
@@ -57,20 +58,20 @@ func TestBasicLRUSuccess(t *testing.T) {
 	data := datastore.MakeDataStore()
 
 	// add files to datastore
-	for j := 0; j < CACHE_SIZE; j++ {
+	for j := 0; j < config.CACHE_SIZE; j++ {
 		filename := "fake_" + strconv.Itoa(j) + ".txt"
 		data.Make(filename)
 	}
 
 	var cache Cache
-	cache.Init(1, CACHE_SIZE, LRU, data)
-	if CACHE_SIZE > 100 {
+	cache.Init(1, config.CACHE_SIZE, config.LRU, data)
+	if config.CACHE_SIZE > 100 {
 		fmt.Printf("\tignoring, CACHE_SIZE too big\n")
 		return
 	}
 
 	for i := 0; i < 2; i++ {
-		for j := 0; j < CACHE_SIZE; j++ {
+		for j := 0; j < config.CACHE_SIZE; j++ {
 			filename := "fake_" + strconv.Itoa(j) + ".txt"
 			_, err := cache.Fetch(filename)
 			if err != nil {
@@ -81,8 +82,8 @@ func TestBasicLRUSuccess(t *testing.T) {
 	}
 
 	hits, misses := cache.Report()
-	if hits != CACHE_SIZE || misses != CACHE_SIZE {
-		t.Errorf("Expected %d hits and %d miss, got %d hits and %d misses.", CACHE_SIZE, CACHE_SIZE, hits, misses)
+	if hits != config.CACHE_SIZE || misses != config.CACHE_SIZE {
+		t.Errorf("Expected %d hits and %d miss, got %d hits and %d misses.", config.CACHE_SIZE, config.CACHE_SIZE, hits, misses)
 		failed = true
 	}
 
@@ -249,62 +250,6 @@ func TestHashmakeFileGroups(t *testing.T) {
 		t.Errorf("Got %v but expected %v with filenames: %v and numGroups: %v", groups, expected, filenames, numGroups)
 		failed = true
 	}
-	if failed {
-		fmt.Printf("\t... FAILED\n")
-	} else {
-		fmt.Printf("\t... PASSED\n")
-	}
-}
-
-func TestHashEndToEnd(t *testing.T) {
-	fmt.Printf("TestHashmakeFileGroups ...\n")
-	failed := false
-
-	// case 0
-	numCaches := 7
-	filenames := []string{"a", "b", "c", "d", "e",
-		"f", "g", "h", "i", "j",
-		"k", "l", "m"}
-	replication := 2
-	numClients := 4
-	clients := make([]*Client, numClients)
-	for i := 0; i < numClients; i++ {
-		clients[i] = Init(i)
-	}
-	hash := MakeHash(numCaches, filenames, len(filenames), replication, clients)
-
-	file := "a"
-	first := hash.GetCaches(file, 0)
-	second := hash.GetCaches(file, 1)
-	third := hash.GetCaches(file, 2)
-	fourth := hash.GetCaches(file, 3)
-
-	if !utils.IntArraySetsEqual(first, second) || !utils.IntArraySetsEqual(first, third) || !utils.IntArraySetsEqual(first, fourth) {
-		failed = true
-		t.Errorf("Expected same cache id sets for each client id, but got: %v, %v, %v, and %v for file %v", first, second, third, fourth, file)
-	}
-
-	if len(first) < replication || len(first) > replication+1 {
-		failed = true
-		t.Errorf("Got bad replication group size: %v when numcaches is %v and replication is %v", len(first), numCaches, replication)
-	}
-
-	file = "b"
-	first = hash.GetCaches(file, 0)
-	second = hash.GetCaches(file, 1)
-	third = hash.GetCaches(file, 2)
-	fourth = hash.GetCaches(file, 3)
-
-	if !utils.IntArraySetsEqual(first, second) || !utils.IntArraySetsEqual(first, third) || !utils.IntArraySetsEqual(first, fourth) {
-		failed = true
-		t.Errorf("Expected same cache id sets for each client id, but got: %v, %v, %v, and %v for file %v", first, second, third, fourth, file)
-	}
-
-	if len(first) < replication || len(first) > replication+1 {
-		failed = true
-		t.Errorf("Got bad replication group size: %v when numcaches is %v and replication is %v", len(first), numCaches, replication)
-	}
-
 	if failed {
 		fmt.Printf("\t... FAILED\n")
 	} else {
