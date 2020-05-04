@@ -25,6 +25,8 @@ type DataStore struct {
 }
 
 func (d *DataStore) GetFileNames() []string {
+    d.mu.Lock()
+    defer d.mu.Unlock()
     filenames := make([]string, len(d.data))
     i := 0
     for f, _ := range d.data {
@@ -42,10 +44,14 @@ func MakeDataStore() *DataStore {
 }
 
 func (d *DataStore) Size() int {
+    d.mu.Lock()
+    defer d.mu.Unlock()
     return d.n
 }
 
 func (d *DataStore) Get(filename string) (config.DataType, bool) {
+    d.mu.Lock()
+    defer d.mu.Unlock()
     // TODO: add time.Sleep for approx time of fetching from underlying datastore
     data, ok := d.data[filename]
     log.Printf("retriveing data inside datastore, got %v for filename %v", data, filename)
@@ -53,6 +59,9 @@ func (d *DataStore) Get(filename string) (config.DataType, bool) {
 }
 
 func (d *DataStore) Make(filename string, content config.DataType) {
+    d.mu.Lock()
+    defer d.mu.Unlock()
+
     // TODO: uncomment if DataType is *os.File
     // f, _ := os.Create(filename) // ignore error if already exists
 	// f.Close()
@@ -66,6 +75,8 @@ func (d *DataStore) Make(filename string, content config.DataType) {
 }
 
 func (d *DataStore) Copy() *DataStore {
+    d.mu.Lock()
+    defer d.mu.Unlock()
     c := &DataStore{}
     c.data = make(map[string]config.DataType)
     for filename, content := range d.data {
