@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"reflect"
 
@@ -62,6 +63,17 @@ func GetIntCounts(a []int) map[int]int {
 	return aCounts
 }
 
+func GetStringCounts(a []string) map[string]int {
+	aCounts := map[string]int{}
+	for _, v := range a {
+		if _, ok := aCounts[v]; !ok {
+			aCounts[v] = 0
+		}
+		aCounts[v]++
+	}
+	return aCounts
+}
+
 func GetDataTypeCounts(a []config.DataType) map[config.DataType]int {
 	aCounts := map[config.DataType]int{}
 	for _, v := range a {
@@ -84,6 +96,16 @@ func IntArraySetsEqual(a, b []int) bool {
 }
 
 // Checks if two Arrays contain same elements
+func StringArraySetsEqual(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	aCounts := GetStringCounts(a)
+	bCounts := GetStringCounts(b)
+	return reflect.DeepEqual(aCounts, bCounts)
+}
+
+// Checks if two Arrays contain same elements
 func DataTypeArraySetsEqual(a, b []config.DataType) bool {
 	if len(a) != len(b) {
 		return false
@@ -91,6 +113,22 @@ func DataTypeArraySetsEqual(a, b []config.DataType) bool {
 	aCounts := GetDataTypeCounts(a)
 	bCounts := GetDataTypeCounts(b)
 	return reflect.DeepEqual(aCounts, bCounts)
+}
+
+// Returns a new slice with the given slice `s` replicated in it `n` times
+func StringSliceExtendMany(s []string, n int) []string {
+	// replication factor must be >= 1
+	if n < 1 {
+		panic(fmt.Sprintf("Can only replicate with replication factor geq to 1 but got %v", n))
+	}
+	out := make([]string, n*len(s))
+	for i := 0; i < n; i++ {
+		for j, v := range s {
+			offset := i*len(s) + j
+			out[offset] = v
+		}
+	}
+	return out
 }
 
 func Max(a int, b int) int {
