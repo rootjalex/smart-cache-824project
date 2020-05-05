@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"strconv"
 	"testing"
-
-	"log"
-
 	"../cache"
 	"../config"
 	"../datastore"
@@ -15,6 +12,7 @@ import (
 
 func TestClientSimpleWorkload(t *testing.T) {
 	fmt.Println("TestClientSimpleWorkload ...")
+	failed := false
 
 	numFiles := 3
 	numClients := 1
@@ -60,14 +58,20 @@ func TestClientSimpleWorkload(t *testing.T) {
 	for _, c := range clients {
 		fetched := c.Run()
 		if !utils.DataTypeArraySetsEqual(fetched, files) {
-			log.Printf("expected: %v, but got: %v", files, fetched)
-			t.Error("FAILED")
+			t.Errorf("FAILED: expected: %v, but got: %v", files, fetched)
+			failed = true
 		}
+	}
+
+	if failed {
+		fmt.Printf("\t... FAILED\n")
+	} else {
+		fmt.Printf("\t... PASSED\n")
 	}
 }
 
 func TestHashEndToEnd(t *testing.T) {
-	fmt.Printf("TestHashmakeFileGroups ...\n")
+	fmt.Printf("TestHashEndToEnd ...\n")
 	failed := false
 
 	// case 0
