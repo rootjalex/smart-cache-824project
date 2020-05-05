@@ -10,6 +10,45 @@ import (
 	"../config"
 )
 
+func TestCacheKillAlive(t *testing.T) {
+	fmt.Printf("TestCacheKillAlive ...\n")
+	failed := false
+
+	data := datastore.MakeDataStore()
+	// add files to datastore
+	for j := 0; j < (config.CACHE_SIZE + 1); j++ {
+		filename := "fake_" + strconv.Itoa(j) + ".txt"
+        data.Make(filename, config.DataType(filename))
+	}
+
+	// this copies data, so can't adjust later
+	var cache Cache
+	cache.Init(1, config.CACHE_SIZE, config.LRU, data)
+    if cache.Killed() == true {
+        failed = true
+		t.Errorf("Cache is dead on start")
+    }
+    cache.Kill()
+    if cache.Killed() != true {
+        failed = true
+		t.Errorf("Cache didn't die")
+    }
+    result, err := cache.Fetch("something")
+    if err == nil || result != config.DATA_DEFAULT {
+        failed = true
+		t.Errorf("Cache should be dead but returned nil error and %v", result)
+    }
+    cache.Revive()
+    if cache.Killed() == true {
+        failed = true
+		t.Errorf("Cache didn't come to life")
+    }
+    if failed {
+		fmt.Printf("\t... FAILED\n")
+    }
+}
+
+
 func TestBasicLRUFail(t *testing.T) {
 	fmt.Printf("TestBasicLRUFail ...\n")
 	failed := false
