@@ -3,7 +3,6 @@ package datastore
 import (
     "sync"
     "../config"
-    "log"
 )
 /********************************************************
 DataStore API
