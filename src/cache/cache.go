@@ -69,6 +69,8 @@ func (c *Cache) Init(id int, cacheSize int, cacheType config.CacheType, data *da
 }
 
 func (c* Cache) Killed() bool {
+	c.mu.Lock()
+	defer c.mu.Unlock()
     return !c.alive
 }
 
@@ -89,13 +91,13 @@ func (c *Cache) GetId() int {
 }
 
 func (c *Cache) Fetch(name string) (config.DataType, error) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
 	var err error
     if c.Killed() {
         err = errors.New("Error: Cache Is Dead")
         return config.DATA_DEFAULT, err
     }
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	file, ok := c.cache[name]
 
