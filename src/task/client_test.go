@@ -5,11 +5,12 @@ import (
 	"strconv"
 	"testing"
 
+	"log"
+
 	"../cache"
 	"../config"
 	"../datastore"
 	"../utils"
-    "log"
 )
 
 func TestClientSimpleWorkload(t *testing.T) {
@@ -18,7 +19,7 @@ func TestClientSimpleWorkload(t *testing.T) {
 	numFiles := 3
 	numClients := 1
 	numCaches := 1
-    syncCachesEveryMS := 100000
+	syncCachesEveryMS := 10
 	replicationFactor := 1
 
 	// make datastore
@@ -55,7 +56,7 @@ func TestClientSimpleWorkload(t *testing.T) {
 		clients[i].BootstrapClient(cachedIDMap, hash, w)
 	}
 
-	// ERROR IS HERE
+	// check that files coming out of client are the ones stored in the datastore
 	for _, c := range clients {
 		fetched := c.Run()
 		if !utils.DataTypeArraySetsEqual(fetched, files) {

@@ -131,6 +131,22 @@ func StringSliceExtendMany(s []string, n int) []string {
 	return out
 }
 
+// Returns a new slice with the given slice `s` replicated in it `n` times
+func DataTypeSliceExtendMany(s []config.DataType, n int) []config.DataType {
+	// replication factor must be >= 1
+	if n < 1 {
+		panic(fmt.Sprintf("Can only replicate with replication factor geq to 1 but got %v", n))
+	}
+	out := make([]config.DataType, n*len(s))
+	for i := 0; i < n; i++ {
+		for j, v := range s {
+			offset := i*len(s) + j
+			out[offset] = v
+		}
+	}
+	return out
+}
+
 func Max(a int, b int) int {
 	if a > b {
 		return a

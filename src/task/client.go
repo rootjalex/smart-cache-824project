@@ -6,8 +6,7 @@ import (
 
 	"../cache"
 	"../config"
-    "log"
-    // "../utils"
+	// "../utils"
 )
 
 /************************************************
@@ -39,6 +38,7 @@ func Init(id int) *Client {
 }
 
 func (c *Client) Run() []config.DataType {
+	// log.Printf("client running. %+v", c)
 	fetched := []config.DataType{}
 	for c.workload.HasNextItemGroup() {
 		nextItemGroup := c.workload.GetNextItemGroup()
@@ -75,10 +75,10 @@ func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
 }
 
 func (c *Client) fetchItem(itemName string) config.DataType {
-    cacheIds := c.hash.GetCaches(itemName, c.id)
+	cacheIds := c.hash.GetCaches(itemName, c.id)
 	for _, cacheID := range cacheIds {
-        cache := c.cachedIDMap[cacheID]
-        log.Printf("cache: %v", cache)
+		cache := c.cachedIDMap[cacheID]
+		// log.Printf("cache: %v", cache)
 		item, err := cache.Fetch(itemName)
 		if err == nil {
 			return item
