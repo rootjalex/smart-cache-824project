@@ -59,6 +59,13 @@ func NewMLWorkload(itemNames []string, batchSize int, numIterations int) Workloa
 
 // ------------------------------------------------------
 
+func (wkld *Workload) FreshCopy() Workload {
+	return Workload{
+		ItemNames:        wkld.ItemNames,
+		ItemGroupIndices: wkld.ItemGroupIndices,
+	}
+}
+
 func (wkld *Workload) HasNextItemGroup() bool {
 	return 0 <= wkld.curr && wkld.curr < len(wkld.ItemGroupIndices)
 }

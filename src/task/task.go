@@ -1,31 +1,31 @@
 package task
 
 import (
+	"sync"
+	"time"
+
 	"../cache"
-	"../datastore"
 	"../config"
+	"../datastore"
 )
 
 // ------------------------------ Abstract Base Task
 
 // no need for mutex since only task runs at a time
 type AbstractBaseTask struct {
-	clients   []*Client
+	mu        sync.Mutex
+	Clients   []*Client
 	datastore *datastore.DataStore
 	caches    map[int]*cache.Cache
 	hash      *cache.Hash
 }
 
-// TODO: datastore instead of files
-func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, cacheType config.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *AbstractBaseTask {
+func NewAbstractBaseTask(workload Workload, numClients int, numCaches int, replicationFactor int, cacheType config.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *AbstractBaseTask {
 	// make clients
 	clients := make([]*Client, numClients)
 	for i := range clients {
-		// TODO: implement and call Client constructor
-		clients[i] = &Client{}
-		// TODO: set their workloads somehow
+		clients[i] = Init(i)
 	}
-
 	// make cache master
 	clientIds := make([]int, len(clients))
 	for i := 0; i < len(clients); i++ {
@@ -33,33 +33,61 @@ func NewAbstractBaseTask(numClients int, numCaches int, replicationFactor int, c
 	}
 	caches, hash := StartTask(clientIds, cacheType, cacheSize, numCaches, replicationFactor, datastore, ms)
 
-	// TODO: add chache size
-
-	// ends := cacheMaster.getCacheEnds()
-	// assign end e for each client c
+	// bootstrap clients
+	for i := range clients {
+		w := workload.FreshCopy()
+		clients[i].BootstrapClient(caches, hash, &w)
+	}
 
 	return &AbstractBaseTask{
-		clients:   clients,
+		Clients:   clients,
 		datastore: datastore,
 		caches:    caches,
 		hash:      hash,
 	}
 }
 
-func (w *AbstractBaseTask) Launch() {
+func (t *AbstractBaseTask) Launch() (map[int][]config.DataType, time.Duration) {
+	preFetchTime := time.Now()
+	clientIDToFetchedFiles := make(map[int][]config.DataType)
 
+	// run all clients in parallel, wait until all are done
+	// aggregate client fetch results
+	var wg sync.WaitGroup
+	for _, c := range t.Clients {
+		wg.Add(1)
+		go func(client *Client) {
+			fetched := client.Run()
+			// log.Printf("fetched from client: %+v", fetched)
+			t.mu.Lock()
+			clientIDToFetchedFiles[client.GetID()] = fetched
+			t.mu.Unlock()
+			wg.Done()
+		}(c)
+	}
+	wg.Wait()
+
+	return clientIDToFetchedFiles, time.Since(preFetchTime)
 }
 
 // ------------------------------ ML Task
 
-// type MLTask struct {
-// 	t *AbstractBaseTask
-// }
+type MLTask struct {
+	abstractTask *AbstractBaseTask
+}
 
-// func NewMLTask(clients []*Client, files []*os.File) *MLTask {
-// 	ml := &MLTask{}
-// 	// ml.aw = NewAbstractBaseTask(clients, files)
-// 	return ml
-// }
+func NewMLTask(batchSize int, numIterations int, numClients int, numCaches int, replicationFactor int, cacheType config.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *MLTask {
+	// make ML workload
+	itemNames := datastore.GetFileNames()
+	mlWkld := NewMLWorkload(itemNames, batchSize, numIterations)
 
-// ML
+	// make abstract task
+	t := NewAbstractBaseTask(mlWkld, numClients, numCaches, replicationFactor, cacheType, cacheSize, datastore, ms)
+	return &MLTask{
+		abstractTask: t,
+	}
+}
+
+func (ml *MLTask) Launch() (map[int][]config.DataType, time.Duration) {
+	return ml.abstractTask.Launch()
+}
