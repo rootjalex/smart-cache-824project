@@ -68,10 +68,8 @@ func (d *DataStore) Make(filename string, content config.DataType) {
     // d.data[filename], _ = os.Open(filename)
 
     // TODO: comment out if DataType is *os.File
-    d.mu.Lock()
     d.data[filename] = content
     d.n = len(d.data)
-    d.mu.Unlock()
 }
 
 func (d *DataStore) Copy() *DataStore {
