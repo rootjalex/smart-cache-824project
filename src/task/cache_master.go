@@ -59,7 +59,7 @@ func StartTask(clientIds []int, cacheType config.CacheType, cacheSize int, numCa
 	m.caches = map[int]*cache.Cache{}
 	for i := 0; i < m.numCaches; i++ {
 		c := cache.Cache{}
-		c.Init(i, cacheSize, cacheType, m.datastore.Copy())
+		c.Init(i, cacheSize, cacheType, m.datastore)
 		m.caches[i] = &c
 	}
 
