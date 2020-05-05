@@ -2,7 +2,7 @@ package task
 
 import (
 	"sync"
-	"time"
+	// "time"
 	"../datastore"
 	"../markov"
 	"../config"
@@ -88,16 +88,17 @@ func (m *CacheMaster) syncGroup(groupID int) {
 }
 
 func (m *CacheMaster) syncCaches(ms int) {
-    for {
-        // for group := range(m.hash.getGroups()){
-        // }
-        for groupId := 0; groupId < m.hash.NumGroups; groupId++ {
-            go m.syncGroup(groupId)
-        }
+	return
+    // for {
+    //     // for group := range(m.hash.getGroups()){
+    //     // }
+    //     for groupId := 0; groupId < m.hash.NumGroups; groupId++ {
+    //         go m.syncGroup(groupId)
+    //     }
 
-        // cast int to duration for multiplication to work
-        time.Sleep(time.Duration(ms)*time.Millisecond)
-    }
+    //     // cast int to duration for multiplication to work
+    //     time.Sleep(time.Duration(ms)*time.Millisecond)
+    // }
 }
 
 

@@ -7,6 +7,7 @@ import (
 	"../markov"
 	"../datastore"
 	"../config"
+	// "../utils"
     "log"
 )
 
@@ -58,7 +59,7 @@ func (c *Cache) Init(id int, cacheSize int, cacheType config.CacheType, data *da
 	c.data = data.Copy()
     c.alive = true
 
-	if cacheType == config.LRU || cacheType == config.MarkovEviction {
+	if cacheType != config.MarkovEviction {
 		// only LRU caches should use heap
 		c.heap = heap.MakeMinHeapInt64()
 	}
@@ -95,6 +96,8 @@ func (c *Cache) GetId() int {
 }
 
 func (c *Cache) Fetch(name string) (config.DataType, error) {
+	// utils.DPrintf("Entering Fetch %v", name)
+	// defer utils.DPrintf("Leaving Fetch %v", name)
 	var err error
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -105,18 +108,19 @@ func (c *Cache) Fetch(name string) (config.DataType, error) {
 
 	file, ok := c.cache[name]
 
+	if c.cacheType != config.LRU {
+		// all other caches need a MarkovChain
+		c.chain.Access(name)
+	}
+
 	if ok {
 		c.hits++
 		err = nil
 
 		// TODO: THIS IS BAAD PRACTICE BUT WILL SUFFICE FOR NOW
-		if c.cacheType == config.LRU || c.cacheType == config.MarkovEviction {
+		if c.cacheType != config.MarkovEviction {
 			// only LRU caches should use heap
 			c.heap.ChangeKey(name, c.timestamp)
-		}
-		if c.cacheType != config.LRU {
-			// all other caches need a MarkovChain
-			c.chain.Access(name)
 		}
 	} else {
 		c.AddToCache(name)
