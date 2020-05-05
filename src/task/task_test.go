@@ -10,7 +10,7 @@ import (
 )
 
 func TestSmallMLTaskLRU(t *testing.T) {
-	t.Log("TestSmallMLTask...")
+	t.Log("TestSmallMLTaskLRU...")
 
 	// Datastore
 	numFiles := 1000
@@ -42,8 +42,41 @@ func TestSmallMLTaskLRU(t *testing.T) {
 	}
 }
 
+// func TestSmallMLTaskMarkov(t *testing.T) {
+// 	t.Log("TestSmallMLTaskMarkov...")
+
+// 	// Datastore
+// 	numFiles := 1000
+// 	datastore, _, _, fileContents := makeDatastore(numFiles)
+
+// 	// ML parameters
+// 	batchSize := 16
+// 	numIterations := 50
+
+// 	// Task parameters
+// 	numClients := 5
+// 	numCaches := 2
+// 	replicationFactor := 1
+// 	cacheType := config.MarkovPrefetch
+// 	cacheSize := config.CACHE_SIZE
+// 	ms := 100
+
+// 	// make and launch new ML task
+// 	mlTask := NewMLTask(batchSize, numIterations, numClients, numCaches, replicationFactor, cacheType, cacheSize, datastore, ms)
+// 	clientFetchMap, taskDuration := mlTask.Launch()
+// 	t.Logf("\tTask Duration: %+v,", taskDuration)
+
+// 	// check that all files fetched per client are the expected files
+// 	for clientID, fetchedFiles := range clientFetchMap {
+// 		repeatedFileContents := utils.DataTypeSliceExtendMany(fileContents, numIterations)
+// 		if !utils.DataTypeArraySetsEqual(fetchedFiles, repeatedFileContents) {
+// 			t.Errorf("Fetched file contents for cleint %v does not match datastore file contents", clientID)
+// 		}
+// 	}
+// }
+
 func TestModestMLTaskLRU(t *testing.T) {
-	t.Log("TestModestMLTask...")
+	t.Log("TestModestMLTaskLRU...")
 
 	// Datastore
 	numFiles := 1000
