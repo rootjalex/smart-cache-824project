@@ -3,7 +3,6 @@ package datastore
 import (
     "sync"
     "../config"
-    "log"
 )
 /********************************************************
 DataStore API
@@ -54,7 +53,6 @@ func (d *DataStore) Get(filename string) (config.DataType, bool) {
     defer d.mu.Unlock()
     // TODO: add time.Sleep for approx time of fetching from underlying datastore
     data, ok := d.data[filename]
-    log.Printf("retriveing data inside datastore, got %v for filename %v", data, filename)
     return data, ok
 }
 
