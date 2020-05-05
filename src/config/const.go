@@ -20,6 +20,8 @@ const (
 )
 
 type DataType string
+// DATA_DEFAULT must be initialized to an empty instance of the above default
+const DATA_DEFAULT = ""
 
 
 

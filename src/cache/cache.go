@@ -56,6 +56,7 @@ func (c *Cache) Init(id int, cacheSize int, cacheType config.CacheType, data *da
 	c.cache = make(map[string]config.DataType)
 	c.timestamp = 0
 	c.data = data.Copy()
+    c.alive = true
 
 	if cacheType == config.LRU || cacheType == config.MarkovEviction {
 		// only LRU caches should use heap
@@ -67,6 +68,22 @@ func (c *Cache) Init(id int, cacheSize int, cacheType config.CacheType, data *da
 	}
 }
 
+func (c* Cache) Killed() bool {
+    return !c.alive
+}
+
+func (c* Cache) Kill() {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    c.alive = false
+}
+
+func (c* Cache) Revive() {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    c.alive = true
+}
+
 func (c *Cache) GetId() int {
     return c.id
 }
@@ -74,9 +91,13 @@ func (c *Cache) GetId() int {
 func (c *Cache) Fetch(name string) (config.DataType, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	var err error
+    if c.Killed() {
+        err = errors.New("Error: Cache Is Dead")
+        return config.DATA_DEFAULT, err
+    }
 
 	file, ok := c.cache[name]
-	var err error
 
 	if ok {
 		c.hits++
