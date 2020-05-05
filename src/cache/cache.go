@@ -7,6 +7,7 @@ import (
 	"../markov"
 	"../datastore"
 	"../config"
+    "log"
 )
 
 /********************************
@@ -26,7 +27,7 @@ type Cache struct {
     id          int
 	misses		int
 	hits		int
-	cache		map[string]config.DataType
+    cache	    map[string]config.DataType
 	heap		*heap.MinHeapInt64
 	timestamp	int64 // for controlling LRU heap
 	cacheSize	int
@@ -97,6 +98,7 @@ func (c *Cache) Fetch(name string) (config.DataType, error) {
 		if !ok {
 			// failed again - should not happen
 			err = errors.New("failed")
+            log.Printf("Cache failed again - should not happen")
 		}
 	}
 	c.timestamp++

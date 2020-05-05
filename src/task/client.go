@@ -3,8 +3,11 @@ package task
 import (
 	"sync"
 	"time"
-	"../config"
+
 	"../cache"
+	"../config"
+    "log"
+    // "../utils"
 )
 
 /************************************************
@@ -16,13 +19,13 @@ Client supports
 type Client struct {
 	mu          sync.Mutex
 	cachedIDMap map[int]*cache.Cache
-	hash        cache.Hash
+	hash        *cache.Hash
 	workload    *Workload
 	id          int
 	startTime   time.Time
 }
 
-func (c *Client) BootstrapClient(cachedIDMap map[int]*cache.Cache, hash cache.Hash, workload *Workload) {
+func (c *Client) BootstrapClient(cachedIDMap map[int]*cache.Cache, hash *cache.Hash, workload *Workload) {
 	c.cachedIDMap = cachedIDMap
 	c.hash = hash
 	c.workload = workload
@@ -53,12 +56,12 @@ func (c *Client) GetID() int {
 
 func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
 	var wg sync.WaitGroup
-	items := make([]config.DataType, len(itemGroup))
+	items := make([]config.DataType, 0)
 
 	// fetch each item in the group asynchronously
 	for _, itemName := range itemGroup {
+		wg.Add(1)
 		go func(item string) {
-			wg.Add(1)
 			res := c.fetchItem(item)
 			c.mu.Lock()
 			items = append(items, res)
@@ -72,10 +75,12 @@ func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
 }
 
 func (c *Client) fetchItem(itemName string) config.DataType {
-	for _, cacheID := range c.hash.GetCaches(itemName, c.id) {
-		item, err := c.cachedIDMap[cacheID].Fetch(itemName)
+    cacheIds := c.hash.GetCaches(itemName, c.id)
+	for _, cacheID := range cacheIds {
+        cache := c.cachedIDMap[cacheID]
+        log.Printf("cache: %v", cache)
+		item, err := cache.Fetch(itemName)
 		if err == nil {
-			// utils.DPrintf("Fetched %+v-->%+v")
 			return item
 		}
 	}

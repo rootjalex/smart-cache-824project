@@ -2,29 +2,33 @@ package task
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"testing"
-	"../datastore"
-	"../config"
-	"../utils"
+
 	"../cache"
+	"../config"
+	"../datastore"
+	"../utils"
+    "log"
 )
 
 func TestClientSimpleWorkload(t *testing.T) {
 	fmt.Println("TestClientSimpleWorkload ...")
 
-	numFiles := 100
+	numFiles := 3
 	numClients := 1
 	numCaches := 1
-	syncCachesEveryMS := 100
+    syncCachesEveryMS := 100000
 	replicationFactor := 1
 
 	// make datastore
+	files := []config.DataType{}
 	data := datastore.MakeDataStore()
 	for i := 0; i < numFiles; i++ {
 		filename := "fake_" + strconv.Itoa(i) + ".txt"
-		data.Make(filename)
+		data.Make(filename, config.DataType(filename))
+		v, _ := data.Get(filename)
+		files = append(files, v)
 	}
 
 	// make basic workload
@@ -40,20 +44,26 @@ func TestClientSimpleWorkload(t *testing.T) {
 	for i := 0; i < numClients; i++ {
 		clients[i] = Init(i)
 	}
+
 	clientIds := make([]int, len(clients))
 	for i := 0; i < len(clients); i++ {
 		clientIds[i] = clients[i].GetID()
 	}
+
 	cachedIDMap, hash := StartTask(clientIds, config.LRU, config.CACHE_SIZE, numCaches, replicationFactor, data, syncCachesEveryMS)
 	for i := 0; i < numClients; i++ {
-		clients[i].BootstrapClient(cachedIDMap, *hash, w)
+		clients[i].BootstrapClient(cachedIDMap, hash, w)
 	}
 
+	// ERROR IS HERE
 	for _, c := range clients {
-		log.Println(c.Run())
+		fetched := c.Run()
+		if !utils.DataTypeArraySetsEqual(fetched, files) {
+			log.Printf("expected: %v, but got: %v", files, fetched)
+			t.Error("FAILED")
+		}
 	}
 }
-
 
 func TestHashEndToEnd(t *testing.T) {
 	fmt.Printf("TestHashmakeFileGroups ...\n")
@@ -72,7 +82,7 @@ func TestHashEndToEnd(t *testing.T) {
 		clients[i] = Init(i)
 		ids[i] = i
 	}
-	
+
 	hash := cache.MakeHash(numCaches, filenames, len(filenames), replication, ids)
 
 	file := "a"

@@ -20,7 +20,7 @@ func TestBasicLRUFail(t *testing.T) {
 	// add files to datastore
 	for j := 0; j < (config.CACHE_SIZE + 1); j++ {
 		filename := "fake_" + strconv.Itoa(j) + ".txt"
-		data.Make(filename)
+        data.Make(filename, config.DataType(filename))
 	}
 
 	// this copies data, so can't adjust later
@@ -60,7 +60,7 @@ func TestBasicLRUSuccess(t *testing.T) {
 	// add files to datastore
 	for j := 0; j < config.CACHE_SIZE; j++ {
 		filename := "fake_" + strconv.Itoa(j) + ".txt"
-		data.Make(filename)
+        data.Make(filename, config.DataType(filename))
 	}
 
 	var cache Cache
