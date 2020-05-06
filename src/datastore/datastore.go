@@ -2,6 +2,7 @@ package datastore
 
 import (
     "sync"
+    "time"
     "../config"
 )
 /********************************************************
@@ -51,8 +52,9 @@ func (d *DataStore) Size() int {
 func (d *DataStore) Get(filename string) (config.DataType, bool) {
     d.mu.Lock()
     defer d.mu.Unlock()
-    // TODO: add time.Sleep for approx time of fetching from underlying datastore
     data, ok := d.data[filename]
+    // approx time of fetching from underlying datastore
+    time.Sleep(config.DATA_FETCH_TIME)
     return data, ok
 }
 
