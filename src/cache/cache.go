@@ -131,6 +131,7 @@ func (c *Cache) Fetch(name string) (config.DataType, error) {
 			err = errors.New("failed")
             log.Printf("Cache failed again - should not happen")
 		}
+
 	}
 	c.timestamp++
 

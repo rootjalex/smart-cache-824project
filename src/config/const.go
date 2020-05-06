@@ -25,8 +25,9 @@ type DataType string
 // DATA_DEFAULT must be initialized to an empty instance of the above default
 const DATA_DEFAULT = ""
 
-const DATA_FETCH_TIME = time.Duration(100) * time.Millisecond
+const TIME_MULTIPLIER = 2
+const DATA_FETCH_TIME = time.Duration(1*TIME_MULTIPLIER) * time.Millisecond
 
-const CLIENT_COMPUTATION_TIME = time.Duration(100) * time.Millisecond
+const CLIENT_COMPUTATION_TIME = time.Duration(1*TIME_MULTIPLIER) * time.Millisecond
 
 // latency stuff?

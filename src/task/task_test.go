@@ -97,15 +97,15 @@ func TestModestMLTaskLRU(t *testing.T) {
 	fmt.Println("TestModestMLTaskLRU...")
 	failed := false
 	// Datastore
-	numFiles := 10000
+	numFiles := 500
 	datastore, _, _, fileContents := makeDatastore(numFiles)
 
 	// ML parameters
 	batchSize := 32
-	numIterations := 200
+	numIterations := 10
 
 	// Task parameters
-	numClients := 20
+	numClients := 10
 	numCaches := 5
 	replicationFactor := 2
 	cacheType := config.LRU
@@ -121,7 +121,7 @@ func TestModestMLTaskLRU(t *testing.T) {
 	for clientID, fetchedFiles := range clientFetchMap {
 		repeatedFileContents := utils.DataTypeSliceExtendMany(fileContents, numIterations)
 		if !utils.DataTypeArraySetsEqual(fetchedFiles, repeatedFileContents) {
-			t.Errorf("Fetched file contents for cleint %v does not match datastore file contents", clientID)
+			t.Errorf("Fetched file contents for client %v does not match datastore file contents", clientID)
 			failed = true
 		}
 	}
