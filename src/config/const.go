@@ -25,7 +25,7 @@ type DataType string
 // DATA_DEFAULT must be initialized to an empty instance of the above default
 const DATA_DEFAULT = ""
 
-const TIME_MULTIPLIER = 2
+const TIME_MULTIPLIER = 100
 const DATA_FETCH_TIME = time.Duration(1*TIME_MULTIPLIER) * time.Millisecond
 
 const CLIENT_COMPUTATION_TIME = time.Duration(1*TIME_MULTIPLIER) * time.Millisecond
