@@ -27,6 +27,6 @@ const DATA_DEFAULT = ""
 
 const DATA_FETCH_TIME = time.Duration(100) * time.Millisecond
 
-const CLIENT_COMPUTATION_TIME = time.Duration(1) * time.Millisecond
+const CLIENT_COMPUTATION_TIME = time.Duration(100) * time.Millisecond
 
 // latency stuff?
