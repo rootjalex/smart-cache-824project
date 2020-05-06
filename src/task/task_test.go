@@ -7,6 +7,7 @@ import (
 	"../config"
 	"../datastore"
 	"../utils"
+
 	// "log"
 	"fmt"
 )
@@ -25,12 +26,12 @@ func TestSmallMLTaskLRU(t *testing.T) {
 	failed := false
 
 	// Datastore
-	numFiles := 1000
+	numFiles := 100
 	datastore, _, _, fileContents := makeDatastore(numFiles)
 
 	// ML parameters
 	batchSize := 16
-	numIterations := 50
+	numIterations := 10
 
 	// Task parameters
 	numClients := 5
@@ -61,12 +62,12 @@ func TestSmallMLTaskMarkov(t *testing.T) {
 	failed := false
 
 	// Datastore
-	numFiles := 1000
+	numFiles := 100
 	datastore, _, _, fileContents := makeDatastore(numFiles)
 
 	// ML parameters
 	batchSize := 16
-	numIterations := 50
+	numIterations := 10
 
 	// Task parameters
 	numClients := 5

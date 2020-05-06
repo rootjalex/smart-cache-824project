@@ -71,6 +71,9 @@ func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
 	}
 	// wait for all the fetchers to return
 	wg.Wait()
+
+	// make client wait to simulate computation
+	time.Sleep(config.CLIENT_COMPUTATION_TIME)
 	return items
 }
 
