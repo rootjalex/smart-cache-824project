@@ -1,12 +1,12 @@
 package config
 
 import (
-//    "time"
+   "time"
 )
 
-const CACHE_SIZE = 1000
+const CACHE_SIZE = 50
 
-const PREFETCH_SIZE = 10
+const PREFETCH_SIZE = 5
 
 //const SEED = time.Now().UnixNano()
 const SEED = 1
@@ -23,7 +23,7 @@ type DataType string
 // DATA_DEFAULT must be initialized to an empty instance of the above default
 const DATA_DEFAULT = ""
 
-
+const DATA_FETCH_TIME = time.Duration(100) * time.Millisecond
 
 // latency stuff?
 

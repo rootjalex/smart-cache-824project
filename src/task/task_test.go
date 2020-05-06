@@ -57,7 +57,7 @@ func TestSmallMLTaskLRU(t *testing.T) {
 }
 
 func TestSmallMLTaskMarkov(t *testing.T) {
-	fmt.Print("TestSmallMLTaskMarkov...")
+	fmt.Println("TestSmallMLTaskMarkov...")
 	failed := false
 
 	// Datastore
@@ -93,10 +93,10 @@ func TestSmallMLTaskMarkov(t *testing.T) {
 }
 
 func TestModestMLTaskLRU(t *testing.T) {
-	fmt.Print("TestModestMLTaskLRU...")
+	fmt.Println("TestModestMLTaskLRU...")
 	failed := false
 	// Datastore
-	numFiles := 1000
+	numFiles := 10000
 	datastore, _, _, fileContents := makeDatastore(numFiles)
 
 	// ML parameters
