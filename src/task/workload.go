@@ -1,5 +1,10 @@
 package task
 
+import (
+	"math/rand"
+	"time"
+)
+
 // ------------------------------------------------------ WORKLOAD GENERATOR
 
 type WorkloadGenerator struct {
@@ -11,6 +16,14 @@ func NewMLWorkloadGenerator(itemNames []string, batchSize int, numIterations int
 	ml := newMLWorkload(itemNames, batchSize, numIterations)
 	return WorkloadGenerator{
 		wkld: &ml,
+	}
+}
+
+// generates different workload order every time
+func NewRandomWorkloadGenerator(itemNames []string, batchSize int) WorkloadGenerator {
+	r := newRandomWorkload(itemNames, batchSize)
+	return WorkloadGenerator{
+		wkld: &r,
 	}
 }
 
@@ -26,6 +39,10 @@ type Workload struct {
 	ItemNames        []string
 	ItemGroupIndices [][]int // slice of sequence of indices representing item names to access
 	curr             int     // index of the current group of item indices
+
+	workloadName  string
+	batchSize     int
+	numIterations int
 }
 
 func newMLWorkload(itemNames []string, batchSize int, numIterations int) Workload {
@@ -72,15 +89,69 @@ func newMLWorkload(itemNames []string, batchSize int, numIterations int) Workloa
 	return Workload{
 		ItemNames:        itemNames,
 		ItemGroupIndices: allBatches,
+		batchSize:        batchSize,
+		numIterations:    numIterations,
+		workloadName:     "ml",
+	}
+}
+
+func newRandomWorkload(itemNames []string, batchSize int) Workload {
+	batchIndices := [][]int{}
+
+	// construct and add the batches to indices
+	if batchSize >= len(itemNames) {
+		// case: batch size greater than items ==> batch is all the items
+		batch := make([]int, len(itemNames))
+		for i := range batch {
+			batch[i] = i
+		}
+		batchIndices = append(batchIndices, batch)
+	} else {
+		// case: batch smaller than items ==> multiple batches
+		i, j := 0, batchSize-1
+		for i < len(itemNames) {
+			batch := []int{}
+			for k := i; k <= j; k++ {
+				if k < len(itemNames) {
+					batch = append(batch, k)
+				}
+			}
+			i += batchSize
+			j += batchSize
+			batchIndices = append(batchIndices, batch)
+		}
+	}
+	// randomize order of each batch of indices and the whole bag of batches
+	rand.Seed(time.Now().UnixNano())
+	for k := range batchIndices {
+		rand.Shuffle(len(batchIndices[k]), func(i, j int) { batchIndices[k][i], batchIndices[k][j] = batchIndices[k][j], batchIndices[k][i] })
+	}
+	rand.Shuffle(len(batchIndices), func(i, j int) { batchIndices[i], batchIndices[j] = batchIndices[j], batchIndices[i] })
+
+	return Workload{
+		ItemNames:        itemNames,
+		ItemGroupIndices: batchIndices,
+		batchSize:        batchSize,
+		workloadName:     "random",
 	}
 }
 
 // ------------------------------------------------------ WORKLOAD METHODS
 
 func (wkld *Workload) FreshCopy() Workload {
-	return Workload{
-		ItemNames:        wkld.ItemNames,
-		ItemGroupIndices: wkld.ItemGroupIndices,
+	switch wkld.workloadName {
+	case "random":
+		return newRandomWorkload(wkld.ItemNames, wkld.batchSize)
+	case "ml":
+		return newMLWorkload(wkld.ItemNames, wkld.batchSize, wkld.numIterations)
+	default:
+		return Workload{
+			ItemNames:        wkld.ItemNames,
+			ItemGroupIndices: wkld.ItemGroupIndices,
+			workloadName:     wkld.workloadName,
+			batchSize:        wkld.batchSize,
+			numIterations:    wkld.numIterations,
+		}
 	}
 }
 
