@@ -117,8 +117,28 @@ func TestMediumMLTaskLRU() {
 	MakeMLBenchmark(cacheType, numFiles, batchSize, numIterations, numClients, numCaches, replicationFactor, cacheSize, ms)
 }
 
-func TestSmallerModestMLTaskLRU() {
-	fmt.Println("TestSmallerModestMLTaskLRU...")
+func TestModestMLTaskLRU() {
+	fmt.Println("TestModestMLTaskLRU...")
+	// Datastore
+	numFiles := 500
+
+	// ML parameters
+	batchSize := 16
+	numIterations := 10
+
+	// Task parameters
+	numClients := 10
+	numCaches := 4
+	replicationFactor := 2
+	cacheType := config.LRU
+	cacheSize := config.CACHE_SIZE
+	ms := 100
+
+	MakeMLBenchmark(cacheType, numFiles, batchSize, numIterations, numClients, numCaches, replicationFactor, cacheSize, ms)
+}
+
+func TestModestMLTaskMarkov() {
+	fmt.Println("TestModestMLTaskMarkov...")
 	// Datastore
 	numFiles := 500
 
@@ -137,11 +157,11 @@ func TestSmallerModestMLTaskLRU() {
 	MakeMLBenchmark(cacheType, numFiles, batchSize, numIterations, numClients, numCaches, replicationFactor, cacheSize, ms)
 }
 
-
 func main() {
 	TestSmallMLTaskMarkov()
 	TestSmallMLTaskLRU()
+	TestModestMLTaskMarkov()
+	TestModestMLTaskLRU()
 	TestMediumMLTaskMarkov()
 	TestMediumMLTaskLRU()
-	// TestSmallerModestMLTaskLRU()
 }
