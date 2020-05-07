@@ -3,6 +3,7 @@ package task
 import (
 	"sync"
 	"time"
+
 	"../cache"
 	"../config"
 	"../datastore"
@@ -20,7 +21,7 @@ type AbstractBaseTask struct {
 	hash      *cache.Hash
 }
 
-func NewAbstractBaseTask(workload Workload, numClients int, numCaches int, replicationFactor int, cacheType config.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *AbstractBaseTask {
+func NewAbstractBaseTask(wg WorkloadGenerator, numClients int, numCaches int, replicationFactor int, cacheType config.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *AbstractBaseTask {
 	// make clients
 	clients := make([]*Client, numClients)
 	for i := range clients {
@@ -35,7 +36,7 @@ func NewAbstractBaseTask(workload Workload, numClients int, numCaches int, repli
 
 	// bootstrap clients
 	for i := range clients {
-		w := workload.FreshCopy()
+		w := wg.GenerateWorkload()
 		clients[i].BootstrapClient(caches, hash, &w)
 	}
 
@@ -81,10 +82,10 @@ type MLTask struct {
 func NewMLTask(batchSize int, numIterations int, numClients int, numCaches int, replicationFactor int, cacheType config.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *MLTask {
 	// make ML workload
 	itemNames := datastore.GetFileNames()
-	mlWkld := NewMLWorkload(itemNames, batchSize, numIterations)
+	mlGen := NewMLWorkloadGenerator(itemNames, batchSize, numIterations)
 
 	// make abstract task
-	t := NewAbstractBaseTask(mlWkld, numClients, numCaches, replicationFactor, cacheType, cacheSize, datastore, ms)
+	t := NewAbstractBaseTask(mlGen, numClients, numCaches, replicationFactor, cacheType, cacheSize, datastore, ms)
 	return &MLTask{
 		abstractTask: t,
 	}

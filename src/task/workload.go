@@ -1,12 +1,34 @@
 package task
 
+// ------------------------------------------------------ WORKLOAD GENERATOR
+
+type WorkloadGenerator struct {
+	wkld *Workload
+}
+
+// generates the same workload every time
+func NewMLWorkloadGenerator(itemNames []string, batchSize int, numIterations int) WorkloadGenerator {
+	ml := newMLWorkload(itemNames, batchSize, numIterations)
+	return WorkloadGenerator{
+		wkld: &ml,
+	}
+}
+
+// ------------------------------------------------------ WORKLOAD GENERATOR METHODS
+
+func (wg *WorkloadGenerator) GenerateWorkload() Workload {
+	return wg.wkld.FreshCopy()
+}
+
+// ------------------------------------------------------ WORKLOAD
+
 type Workload struct {
 	ItemNames        []string
 	ItemGroupIndices [][]int // slice of sequence of indices representing item names to access
 	curr             int     // index of the current group of item indices
 }
 
-func NewMLWorkload(itemNames []string, batchSize int, numIterations int) Workload {
+func newMLWorkload(itemNames []string, batchSize int, numIterations int) Workload {
 	var allBatches [][]int
 
 	if batchSize >= len(itemNames) {
@@ -47,17 +69,13 @@ func NewMLWorkload(itemNames []string, batchSize int, numIterations int) Workloa
 		}
 	}
 
-	// shuffle the batches
-	// rand.Seed(time.Now().UnixNano())
-	// rand.Shuffle(len(allBatches), func(i, j int) { allBatches[i], allBatches[j] = allBatches[j], allBatches[i] })
-
 	return Workload{
 		ItemNames:        itemNames,
 		ItemGroupIndices: allBatches,
 	}
 }
 
-// ------------------------------------------------------
+// ------------------------------------------------------ WORKLOAD METHODS
 
 func (wkld *Workload) FreshCopy() Workload {
 	return Workload{
