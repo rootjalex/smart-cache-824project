@@ -66,42 +66,30 @@ func MakeRandomBenchmark(cacheType config.CacheType, nFiles int, batchSize int, 
 
 func TestSmallRandomTaskLRU() {
 	fmt.Println("TestSmallRandomTaskLRU...")
-
-	// Datastore
-	numFiles := 200
-
-	// Random parameters
-	batchSize := 16
-
-	// Task parameters
-	numClients := 5
-	numCaches := 2
-	replicationFactor := 1
-	cacheType := config.LRU
-	cacheSize := config.CACHE_SIZE
-	ms := 100
-
-	MakeRandomBenchmark(cacheType, numFiles, batchSize, numClients, numCaches, replicationFactor, cacheSize, ms)
+	MakeRandomBenchmark(
+		config.LRU, // LRU
+		config.NFILES_SMALL,
+		config.BATCH_SMALL,
+		config.NCLIENTS_SMALL,
+		config.NCACHES_SMALL,
+		config.RFACTOR_SMALL,
+		config.CACHE_SIZE,
+		config.SYNC_MS_SMALL,
+	)
 }
 
 func TestSmallRandomTaskMarkov() {
 	fmt.Println("TestSmallRandomTaskMarkov...")
-
-	// Datastore
-	numFiles := 200
-
-	// Random parameters
-	batchSize := 16
-
-	// Task parameters
-	numClients := 5
-	numCaches := 2
-	replicationFactor := 1
-	cacheType := config.MarkovPrefetch
-	cacheSize := config.CACHE_SIZE
-	ms := 100
-
-	MakeRandomBenchmark(cacheType, numFiles, batchSize, numClients, numCaches, replicationFactor, cacheSize, ms)
+	MakeRandomBenchmark(
+		config.MarkovPrefetch, // MARKOV
+		config.NFILES_SMALL,
+		config.BATCH_SMALL,
+		config.NCLIENTS_SMALL,
+		config.NCACHES_SMALL,
+		config.RFACTOR_SMALL,
+		config.CACHE_SIZE,
+		config.SYNC_MS_SMALL,
+	)
 }
 
 // ------------------------------------------------------------
@@ -112,44 +100,32 @@ func TestSmallRandomTaskMarkov() {
 
 func TestSmallMLTaskMarkov() {
 	fmt.Println("TestSmallMLTaskMarkov...")
-
-	// Datastore
-	numFiles := 200
-
-	// ML parameters
-	batchSize := 16
-	numIterations := 10
-
-	// Task parameters
-	numClients := 5
-	numCaches := 2
-	replicationFactor := 1
-	cacheType := config.MarkovPrefetch
-	cacheSize := config.CACHE_SIZE
-	ms := 100
-
-	MakeMLBenchmark(cacheType, numFiles, batchSize, numIterations, numClients, numCaches, replicationFactor, cacheSize, ms)
+	MakeMLBenchmark(
+		config.MarkovPrefetch, // MARKOV
+		config.NFILES_SMALL,
+		config.BATCH_SMALL,
+		config.ITERS_SMALL,
+		config.NCLIENTS_SMALL,
+		config.NCACHES_SMALL,
+		config.RFACTOR_SMALL,
+		config.CACHE_SIZE,
+		config.SYNC_MS_SMALL,
+	)
 }
 
 func TestSmallMLTaskLRU() {
 	fmt.Println("TestSmallMLTaskLRU...")
-
-	// Datastore
-	numFiles := 200
-
-	// ML parameters
-	batchSize := 16
-	numIterations := 10
-
-	// Task parameters
-	numClients := 5
-	numCaches := 2
-	replicationFactor := 1
-	cacheType := config.LRU
-	cacheSize := config.CACHE_SIZE
-	ms := 100
-
-	MakeMLBenchmark(cacheType, numFiles, batchSize, numIterations, numClients, numCaches, replicationFactor, cacheSize, ms)
+	MakeMLBenchmark(
+		config.LRU, // LRU
+		config.NFILES_SMALL,
+		config.BATCH_SMALL,
+		config.ITERS_SMALL,
+		config.NCLIENTS_SMALL,
+		config.NCACHES_SMALL,
+		config.RFACTOR_SMALL,
+		config.CACHE_SIZE,
+		config.SYNC_MS_SMALL,
+	)
 }
 
 func TestMediumMLTaskMarkov() {

@@ -31,3 +31,12 @@ const DATA_FETCH_TIME = time.Duration(1*TIME_MULTIPLIER) * time.Millisecond
 const CLIENT_COMPUTATION_TIME = time.Duration(1*TIME_MULTIPLIER) * time.Millisecond
 
 // latency stuff?
+
+// benchmarking constants -- SMALL
+const NFILES_SMALL = 200
+const BATCH_SMALL = 16
+const ITERS_SMALL = 10
+const NCLIENTS_SMALL = 5
+const NCACHES_SMALL = 2
+const RFACTOR_SMALL = 1
+const SYNC_MS_SMALL = 100
