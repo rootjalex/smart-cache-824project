@@ -7,6 +7,7 @@ import (
 	"../markov"
 	"../datastore"
 	"../config"
+	// "../utils"
     "log"
 )
 
@@ -58,7 +59,7 @@ func (c *Cache) Init(id int, cacheSize int, cacheType config.CacheType, data *da
 	c.data = data.Copy()
     c.alive = true
 
-	if cacheType == config.LRU || cacheType == config.MarkovEviction {
+	if cacheType != config.MarkovEviction {
 		// only LRU caches should use heap
 		c.heap = heap.MakeMinHeapInt64()
 	}
@@ -95,42 +96,42 @@ func (c *Cache) GetId() int {
 }
 
 func (c *Cache) Fetch(name string) (config.DataType, error) {
+	// utils.DPrintf("Entering Fetch %v", name)
+	// defer utils.DPrintf("Leaving Fetch %v", name)
 	var err error
-	c.mu.Lock()
-	defer c.mu.Unlock()
     if c.killed() {
         err = errors.New("Error: Cache Is Dead")
         return config.DATA_DEFAULT, err
     }
 
+	c.mu.Lock()
 	file, ok := c.cache[name]
+	c.mu.Unlock()
+
+	if c.cacheType != config.LRU {
+		// all other caches need a MarkovChain
+		c.chain.Access(name)
+	}
 
 	if ok {
 		c.hits++
 		err = nil
 
 		// TODO: THIS IS BAAD PRACTICE BUT WILL SUFFICE FOR NOW
-		if c.cacheType == config.LRU || c.cacheType == config.MarkovEviction {
+		if c.cacheType != config.MarkovEviction {
 			// only LRU caches should use heap
+			c.mu.Lock()
 			c.heap.ChangeKey(name, c.timestamp)
-		}
-		if c.cacheType != config.LRU {
-			// all other caches need a MarkovChain
-			c.chain.Access(name)
+			c.mu.Unlock()
 		}
 	} else {
-		c.AddToCache(name)
+		file = c.AddToCache(name)
 		c.misses++
-		file, ok = c.cache[name]
-		if !ok {
-			// failed again - should not happen
-			err = errors.New("failed")
-            log.Printf("Cache failed again - should not happen")
-		}
 	}
 	c.timestamp++
-
-	go c.Prefetch(name)
+	if c.timestamp % config.PREFETCH_SIZE == 0 {
+		go c.Prefetch(name)
+	}
 	return file, err
 }
 
@@ -144,6 +145,8 @@ func (c *Cache) Report() (int, int) {
 // TODO: REPLACEMENT POLICY FOR MARKOV CHAIN
 // assumes mu is Locked
 func (c *Cache) replace(name string, file config.DataType) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.cache[name] = file
 	c.heap.Insert(name, c.timestamp)
 	if c.heap.Size > c.cacheSize {
@@ -154,12 +157,10 @@ func (c *Cache) replace(name string, file config.DataType) {
 }
 
 func (c *Cache) Prefetch(filename string) {
-    c.mu.Lock()
-	defer c.mu.Unlock()
 	if c.cacheType == config.MarkovPrefetch || c.cacheType == config.MarkovBoth {
 		files := c.chain.Predict(filename, config.PREFETCH_SIZE)
 		for _, file :=  range files {
-			c.AddToCache(file)
+			go c.AddToCache(file)
 		}
 	}
 }
@@ -178,16 +179,19 @@ func (c *Cache) UpdateState(chain *markov.MarkovChain) {
     c.chain = chain.Copy()
 }
 
-func (c *Cache) AddToCache(filename string) bool {
-	// assumes c.mu is held
-	_, ok := c.cache[filename]
+func (c *Cache) AddToCache(filename string) config.DataType {
+	c.mu.Lock()
+	file, ok := c.cache[filename]
+	c.mu.Unlock()
 
 	if !ok {
-		file, err := c.data.Get(filename)
+		file, ok = c.data.Get(filename)
 		c.replace(filename, file) // handles insertion into heap
-		return err
+		if !ok {
+			log.Fatalf("Failed to fetch file %v", filename)
+		}
 	}
-	return ok
+	return file
 }
 
 

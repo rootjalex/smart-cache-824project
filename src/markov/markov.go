@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"../heap"
+	// "../utils"
 )
 
 type MarkovChain struct {
@@ -23,6 +24,8 @@ func MakeMarkovChain() *MarkovChain {
 }
 
 func (m *MarkovChain) Access(filename string) {
+	// utils.DPrintf("Entering Access")
+	// defer utils.DPrintf("Leaving Access")
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -61,7 +64,10 @@ func (m *MarkovChain) longPaths(source string, n int) []string {
 	heap.Init()
 
 	// relax all edges from source
-	src_node := m.nodes[source] 
+	src_node, ok := m.nodes[source]
+	if !ok {
+		log.Fatalf("THIS SHOULDNEVER HAPPEN %v -> %v", source, m.nodes)
+	}
 	
 	for _, neighbor := range src_node.adjacencies {
 		weight := -math.Log((float64(neighbor.count) / float64(src_node.size)))

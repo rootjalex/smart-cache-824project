@@ -4,21 +4,20 @@ import (
 	"fmt"
 	"strconv"
 	"testing"
-
 	"../cache"
 	"../config"
 	"../datastore"
 	"../utils"
-    "log"
 )
 
 func TestClientSimpleWorkload(t *testing.T) {
 	fmt.Println("TestClientSimpleWorkload ...")
+	failed := false
 
 	numFiles := 3
 	numClients := 1
 	numCaches := 1
-    syncCachesEveryMS := 100000
+	syncCachesEveryMS := 10
 	replicationFactor := 1
 
 	// make datastore
@@ -55,18 +54,24 @@ func TestClientSimpleWorkload(t *testing.T) {
 		clients[i].BootstrapClient(cachedIDMap, hash, w)
 	}
 
-	// ERROR IS HERE
+	// check that files coming out of client are the ones stored in the datastore
 	for _, c := range clients {
 		fetched := c.Run()
 		if !utils.DataTypeArraySetsEqual(fetched, files) {
-			log.Printf("expected: %v, but got: %v", files, fetched)
-			t.Error("FAILED")
+			t.Errorf("FAILED: expected: %v, but got: %v", files, fetched)
+			failed = true
 		}
+	}
+
+	if failed {
+		fmt.Printf("\t... FAILED\n")
+	} else {
+		fmt.Printf("\t... PASSED\n")
 	}
 }
 
 func TestHashEndToEnd(t *testing.T) {
-	fmt.Printf("TestHashmakeFileGroups ...\n")
+	fmt.Printf("TestHashEndToEnd ...\n")
 	failed := false
 
 	// case 0

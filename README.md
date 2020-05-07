@@ -43,7 +43,13 @@ We rely on Go's testing infrastructure. From the root of the repository, run:
 
 ```
 cd src
-go test
+go test ./...
+```
+
+To check out our benchmarks, from the src/ directory, run:
+
+```
+go run benchmarks.go
 ```
 
 ### Break down into end to end tests

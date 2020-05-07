@@ -6,8 +6,7 @@ import (
 
 	"../cache"
 	"../config"
-    "log"
-    // "../utils"
+	// "../utils"
 )
 
 /************************************************
@@ -39,6 +38,7 @@ func Init(id int) *Client {
 }
 
 func (c *Client) Run() []config.DataType {
+	// log.Printf("client running. %+v", c)
 	fetched := []config.DataType{}
 	for c.workload.HasNextItemGroup() {
 		nextItemGroup := c.workload.GetNextItemGroup()
@@ -55,30 +55,33 @@ func (c *Client) GetID() int {
 // ----------------------------------------------- UTILS
 
 func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
-	var wg sync.WaitGroup
+	// var wg sync.WaitGroup
 	items := make([]config.DataType, 0)
 
 	// fetch each item in the group asynchronously
 	for _, itemName := range itemGroup {
-		wg.Add(1)
-		go func(item string) {
-			res := c.fetchItem(item)
-			c.mu.Lock()
+		// wg.Add(1)
+		// go func(item string) {
+			res := c.fetchItem(itemName)
+			// c.mu.Lock()
 			items = append(items, res)
-			c.mu.Unlock()
-			wg.Done()
-		}(itemName)
+			// c.mu.Unlock()
+			// wg.Done()
+		// }(itemName)
 	}
 	// wait for all the fetchers to return
-	wg.Wait()
+	// wg.Wait()
+
+	// make client wait to simulate computation
+	time.Sleep(config.CLIENT_COMPUTATION_TIME)
 	return items
 }
 
 func (c *Client) fetchItem(itemName string) config.DataType {
-    cacheIds := c.hash.GetCaches(itemName, c.id)
+	cacheIds := c.hash.GetCaches(itemName, c.id)
 	for _, cacheID := range cacheIds {
-        cache := c.cachedIDMap[cacheID]
-        log.Printf("cache: %v", cache)
+		cache := c.cachedIDMap[cacheID]
+		// log.Printf("cache: %v", cache)
 		item, err := cache.Fetch(itemName)
 		if err == nil {
 			return item
