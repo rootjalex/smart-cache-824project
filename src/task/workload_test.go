@@ -93,7 +93,7 @@ func TestRandomWorkloadAndGenerator(t *testing.T) {
 
 	// param and file setup
 	numFiles := 10
-	batchSize := 1
+	batchSize := 4
 	itemNames := make([]string, numFiles)
 	for i := 0; i < numFiles; i++ {
 		itemNames[i] = "" + strconv.Itoa(i+1)
