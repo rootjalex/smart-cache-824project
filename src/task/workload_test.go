@@ -16,7 +16,8 @@ func TestBasicWorkload(t *testing.T) {
 		[]int{2, 3},
 		[]int{0, 1, 2, 3},
 	}
-	w := Workload{ItemNames: itemNames, ItemGroupIndices: itemGroupIndices}
+	wg := WorkloadGenerator{wkld: &Workload{ItemNames: itemNames, ItemGroupIndices: itemGroupIndices}}
+	w := wg.GenerateWorkload()
 
 	// check the {0, 1} ==> {a, b} group
 	assertWorkloadHasNextItemGroup(t, &w, []string{"a", "b"})
@@ -40,7 +41,8 @@ func TestBasicMLWorkloadSmallBatchSmallIters(t *testing.T) {
 	for i := 0; i < numFiles; i++ {
 		itemNames[i] = "imagenet-" + strconv.Itoa(i+1)
 	}
-	w := NewMLWorkload(itemNames, 1, 1)
+	wg := NewMLWorkloadGenerator(itemNames, 1, 1)
+	w := wg.GenerateWorkload()
 
 	// check that each file makes it in its own group
 	for i := 0; i < numFiles; i++ {
@@ -62,7 +64,8 @@ func TestBasicMLWorkloadLargeBatchLargeIters(t *testing.T) {
 	for i := 0; i < numFiles; i++ {
 		itemNames[i] = "imagenet-" + strconv.Itoa(i+1)
 	}
-	w := NewMLWorkload(itemNames, batchSize, numIterations)
+	wg := NewMLWorkloadGenerator(itemNames, batchSize, numIterations)
+	w := wg.GenerateWorkload()
 
 	for i := 0; i < numIterations; i++ {
 		// 1-10
