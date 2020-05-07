@@ -94,3 +94,25 @@ func NewMLTask(batchSize int, numIterations int, numClients int, numCaches int, 
 func (ml *MLTask) Launch() (map[int][]config.DataType, time.Duration) {
 	return ml.abstractTask.Launch()
 }
+
+// ------------------------------ Random Task
+
+type RandomTask struct {
+	abstractTask *AbstractBaseTask
+}
+
+func NewRandomTask(batchSize int, numClients int, numCaches int, replicationFactor int, cacheType config.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *RandomTask {
+	// make random workload
+	itemNames := datastore.GetFileNames()
+	randGen := NewRandomWorkloadGenerator(itemNames, batchSize)
+
+	// make abstract task
+	t := NewAbstractBaseTask(randGen, numClients, numCaches, replicationFactor, cacheType, cacheSize, datastore, ms)
+	return &RandomTask{
+		abstractTask: t,
+	}
+}
+
+func (ml *RandomTask) Launch() (map[int][]config.DataType, time.Duration) {
+	return ml.abstractTask.Launch()
+}

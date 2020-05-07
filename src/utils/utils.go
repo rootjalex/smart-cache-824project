@@ -3,22 +3,23 @@ package utils
 import (
 	"fmt"
 	"log"
+	"os"
 	"reflect"
-    "strings"
-    "os"
+	"strings"
+
 	"../config"
 )
 
 const Debug int = 0
 
 func DPrintf(format string, args ...interface{}) {
-    debug := false
-    d_str := "DEBUG=1"
-    for _, arg := range os.Environ() {
-        if strings.HasPrefix(arg, d_str) {
-            debug = true
-        }
-    }
+	debug := false
+	d_str := "DEBUG=1"
+	for _, arg := range os.Environ() {
+		if strings.HasPrefix(arg, d_str) {
+			debug = true
+		}
+	}
 	if debug {
 		log.Printf(format, args...)
 	}
@@ -50,6 +51,20 @@ func JoinInts(a []int, b []int) []int {
 // Equal tells whether a and b contain the same elements.
 // A nil argument is equivalent to an empty slice.
 func IntArrayEqual(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// Equal tells whether a and b contain the same elements.
+// A nil argument is equivalent to an empty slice.
+func StringArrayEqual(a, b []string) bool {
 	if len(a) != len(b) {
 		return false
 	}

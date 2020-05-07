@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strconv"
 	"testing"
+
+	"../utils"
 )
 
 func TestBasicWorkload(t *testing.T) {
@@ -84,6 +86,54 @@ func TestBasicMLWorkloadLargeBatchLargeIters(t *testing.T) {
 
 	// check that there are no more item groups
 	assertNoMoreItemGroups(t, &w)
+}
+
+func TestRandomWorkloadAndGenerator(t *testing.T) {
+	fmt.Println("TestRandomWorkloadAndGenerator ...")
+
+	// param and file setup
+	numFiles := 10
+	batchSize := 4
+	itemNames := make([]string, numFiles)
+	for i := 0; i < numFiles; i++ {
+		itemNames[i] = "" + strconv.Itoa(i+1)
+	}
+	// create two workload generators
+	wg1 := NewRandomWorkloadGenerator(itemNames, batchSize)
+	wg2 := NewRandomWorkloadGenerator(itemNames, batchSize)
+
+	// check multiple workloads generated from the same generator
+	workloadsPerGenerator := 5
+	itemGroups1 := [][]string{}
+	itemGroups2 := [][]string{}
+	for i := 0; i < workloadsPerGenerator; i++ {
+		w1, items1 := wg1.GenerateWorkload(), []string{}
+		w2, items2 := wg2.GenerateWorkload(), []string{}
+		for w1.HasNextItemGroup() && w2.HasNextItemGroup() {
+			ig1, ig2 := w1.GetNextItemGroup(), w2.GetNextItemGroup()
+			items1 = append(items1, ig1...)
+			items2 = append(items2, ig2...)
+		}
+		itemGroups1 = append(itemGroups1, items1)
+		itemGroups2 = append(itemGroups2, items2)
+
+		// items must be the same ones we created
+		if !utils.StringArraySetsEqual(itemNames, items1) {
+			t.Errorf("Expected items from workload %+v to equal the files %+v", w1, itemNames)
+		}
+		if !utils.StringArraySetsEqual(itemNames, items2) {
+			t.Errorf("Expected items from workload %+v to equal the files %+v", w2, itemNames)
+		}
+		// check that there are no more item groups
+		assertNoMoreItemGroups(t, &w1)
+		assertNoMoreItemGroups(t, &w2)
+	}
+	// check that item groups not equal
+	for i := 1; i < workloadsPerGenerator; i++ {
+		if reflect.DeepEqual(itemGroups1[i-1], itemGroups1[i]) || reflect.DeepEqual(itemGroups2[i-1], itemGroups2[i]) {
+			t.Errorf("Expected different item groups")
+		}
+	}
 }
 
 func assertWorkloadHasNextItemGroup(t *testing.T, w *Workload, itemGroup []string) {
