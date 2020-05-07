@@ -3,10 +3,10 @@ package task
 import (
 	"sync"
 	"time"
-
 	"../cache"
 	"../config"
 	"../datastore"
+	"../utils"
 )
 
 // ------------------------------ Abstract Base Task
@@ -54,16 +54,18 @@ func (t *AbstractBaseTask) Launch() (map[int][]config.DataType, time.Duration) {
 	// run all clients in parallel, wait until all are done
 	// aggregate client fetch results
 	var wg sync.WaitGroup
-	for _, c := range t.Clients {
+	for i, c := range t.Clients {
 		wg.Add(1)
-		go func(client *Client) {
+		go func(client *Client, nc int) {
+			utils.DPrintf("Entering lambda Client %v...", nc)
+			utils.DPrintf("Leaving lambda Client %v...", nc)
 			fetched := client.Run()
 			// log.Printf("fetched from client: %+v", fetched)
 			t.mu.Lock()
 			clientIDToFetchedFiles[client.GetID()] = fetched
 			t.mu.Unlock()
 			wg.Done()
-		}(c)
+		}(c, i)
 	}
 	wg.Wait()
 

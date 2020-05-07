@@ -50,11 +50,11 @@ func (d *DataStore) Size() int {
 }
 
 func (d *DataStore) Get(filename string) (config.DataType, bool) {
+    time.Sleep(config.DATA_FETCH_TIME)
     d.mu.Lock()
     defer d.mu.Unlock()
     data, ok := d.data[filename]
     // approx time of fetching from underlying datastore
-    time.Sleep(config.DATA_FETCH_TIME)
     return data, ok
 }
 

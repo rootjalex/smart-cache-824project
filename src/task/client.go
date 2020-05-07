@@ -55,22 +55,22 @@ func (c *Client) GetID() int {
 // ----------------------------------------------- UTILS
 
 func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
-	var wg sync.WaitGroup
+	// var wg sync.WaitGroup
 	items := make([]config.DataType, 0)
 
 	// fetch each item in the group asynchronously
 	for _, itemName := range itemGroup {
-		wg.Add(1)
-		go func(item string) {
-			res := c.fetchItem(item)
-			c.mu.Lock()
+		// wg.Add(1)
+		// go func(item string) {
+			res := c.fetchItem(itemName)
+			// c.mu.Lock()
 			items = append(items, res)
-			c.mu.Unlock()
-			wg.Done()
-		}(itemName)
+			// c.mu.Unlock()
+			// wg.Done()
+		// }(itemName)
 	}
 	// wait for all the fetchers to return
-	wg.Wait()
+	// wg.Wait()
 
 	// make client wait to simulate computation
 	time.Sleep(config.CLIENT_COMPUTATION_TIME)

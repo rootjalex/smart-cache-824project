@@ -8,7 +8,7 @@ import (
 	"../config"
 )
 
-const Debug int = 1
+const Debug int = 0
 
 func DPrintf(format string, args ...interface{}) {
 	if Debug > 0 {
