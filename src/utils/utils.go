@@ -4,16 +4,25 @@ import (
 	"fmt"
 	"log"
 	"reflect"
-
+    "strings"
+    "os"
 	"../config"
 )
 
 const Debug int = 1
 
 func DPrintf(format string, args ...interface{}) {
-	if Debug > 0 {
+    debug := false
+    d_str := "DEBUG=1"
+    for _, arg := range os.Environ() {
+        if strings.HasPrefix(arg, d_str) {
+            debug = true
+        }
+    }
+	if debug {
 		log.Printf(format, args...)
 	}
+	return
 }
 
 func CountValues(a []int, i int) int {
