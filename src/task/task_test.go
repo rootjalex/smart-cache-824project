@@ -93,19 +93,19 @@ func TestSmallMLTaskMarkov(t *testing.T) {
 	printFailure(failed)
 }
 
-func TestModestMLTaskLRU(t *testing.T) {
-	fmt.Println("TestModestMLTaskLRU...")
+func TestSmallerModestMLTaskLRU(t *testing.T) {
+	fmt.Println("TestSmallerModestMLTaskLRU...")
 	failed := false
 	// Datastore
-	numFiles := 10000
+	numFiles := 500
 	datastore, _, _, fileContents := makeDatastore(numFiles)
 
 	// ML parameters
 	batchSize := 32
-	numIterations := 200
+	numIterations := 10
 
 	// Task parameters
-	numClients := 20
+	numClients := 10
 	numCaches := 5
 	replicationFactor := 2
 	cacheType := config.LRU
@@ -121,7 +121,42 @@ func TestModestMLTaskLRU(t *testing.T) {
 	for clientID, fetchedFiles := range clientFetchMap {
 		repeatedFileContents := utils.DataTypeSliceExtendMany(fileContents, numIterations)
 		if !utils.DataTypeArraySetsEqual(fetchedFiles, repeatedFileContents) {
-			t.Errorf("Fetched file contents for cleint %v does not match datastore file contents", clientID)
+			t.Errorf("Fetched file contents for client %v does not match datastore file contents", clientID)
+			failed = true
+		}
+	}
+	printFailure(failed)
+}
+
+func TestModestMLTaskLRU(t *testing.T) {
+	fmt.Println("TestModestMLTaskLRU...")
+	failed := false
+	// Datastore
+	numFiles := 5000
+	datastore, _, _, fileContents := makeDatastore(numFiles)
+
+	// ML parameters
+	batchSize := 32
+	numIterations := 20
+
+	// Task parameters
+	numClients := 15
+	numCaches := 5
+	replicationFactor := 2
+	cacheType := config.LRU
+	cacheSize := config.CACHE_SIZE
+	ms := 100
+
+	// make and launch new ML task
+	mlTask := NewMLTask(batchSize, numIterations, numClients, numCaches, replicationFactor, cacheType, cacheSize, datastore, ms)
+	clientFetchMap, taskDuration := mlTask.Launch()
+	fmt.Printf("\tTask Duration: %+v\n", taskDuration)
+
+	// check that all files fetched per client are the expected files
+	for clientID, fetchedFiles := range clientFetchMap {
+		repeatedFileContents := utils.DataTypeSliceExtendMany(fileContents, numIterations)
+		if !utils.DataTypeArraySetsEqual(fetchedFiles, repeatedFileContents) {
+			t.Errorf("Fetched file contents for client %v does not match datastore file contents", clientID)
 			failed = true
 		}
 	}
