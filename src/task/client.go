@@ -58,20 +58,11 @@ func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
 	// var wg sync.WaitGroup
 	items := make([]config.DataType, 0)
 
-	// fetch each item in the group asynchronously
+	// fetch each item in the group
 	for _, itemName := range itemGroup {
-		// wg.Add(1)
-		// go func(item string) {
 		res := c.fetchItem(itemName)
-		// c.mu.Lock()
 		items = append(items, res)
-		// c.mu.Unlock()
-		// wg.Done()
-		// }(itemName)
 	}
-	// wait for all the fetchers to return
-	// wg.Wait()
-
 	// make client wait to simulate computation
 	time.Sleep(config.CLIENT_COMPUTATION_TIME)
 	return items
