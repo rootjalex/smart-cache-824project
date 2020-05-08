@@ -148,10 +148,6 @@ func newRandomWorkload(itemNames []string, batchSize int) Workload {
 	}
 }
 
-// [A B C D E F G H I J K L M N O P Q R S T U V W X Y Z]
-// numPatterns int
-// minPatternLength int
-// maxPatternLength int
 func newWebWorkload(itemNames []string, numPatterns int, minPatternLength int, maxPatternLength int, replicationFactor int) Workload {
 	rand.Seed(time.Now().UnixNano())
 
