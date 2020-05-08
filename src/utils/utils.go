@@ -12,7 +12,7 @@ import (
 	"../config"
 )
 
-const Debug int = 0
+const Debug int = 1
 
 func DPrintf(format string, args ...interface{}) {
 	debug := false
