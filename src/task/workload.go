@@ -1,11 +1,10 @@
 package task
 
 import (
-	"log"
 	"math/rand"
 	"time"
 
-	"../config"
+	"../utils"
 )
 
 // ------------------------------------------------------ WORKLOAD GENERATOR
@@ -156,7 +155,7 @@ func newWebWorkload(itemNames []string, numPatterns int, minPatternLength int, m
 
 	// populate different kinds of patterns
 	patterns := [][]int{}
-	log.Printf("NumPatterns %+v\n", numPatterns)
+	utils.DPrintf("NumPatterns %+v\n", numPatterns)
 	offset := len(itemNames) / numPatterns
 	for i := 0; i < numPatterns; i++ {
 		pLength := minPatternLength + rand.Intn(maxPatternLength-minPatternLength)
@@ -168,14 +167,14 @@ func newWebWorkload(itemNames []string, numPatterns int, minPatternLength int, m
 		patterns = append(patterns, p)
 		p = nil
 	}
-	log.Printf("Patterns %+v\n", patterns)
+	utils.DPrintf("Patterns %+v\n", patterns)
 	// randomly pick patterns and extend to the big pattern
 	bigPattern := []int{}
 	for i := 0; i < replicationFactor; i++ {
 		pi := rand.Intn(len(patterns))
 		bigPattern = append(bigPattern, patterns[pi]...)
 	}
-	log.Printf("bigPattern %+v\n", bigPattern)
+	utils.DPrintf("bigPattern %+v\n", len(bigPattern))
 	groups := [][]int{}
 	for _, item := range bigPattern {
 		groups = append(groups, []int{item})
@@ -224,12 +223,7 @@ func (wkld *Workload) HasNextItemGroup() bool {
 func (wkld *Workload) GetNextItemGroup() []string {
 	itemNameGroup := []string{}
 	for _, j := range wkld.ItemGroupIndices[wkld.curr] {
-		var item string
-		if j == -1 {
-			item = config.PATTERN_END_MARKER
-		} else {
-			item = wkld.ItemNames[j]
-		}
+		item := wkld.ItemNames[j]
 		itemNameGroup = append(itemNameGroup, item)
 	}
 	wkld.curr++
