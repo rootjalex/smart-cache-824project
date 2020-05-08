@@ -1,12 +1,12 @@
 package task
 
 import (
-	"math/rand"
 	"sync"
 	"time"
 
 	"../cache"
 	"../config"
+    "../utils"
 )
 
 /************************************************
@@ -67,15 +67,13 @@ func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
 		res := c.fetchItem(itemName)
 		items = append(items, res)
 		// at the end of a web workload pattern, we wait
-		if c.workload.workloadName == "web" {
-			sleepTime := config.MIN_PATTERN_WAIT + rand.Intn(config.MAX_PATTERN_WAIT-config.MIN_PATTERN_WAIT)
-			time.Sleep(time.Duration(sleepTime) * time.Millisecond)
-		}
 	}
 	// make client wait to simulate ML computation
 	if c.workload.workloadName == "ml" {
 		time.Sleep(config.CLIENT_COMPUTATION_TIME)
-	}
+	} else if c.workload.workloadName == "web" {
+        utils.WaitRandomMillis(config.MIN_PATTERN_WAIT, config.MAX_PATTERN_WAIT)
+    }
 	return items
 }
 
