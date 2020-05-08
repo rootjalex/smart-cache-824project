@@ -56,6 +56,14 @@ func (h *Hash) GetCachesInGroup(groupID int) []int {
     return h.groupToCacheIDs[groupID]
 }
 
+/***********************************************************
+API Useful in Testing
+***********************************************************/
+func (h *Hash) GetFileGroups(groupID int) map[int][]int {
+    return h.groupToCacheIDs
+}
+
+
 /*
 Internal Usage in hash creation and initialization
 */
