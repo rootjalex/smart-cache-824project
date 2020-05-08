@@ -301,25 +301,36 @@ func TestMediumLowRepMLTaskLRU() {
 // ------------------------------------------------------------ RANDOM
 // ------------------------------------------------------------
 // ------------------------------------------------------------
-
-func main() {
-	// Web Benchmarks
+func web() {
 	TestSmallWebTaskLRU()
 	TestSmallWebTaskMarkov()
 	TestMediumWebTaskLRU()
 	TestMediumWebTaskMarkov()
+}
+
+func random() {
+	TestSmallRandomTaskLRU()
+	TestSmallRandomTaskMarkov()
+	TestMediumRandomTaskLRU()
+	TestMediumRandomTaskMarkov()
+}
+
+func ml() {
+	TestSmallMLTaskMarkov()
+	TestSmallMLTaskLRU()
+	TestMediumMLTaskMarkov()
+	TestMediumMLTaskLRU()
+	TestMediumLowRepMLTaskMarkov()
+	TestMediumLowRepMLTaskLRU()
+}
+
+func main() {
+	// Web Benchmarks
+    web()
 
 	// // Random Benchmarks
-	// TestSmallRandomTaskLRU()
-	// TestSmallRandomTaskMarkov()
-	// TestMediumRandomTaskLRU()
-	// TestMediumRandomTaskMarkov()
+    // random()
 
-	// // ML Benchmarks
-	// TestSmallMLTaskMarkov()
-	// TestSmallMLTaskLRU()
-	// TestMediumMLTaskMarkov()
-	// TestMediumMLTaskLRU()
-	// TestMediumLowRepMLTaskMarkov()
-	// TestMediumLowRepMLTaskLRU()
+	// ML Benchmarks
+    // ml()
 }
