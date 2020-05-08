@@ -74,7 +74,7 @@ func TestSmallRandomTaskLRU() {
 		config.NCACHES_SMALL,
 		config.RFACTOR_SMALL,
 		config.CACHE_SIZE,
-		config.SYNC_MS_SMALL,
+		config.SYNC_MS,
 	)
 }
 
@@ -88,7 +88,35 @@ func TestSmallRandomTaskMarkov() {
 		config.NCACHES_SMALL,
 		config.RFACTOR_SMALL,
 		config.CACHE_SIZE,
-		config.SYNC_MS_SMALL,
+		config.SYNC_MS,
+	)
+}
+
+func TestMediumRandomTaskLRU() {
+	fmt.Println("TestMediumRandomTaskLRU...")
+	MakeRandomBenchmark(
+		config.LRU, // LRU
+		config.NFILES_MED,
+		config.BATCH_MED,
+		config.NCLIENTS_MED,
+		config.NCACHES_MED,
+		config.RFACTOR_MED,
+		config.CACHE_SIZE,
+		config.SYNC_MS,
+	)
+}
+
+func TestMediumRandomTaskMarkov() {
+	fmt.Println("TestMediumRandomTaskMarkov...")
+	MakeRandomBenchmark(
+		config.MarkovPrefetch, // MARKOV
+		config.NFILES_MED,
+		config.BATCH_MED,
+		config.NCLIENTS_MED,
+		config.NCACHES_MED,
+		config.RFACTOR_MED,
+		config.CACHE_SIZE,
+		config.SYNC_MS,
 	)
 }
 
@@ -109,7 +137,7 @@ func TestSmallMLTaskMarkov() {
 		config.NCACHES_SMALL,
 		config.RFACTOR_SMALL,
 		config.CACHE_SIZE,
-		config.SYNC_MS_SMALL,
+		config.SYNC_MS,
 	)
 }
 
@@ -124,71 +152,70 @@ func TestSmallMLTaskLRU() {
 		config.NCACHES_SMALL,
 		config.RFACTOR_SMALL,
 		config.CACHE_SIZE,
-		config.SYNC_MS_SMALL,
+		config.SYNC_MS,
 	)
 }
 
 func TestMediumMLTaskMarkov() {
 	fmt.Println("TestMediumMLTaskMarkov...")
-
-	// Datastore
-	numFiles := 1000
-
-	// ML parameters
-	batchSize := 16
-	numIterations := 10
-
-	// Task parameters
-	numClients := 5
-	numCaches := 2
-	replicationFactor := 1
-	cacheType := config.MarkovPrefetch
-	cacheSize := config.CACHE_SIZE
-	ms := 100
-
-	MakeMLBenchmark(cacheType, numFiles, batchSize, numIterations, numClients, numCaches, replicationFactor, cacheSize, ms)
+	MakeMLBenchmark(
+		config.MarkovPrefetch, // MARKOV
+		config.NFILES_MED,
+		config.BATCH_MED,
+		config.ITERS_MED,
+		config.NCLIENTS_MED,
+		config.NCACHES_MED,
+		config.RFACTOR_MED,
+		config.CACHE_SIZE,
+		config.SYNC_MS,
+	)
 }
 
 func TestMediumMLTaskLRU() {
 	fmt.Println("TestMediumMLTaskLRU...")
-
-	// Datastore
-	numFiles := 1000
-
-	// ML parameters
-	batchSize := 16
-	numIterations := 10
-
-	// Task parameters
-	numClients := 5
-	numCaches := 2
-	replicationFactor := 1
-	cacheType := config.LRU
-	cacheSize := config.CACHE_SIZE
-	ms := 100
-
-	MakeMLBenchmark(cacheType, numFiles, batchSize, numIterations, numClients, numCaches, replicationFactor, cacheSize, ms)
+	MakeMLBenchmark(
+		config.LRU, // LRU
+		config.NFILES_MED,
+		config.BATCH_MED,
+		config.ITERS_MED,
+		config.NCLIENTS_MED,
+		config.NCACHES_MED,
+		config.RFACTOR_MED,
+		config.CACHE_SIZE,
+		config.SYNC_MS,
+	)
 }
 
-func TestSmallerModestMLTaskLRU() {
-	fmt.Println("TestSmallerModestMLTaskLRU...")
-	// Datastore
-	numFiles := 500
-
-	// ML parameters
-	batchSize := 16
-	numIterations := 10
-
-	// Task parameters
-	numClients := 10
-	numCaches := 4
-	replicationFactor := 2
-	cacheType := config.MarkovPrefetch
-	cacheSize := config.CACHE_SIZE
-	ms := 100
-
-	MakeMLBenchmark(cacheType, numFiles, batchSize, numIterations, numClients, numCaches, replicationFactor, cacheSize, ms)
+func TestMediumLowRepMLTaskMarkov() {
+	fmt.Println("TestMediumLowRepMLTaskMarkov...")
+	MakeMLBenchmark(
+		config.MarkovPrefetch, // MARKOV
+		config.NFILES_MED,
+		config.BATCH_MED,
+		config.ITERS_MED,
+		config.NCLIENTS_MED,
+		config.NCACHES_MED,
+		config.RFACTOR_SMALL,
+		config.CACHE_SIZE,
+		config.SYNC_MS,
+	)
 }
+
+func TestMediumLowRepMLTaskLRU() {
+	fmt.Println("TestMediumLowRepMLTaskLRU...")
+	MakeMLBenchmark(
+		config.LRU, // LRU
+		config.NFILES_MED,
+		config.BATCH_MED,
+		config.ITERS_MED,
+		config.NCLIENTS_MED,
+		config.NCACHES_MED,
+		config.RFACTOR_SMALL,
+		config.CACHE_SIZE,
+		config.SYNC_MS,
+	)
+}
+
 
 // ------------------------------------------------------------
 // ------------------------------------------------------------
@@ -200,11 +227,14 @@ func main() {
 	// Random Benchmarks
 	TestSmallRandomTaskLRU()
 	TestSmallRandomTaskMarkov()
+	TestMediumRandomTaskLRU()
+	TestMediumRandomTaskMarkov()
 
 	// ML Benchmarks
-	// TestSmallMLTaskMarkov()
-	// TestSmallMLTaskLRU()
-	// TestMediumMLTaskMarkov()
-	// TestMediumMLTaskLRU()
-	// TestSmallerModestMLTaskLRU()
+	TestSmallMLTaskMarkov()
+	TestSmallMLTaskLRU()
+	TestMediumMLTaskMarkov()
+	TestMediumMLTaskLRU()
+	TestMediumLowRepMLTaskMarkov()
+	TestMediumLowRepMLTaskLRU()
 }
