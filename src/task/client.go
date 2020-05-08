@@ -1,7 +1,6 @@
 package task
 
 import (
-	"log"
 	"math/rand"
 	"sync"
 	"time"
@@ -39,9 +38,14 @@ func Init(id int) *Client {
 }
 
 func (c *Client) Run() []config.DataType {
+	// totalFiles := 0
+	// for _, igi := range c.workload.ItemGroupIndices {
+	// 	totalFiles += len(igi)
+	// }
+	// log.Printf("client %v fetching %+v items", c.id, totalFiles)
+
 	fetched := []config.DataType{}
 	for c.workload.HasNextItemGroup() {
-		log.Printf("client %v fetching %+v items", c.id, len(c.workload.ItemGroupIndices))
 		nextItemGroup := c.workload.GetNextItemGroup()
 		fetchedItems := c.fetchItemGroup(nextItemGroup)
 		fetched = append(fetched, fetchedItems...)

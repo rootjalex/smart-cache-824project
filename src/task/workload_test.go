@@ -140,7 +140,7 @@ func TestRandomWorkloadAndGenerator(t *testing.T) {
 func TestWebWorkloadAndGenerator(t *testing.T) {
 	fmt.Println("TestWebWorkloadAndGenerator ...")
 
-	numFiles := 10
+	numFiles := 100
 	itemNames := make([]string, numFiles)
 	for i := 0; i < numFiles; i++ {
 		itemNames[i] = "x" + strconv.Itoa(i+1)
