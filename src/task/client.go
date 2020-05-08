@@ -6,7 +6,7 @@ import (
 
 	"../cache"
 	"../config"
-	// "../utils"
+	"../utils"
 )
 
 /************************************************
@@ -38,7 +38,6 @@ func Init(id int) *Client {
 }
 
 func (c *Client) Run() []config.DataType {
-	// log.Printf("client running. %+v", c)
 	fetched := []config.DataType{}
 	for c.workload.HasNextItemGroup() {
 		nextItemGroup := c.workload.GetNextItemGroup()
@@ -55,13 +54,17 @@ func (c *Client) GetID() int {
 // ----------------------------------------------- UTILS
 
 func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
-	// var wg sync.WaitGroup
 	items := make([]config.DataType, 0)
 
 	// fetch each item in the group
 	for _, itemName := range itemGroup {
-		res := c.fetchItem(itemName)
-		items = append(items, res)
+		// at the end of a web workload pattern, we wait
+		if itemName == config.PATTERN_END_MARKER {
+			utils.WaitRandomMillis(config.MIN_PATTERN_WAIT, config.MAX_PATTERN_WAIT)
+		} else {
+			res := c.fetchItem(itemName)
+			items = append(items, res)
+		}
 	}
 	// make client wait to simulate computation
 	time.Sleep(config.CLIENT_COMPUTATION_TIME)
@@ -72,7 +75,6 @@ func (c *Client) fetchItem(itemName string) config.DataType {
 	cacheIds := c.hash.GetCaches(itemName, c.id)
 	for _, cacheID := range cacheIds {
 		cache := c.cachedIDMap[cacheID]
-		// log.Printf("cache: %v", cache)
 		item, err := cache.Fetch(itemName)
 		if err == nil {
 			return item
