@@ -2,7 +2,6 @@ package task
 
 import (
 	"fmt"
-	"log"
 	"reflect"
 	"strconv"
 	"testing"
@@ -147,10 +146,12 @@ func TestWebWorkloadAndGenerator(t *testing.T) {
 		itemNames[i] = "x" + strconv.Itoa(i+1)
 	}
 
-	wg := NewWebWorkloadGenerator(itemNames, config.NUM_PATTERNS, config.MIN_PATTERN_LENGTH, config.MAX_PATTERN_LENGTH, config.PATTERN_REPLICATION)
+	wg := NewWebWorkloadGenerator(itemNames, config.NUM_PATTERNS_SMALL, config.MIN_PATTERN_LENGTH, config.MAX_PATTERN_LENGTH, config.PATTERN_REPLICATION_SMALL)
 	w := wg.GenerateWorkload()
+	// log.Printf("wkld %+v", w)
 	for w.HasNextItemGroup() {
-		log.Println(w.GetNextItemGroup())
+		// log.Println(w.GetNextItemGroup())
+		continue
 	}
 
 	// just checkt h

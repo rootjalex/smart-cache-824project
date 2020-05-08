@@ -78,7 +78,7 @@ func TestSmallWebTaskLRU() {
 	fmt.Println("TestSmallWebTaskLRU...")
 	MakeWebBenchmark(
 		config.LRU, // LRU
-        config.NUM_PATTERNS_SMALL,
+		config.NUM_PATTERNS_SMALL,
 		config.PATTERN_REPLICATION_SMALL,
 		config.NFILES_SMALL,
 		config.BATCH_SMALL,
@@ -94,7 +94,7 @@ func TestSmallWebTaskMarkov() {
 	fmt.Println("TestSmallWebTaskMarkov...")
 	MakeWebBenchmark(
 		config.MarkovPrefetch, // MARKOV
-        config.NUM_PATTERNS_SMALL,
+		config.NUM_PATTERNS_SMALL,
 		config.PATTERN_REPLICATION_SMALL,
 		config.NFILES_SMALL,
 		config.BATCH_SMALL,
@@ -110,7 +110,7 @@ func TestMediumWebTaskLRU() {
 	fmt.Println("TestMediumWebTaskLRU...")
 	MakeWebBenchmark(
 		config.LRU, // LRU
-        config.NUM_PATTERNS_MED,
+		config.NUM_PATTERNS_MED,
 		config.PATTERN_REPLICATION_MED,
 		config.NFILES_MED,
 		config.BATCH_MED,
@@ -126,7 +126,7 @@ func TestMediumWebTaskMarkov() {
 	fmt.Println("TestMediumWebTaskMarkov...")
 	MakeWebBenchmark(
 		config.MarkovPrefetch, // MARKOV
-        config.NUM_PATTERNS_MED,
+		config.NUM_PATTERNS_MED,
 		config.PATTERN_REPLICATION_MED,
 		config.NFILES_MED,
 		config.BATCH_MED,

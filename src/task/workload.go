@@ -1,11 +1,11 @@
 package task
 
 import (
+	"log"
 	"math/rand"
 	"time"
 
 	"../config"
-    "../utils"
 )
 
 // ------------------------------------------------------ WORKLOAD GENERATOR
@@ -156,32 +156,32 @@ func newWebWorkload(itemNames []string, numPatterns int, minPatternLength int, m
 
 	// populate different kinds of patterns
 	patterns := [][]int{}
-    utils.DPrintf("NumPatterns %+v", numPatterns)
-    offset := len(itemNames) / numPatterns
+	log.Printf("NumPatterns %+v\n", numPatterns)
+	offset := len(itemNames) / numPatterns
 	for i := 0; i < numPatterns; i++ {
 		pLength := minPatternLength + rand.Intn(maxPatternLength-minPatternLength)
-        p := []int{}
-		pStart := i*offset
+		p := []int{}
+		pStart := i * offset
 		for j := pStart; j < pStart+pLength; j++ {
 			p = append(p, j)
-        }
+		}
 		patterns = append(patterns, p)
-        p = nil
+		p = nil
 	}
-    utils.DPrintf("Patterns %+v", patterns)
+	log.Printf("Patterns %+v\n", patterns)
 	// randomly pick patterns and extend to the big pattern
 	bigPattern := []int{}
 	for i := 0; i < replicationFactor; i++ {
 		pi := rand.Intn(len(patterns))
 		bigPattern = append(bigPattern, patterns[pi]...)
 	}
-	utils.DPrintf("bigPattern %+v", bigPattern)
-    groups := [][]int{}
-    for item := range bigPattern {
-        groups = append(groups, []int{item})
-    }
+	log.Printf("bigPattern %+v\n", bigPattern)
+	groups := [][]int{}
+	for _, item := range bigPattern {
+		groups = append(groups, []int{item})
+	}
 
-    return Workload{
+	return Workload{
 		ItemNames:         itemNames,
 		ItemGroupIndices:  groups,
 		numPatterns:       numPatterns,
