@@ -62,11 +62,11 @@ func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
 	for _, itemName := range itemGroup {
 		// wg.Add(1)
 		// go func(item string) {
-			res := c.fetchItem(itemName)
-			// c.mu.Lock()
-			items = append(items, res)
-			// c.mu.Unlock()
-			// wg.Done()
+		res := c.fetchItem(itemName)
+		// c.mu.Lock()
+		items = append(items, res)
+		// c.mu.Unlock()
+		// wg.Done()
 		// }(itemName)
 	}
 	// wait for all the fetchers to return
