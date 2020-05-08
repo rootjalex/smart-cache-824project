@@ -5,8 +5,8 @@ import (
 )
 
 const CACHE_SIZE = 50
-
-const PREFETCH_SIZE = 5
+const SYNC_MS = 100
+const PREFETCH_SIZE = 10
 
 //const SEED = time.Now().UnixNano()
 const SEED = 1
@@ -39,4 +39,10 @@ const ITERS_SMALL = 10
 const NCLIENTS_SMALL = 5
 const NCACHES_SMALL = 2
 const RFACTOR_SMALL = 1
-const SYNC_MS_SMALL = 100
+
+const NFILES_MED = 1000
+const BATCH_MED = 32
+const ITERS_MED = 20
+const NCLIENTS_MED = 10
+const NCACHES_MED = 10
+const RFACTOR_MED = 2

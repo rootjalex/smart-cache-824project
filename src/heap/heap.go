@@ -96,6 +96,8 @@ func (h *MinHeapInt64) ChangeKey(label string, key int64) {
 			h.items[index].key = key
 			h.MinHeapifyDown(index)
 		}
+	} else {
+		h.Insert(label, key)
 	}
 }
 
