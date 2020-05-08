@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"testing"
 
+	"../config"
 	"../utils"
 )
 
@@ -134,6 +135,26 @@ func TestRandomWorkloadAndGenerator(t *testing.T) {
 			t.Errorf("Expected different item groups")
 		}
 	}
+}
+
+func TestWebWorkloadAndGenerator(t *testing.T) {
+	fmt.Println("TestWebWorkloadAndGenerator ...")
+
+	numFiles := 100
+	itemNames := make([]string, numFiles)
+	for i := 0; i < numFiles; i++ {
+		itemNames[i] = "x" + strconv.Itoa(i+1)
+	}
+
+	wg := NewWebWorkloadGenerator(itemNames, config.NUM_PATTERNS_SMALL, config.MIN_PATTERN_LENGTH, config.MAX_PATTERN_LENGTH, config.PATTERN_REPLICATION_SMALL)
+	w := wg.GenerateWorkload()
+	// log.Printf("wkld %+v", w)
+	for w.HasNextItemGroup() {
+		// log.Println(w.GetNextItemGroup())
+		continue
+	}
+
+	// just checkt h
 }
 
 func assertWorkloadHasNextItemGroup(t *testing.T, w *Workload, itemGroup []string) {

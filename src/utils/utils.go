@@ -3,14 +3,16 @@ package utils
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"reflect"
 	"strings"
+	"time"
 
 	"../config"
 )
 
-const Debug int = 0
+const Debug int = 1
 
 func DPrintf(format string, args ...interface{}) {
 	debug := false
@@ -183,4 +185,13 @@ func Min(a int, b int) int {
 		return a
 	}
 	return b
+}
+
+func WaitRandomMillis(minMs int, maxMs int) {
+    waitTime := minMs
+    if maxMs > minMs {
+	    waitTime = minMs + rand.Intn(maxMs-minMs)
+    }
+    waitDuration := time.Duration(1*waitTime) * time.Millisecond
+	time.Sleep(waitDuration)
 }

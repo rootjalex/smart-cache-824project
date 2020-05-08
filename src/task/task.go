@@ -116,3 +116,25 @@ func NewRandomTask(batchSize int, numClients int, numCaches int, replicationFact
 func (ml *RandomTask) Launch() (map[int][]config.DataType, time.Duration) {
 	return ml.abstractTask.Launch()
 }
+
+// ------------------------------ Web Task
+
+type WebTask struct {
+	abstractTask *AbstractBaseTask
+}
+
+func NewWebTask(numPatterns int, minPatternLength int, maxPatternLength int, patternReplication int, numClients int, numCaches int, replicationFactor int, cacheType config.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *WebTask {
+	// make web workload
+	itemNames := datastore.GetFileNames()
+	webGen := NewWebWorkloadGenerator(itemNames, numPatterns, minPatternLength, maxPatternLength, patternReplication)
+
+	// make abstract task
+	t := NewAbstractBaseTask(webGen, numClients, numCaches, replicationFactor, cacheType, cacheSize, datastore, ms)
+	return &WebTask{
+		abstractTask: t,
+	}
+}
+
+func (ml *WebTask) Launch() (map[int][]config.DataType, time.Duration) {
+	return ml.abstractTask.Launch()
+}

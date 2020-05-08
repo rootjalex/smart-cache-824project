@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-const CACHE_SIZE = 50
+const CACHE_SIZE = 20
 const SYNC_MS = 100
 const PREFETCH_SIZE = 10
 
@@ -32,6 +32,16 @@ const CLIENT_COMPUTATION_TIME = time.Duration(1*TIME_MULTIPLIER) * time.Millisec
 
 // latency stuff?
 
+// web pattern configs
+const MIN_PATTERN_LENGTH = 3
+const MAX_PATTERN_LENGTH = 7
+const MIN_PATTERN_WAIT = 30  // ms
+const MAX_PATTERN_WAIT = 40 // ms
+const NUM_PATTERNS_SMALL = NFILES_SMALL / MAX_PATTERN_LENGTH / 6
+const NUM_PATTERNS_MED = NFILES_MED / MAX_PATTERN_LENGTH / 10
+const PATTERN_REPLICATION_SMALL = NFILES_SMALL / ((MAX_PATTERN_LENGTH + MIN_PATTERN_LENGTH) / 2)
+const PATTERN_REPLICATION_MED = NFILES_MED / ((MAX_PATTERN_LENGTH + MIN_PATTERN_LENGTH) / 2)
+
 // benchmarking constants -- SMALL
 const NFILES_SMALL = 200
 const BATCH_SMALL = 16
@@ -40,6 +50,7 @@ const NCLIENTS_SMALL = 5
 const NCACHES_SMALL = 2
 const RFACTOR_SMALL = 1
 
+// benchmarking constants -- MEDIUM
 const NFILES_MED = 1000
 const BATCH_MED = 32
 const ITERS_MED = 20

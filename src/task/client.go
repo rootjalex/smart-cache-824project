@@ -6,7 +6,7 @@ import (
 
 	"../cache"
 	"../config"
-	// "../utils"
+    "../utils"
 )
 
 /************************************************
@@ -38,7 +38,12 @@ func Init(id int) *Client {
 }
 
 func (c *Client) Run() []config.DataType {
-	// log.Printf("client running. %+v", c)
+	// totalFiles := 0
+	// for _, igi := range c.workload.ItemGroupIndices {
+	// 	totalFiles += len(igi)
+	// }
+	// log.Printf("client %v fetching %+v items", c.id, totalFiles)
+
 	fetched := []config.DataType{}
 	for c.workload.HasNextItemGroup() {
 		nextItemGroup := c.workload.GetNextItemGroup()
@@ -55,25 +60,20 @@ func (c *Client) GetID() int {
 // ----------------------------------------------- UTILS
 
 func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
-	// var wg sync.WaitGroup
 	items := make([]config.DataType, 0)
 
-	// fetch each item in the group asynchronously
+	// fetch each item in the group
 	for _, itemName := range itemGroup {
-		// wg.Add(1)
-		// go func(item string) {
-			res := c.fetchItem(itemName)
-			// c.mu.Lock()
-			items = append(items, res)
-			// c.mu.Unlock()
-			// wg.Done()
-		// }(itemName)
+		res := c.fetchItem(itemName)
+		items = append(items, res)
+		// at the end of a web workload pattern, we wait
 	}
-	// wait for all the fetchers to return
-	// wg.Wait()
-
-	// make client wait to simulate computation
-	time.Sleep(config.CLIENT_COMPUTATION_TIME)
+	// make client wait to simulate ML computation
+	if c.workload.workloadName == "ml" {
+		time.Sleep(config.CLIENT_COMPUTATION_TIME)
+	} else if c.workload.workloadName == "web" {
+        utils.WaitRandomMillis(config.MIN_PATTERN_WAIT, config.MAX_PATTERN_WAIT)
+    }
 	return items
 }
 
@@ -81,7 +81,6 @@ func (c *Client) fetchItem(itemName string) config.DataType {
 	cacheIds := c.hash.GetCaches(itemName, c.id)
 	for _, cacheID := range cacheIds {
 		cache := c.cachedIDMap[cacheID]
-		// log.Printf("cache: %v", cache)
 		item, err := cache.Fetch(itemName)
 		if err == nil {
 			return item

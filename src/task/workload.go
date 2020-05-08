@@ -3,6 +3,8 @@ package task
 import (
 	"math/rand"
 	"time"
+
+	"../utils"
 )
 
 // ------------------------------------------------------ WORKLOAD GENERATOR
@@ -27,6 +29,14 @@ func NewRandomWorkloadGenerator(itemNames []string, batchSize int) WorkloadGener
 	}
 }
 
+// generates different workload every time
+func NewWebWorkloadGenerator(itemNames []string, numPatterns int, minPatternLength int, maxPatternLength int, replicationFactor int) WorkloadGenerator {
+	w := newWebWorkload(itemNames, numPatterns, minPatternLength, maxPatternLength, replicationFactor)
+	return WorkloadGenerator{
+		wkld: &w,
+	}
+}
+
 // ------------------------------------------------------ WORKLOAD GENERATOR METHODS
 
 func (wg *WorkloadGenerator) GenerateWorkload() Workload {
@@ -40,9 +50,13 @@ type Workload struct {
 	ItemGroupIndices [][]int // slice of sequence of indices representing item names to access
 	curr             int     // index of the current group of item indices
 
-	workloadName  string
-	batchSize     int
-	numIterations int
+	workloadName      string
+	batchSize         int
+	numIterations     int
+	numPatterns       int
+	minPatternLength  int
+	maxPatternLength  int
+	replicationFactor int
 }
 
 func newMLWorkload(itemNames []string, batchSize int, numIterations int) Workload {
@@ -136,6 +150,47 @@ func newRandomWorkload(itemNames []string, batchSize int) Workload {
 	}
 }
 
+func newWebWorkload(itemNames []string, numPatterns int, minPatternLength int, maxPatternLength int, replicationFactor int) Workload {
+	rand.Seed(time.Now().UnixNano())
+
+	// populate different kinds of patterns
+	patterns := [][]int{}
+	utils.DPrintf("NumPatterns %+v\n", numPatterns)
+	offset := len(itemNames) / numPatterns
+	for i := 0; i < numPatterns; i++ {
+		pLength := minPatternLength + rand.Intn(maxPatternLength-minPatternLength)
+		p := []int{}
+		pStart := i * offset
+		for j := pStart; j < pStart+pLength; j++ {
+			p = append(p, j)
+		}
+		patterns = append(patterns, p)
+		p = nil
+	}
+	utils.DPrintf("Patterns %+v\n", patterns)
+	// randomly pick patterns and extend to the big pattern
+	bigPattern := []int{}
+	for i := 0; i < replicationFactor; i++ {
+		pi := rand.Intn(len(patterns))
+		bigPattern = append(bigPattern, patterns[pi]...)
+	}
+	utils.DPrintf("bigPattern %+v\n", len(bigPattern))
+	groups := [][]int{}
+	for _, item := range bigPattern {
+		groups = append(groups, []int{item})
+	}
+
+	return Workload{
+		ItemNames:         itemNames,
+		ItemGroupIndices:  groups,
+		numPatterns:       numPatterns,
+		minPatternLength:  minPatternLength,
+		maxPatternLength:  maxPatternLength,
+		replicationFactor: replicationFactor,
+		workloadName:      "web",
+	}
+}
+
 // ------------------------------------------------------ WORKLOAD METHODS
 
 func (wkld *Workload) FreshCopy() Workload {
@@ -144,13 +199,19 @@ func (wkld *Workload) FreshCopy() Workload {
 		return newRandomWorkload(wkld.ItemNames, wkld.batchSize)
 	case "ml":
 		return newMLWorkload(wkld.ItemNames, wkld.batchSize, wkld.numIterations)
+	case "web":
+		return newWebWorkload(wkld.ItemNames, wkld.numPatterns, wkld.minPatternLength, wkld.maxPatternLength, wkld.replicationFactor)
 	default:
 		return Workload{
-			ItemNames:        wkld.ItemNames,
-			ItemGroupIndices: wkld.ItemGroupIndices,
-			workloadName:     wkld.workloadName,
-			batchSize:        wkld.batchSize,
-			numIterations:    wkld.numIterations,
+			ItemNames:         wkld.ItemNames,
+			ItemGroupIndices:  wkld.ItemGroupIndices,
+			workloadName:      wkld.workloadName,
+			batchSize:         wkld.batchSize,
+			numIterations:     wkld.numIterations,
+			numPatterns:       wkld.numPatterns,
+			minPatternLength:  wkld.minPatternLength,
+			maxPatternLength:  wkld.maxPatternLength,
+			replicationFactor: wkld.replicationFactor,
 		}
 	}
 }
@@ -162,7 +223,8 @@ func (wkld *Workload) HasNextItemGroup() bool {
 func (wkld *Workload) GetNextItemGroup() []string {
 	itemNameGroup := []string{}
 	for _, j := range wkld.ItemGroupIndices[wkld.curr] {
-		itemNameGroup = append(itemNameGroup, wkld.ItemNames[j])
+		item := wkld.ItemNames[j]
+		itemNameGroup = append(itemNameGroup, item)
 	}
 	wkld.curr++
 	return itemNameGroup
