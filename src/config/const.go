@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-const CACHE_SIZE = 15
+const CACHE_SIZE = 20
 const SYNC_MS = 100
 const PREFETCH_SIZE = 10
 
