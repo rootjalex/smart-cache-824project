@@ -58,6 +58,78 @@ func MakeRandomBenchmark(cacheType config.CacheType, nFiles int, batchSize int, 
 	task.PrintFailure(failed)
 }
 
+func MakeWebBenchmark(cacheType config.CacheType, nFiles int, batchSize int, nClients int, nCaches int, rFactor, cacheSize int, ms int) {
+	failed := false
+	datastore, _, _, _ := task.MakeDatastore(nFiles)
+	// make and launch new web task
+	webTask := task.NewWebTask(config.NUM_PATTERNS, config.MIN_PATTERN_LENGTH, config.MAX_PATTERN_LENGTH, config.PATTERN_REPLICATION, nClients, nCaches, rFactor, cacheType, cacheSize, datastore, ms)
+	_, taskDuration := webTask.Launch()
+	fmt.Printf("\tTask Duration: %+v\n", taskDuration)
+	task.PrintFailure(failed)
+}
+
+// ------------------------------------------------------------
+// ------------------------------------------------------------
+// ------------------------------------------------------------ WEB
+// ------------------------------------------------------------
+// ------------------------------------------------------------
+
+func TestSmallWebTaskLRU() {
+	fmt.Println("TestSmallWebTaskLRU...")
+	MakeWebBenchmark(
+		config.LRU, // LRU
+		config.NFILES_SMALL,
+		config.BATCH_SMALL,
+		config.NCLIENTS_SMALL,
+		config.NCACHES_SMALL,
+		config.RFACTOR_SMALL,
+		config.CACHE_SIZE,
+		config.SYNC_MS,
+	)
+}
+
+func TestSmallWebTaskMarkov() {
+	fmt.Println("TestSmallWebTaskMarkov...")
+	MakeWebBenchmark(
+		config.MarkovPrefetch, // MARKOV
+		config.NFILES_SMALL,
+		config.BATCH_SMALL,
+		config.NCLIENTS_SMALL,
+		config.NCACHES_SMALL,
+		config.RFACTOR_SMALL,
+		config.CACHE_SIZE,
+		config.SYNC_MS,
+	)
+}
+
+func TestMediumWebTaskLRU() {
+	fmt.Println("TestMediumWebTaskLRU...")
+	MakeWebBenchmark(
+		config.LRU, // LRU
+		config.NFILES_MED,
+		config.BATCH_MED,
+		config.NCLIENTS_MED,
+		config.NCACHES_MED,
+		config.RFACTOR_MED,
+		config.CACHE_SIZE,
+		config.SYNC_MS,
+	)
+}
+
+func TestMediumWebTaskMarkov() {
+	fmt.Println("TestMediumWebTaskMarkov...")
+	MakeWebBenchmark(
+		config.MarkovPrefetch, // MARKOV
+		config.NFILES_MED,
+		config.BATCH_MED,
+		config.NCLIENTS_MED,
+		config.NCACHES_MED,
+		config.RFACTOR_MED,
+		config.CACHE_SIZE,
+		config.SYNC_MS,
+	)
+}
+
 // ------------------------------------------------------------
 // ------------------------------------------------------------
 // ------------------------------------------------------------ RANDOM
@@ -216,7 +288,6 @@ func TestMediumLowRepMLTaskLRU() {
 	)
 }
 
-
 // ------------------------------------------------------------
 // ------------------------------------------------------------
 // ------------------------------------------------------------ RANDOM
@@ -224,17 +295,23 @@ func TestMediumLowRepMLTaskLRU() {
 // ------------------------------------------------------------
 
 func main() {
-	// Random Benchmarks
-	TestSmallRandomTaskLRU()
-	TestSmallRandomTaskMarkov()
-	TestMediumRandomTaskLRU()
-	TestMediumRandomTaskMarkov()
+	// Web Benchmarks
+	TestSmallWebTaskLRU()
+	TestSmallWebTaskMarkov()
+	TestMediumWebTaskLRU()
+	TestMediumWebTaskMarkov()
 
-	// ML Benchmarks
-	TestSmallMLTaskMarkov()
-	TestSmallMLTaskLRU()
-	TestMediumMLTaskMarkov()
-	TestMediumMLTaskLRU()
-	TestMediumLowRepMLTaskMarkov()
-	TestMediumLowRepMLTaskLRU()
+	// // Random Benchmarks
+	// TestSmallRandomTaskLRU()
+	// TestSmallRandomTaskMarkov()
+	// TestMediumRandomTaskLRU()
+	// TestMediumRandomTaskMarkov()
+
+	// // ML Benchmarks
+	// TestSmallMLTaskMarkov()
+	// TestSmallMLTaskLRU()
+	// TestMediumMLTaskMarkov()
+	// TestMediumMLTaskLRU()
+	// TestMediumLowRepMLTaskMarkov()
+	// TestMediumLowRepMLTaskLRU()
 }
