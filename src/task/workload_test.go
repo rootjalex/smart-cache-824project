@@ -2,10 +2,12 @@ package task
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 	"strconv"
 	"testing"
 
+	"../config"
 	"../utils"
 )
 
@@ -134,6 +136,24 @@ func TestRandomWorkloadAndGenerator(t *testing.T) {
 			t.Errorf("Expected different item groups")
 		}
 	}
+}
+
+func TestWebWorkloadAndGenerator(t *testing.T) {
+	fmt.Println("TestWebWorkloadAndGenerator ...")
+
+	numFiles := 10
+	itemNames := make([]string, numFiles)
+	for i := 0; i < numFiles; i++ {
+		itemNames[i] = "x" + strconv.Itoa(i+1)
+	}
+
+	wg := NewWebWorkloadGenerator(itemNames, config.NUM_PATTERNS, config.MIN_PATTERN_LENGTH, config.MAX_PATTERN_LENGTH, config.PATTERN_REPLICATION)
+	w := wg.GenerateWorkload()
+	for w.HasNextItemGroup() {
+		log.Println(w.GetNextItemGroup())
+	}
+
+	// just checkt h
 }
 
 func assertWorkloadHasNextItemGroup(t *testing.T, w *Workload, itemGroup []string) {

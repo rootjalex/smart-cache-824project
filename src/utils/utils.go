@@ -3,9 +3,11 @@ package utils
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"reflect"
 	"strings"
+	"time"
 
 	"../config"
 )
@@ -183,4 +185,10 @@ func Min(a int, b int) int {
 		return a
 	}
 	return b
+}
+
+func WaitRandomMillis(minMs int, maxMs int) {
+	waitTime := minMs + rand.Intn(maxMs-minMs)
+	waitDuration := time.Duration(1*waitTime) * time.Millisecond
+	time.Sleep(waitDuration)
 }

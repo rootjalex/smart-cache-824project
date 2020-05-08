@@ -3,6 +3,8 @@ package task
 import (
 	"math/rand"
 	"time"
+
+	"../config"
 )
 
 // ------------------------------------------------------ WORKLOAD GENERATOR
@@ -168,6 +170,9 @@ func newWebWorkload(itemNames []string, numPatterns int, minPatternLength int, m
 	for i := 0; i < replicationFactor; i++ {
 		pi := rand.Intn(len(patterns))
 		bigPattern = append(bigPattern, patterns[pi]...)
+		if i < replicationFactor-1 {
+			bigPattern = append(bigPattern, -1)
+		}
 	}
 	// log.Printf("bigPattern %+v", bigPattern)
 	return Workload{
@@ -213,7 +218,13 @@ func (wkld *Workload) HasNextItemGroup() bool {
 func (wkld *Workload) GetNextItemGroup() []string {
 	itemNameGroup := []string{}
 	for _, j := range wkld.ItemGroupIndices[wkld.curr] {
-		itemNameGroup = append(itemNameGroup, wkld.ItemNames[j])
+		var item string
+		if j == -1 {
+			item = config.PATTERN_END_MARKER
+		} else {
+			item = wkld.ItemNames[j]
+		}
+		itemNameGroup = append(itemNameGroup, item)
 	}
 	wkld.curr++
 	return itemNameGroup

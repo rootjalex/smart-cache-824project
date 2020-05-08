@@ -32,11 +32,14 @@ const CLIENT_COMPUTATION_TIME = time.Duration(1*TIME_MULTIPLIER) * time.Millisec
 
 // latency stuff?
 
-// pattern configs
+// web pattern configs
 const NUM_PATTERNS = 5
 const MIN_PATTERN_LENGTH = 3
 const MAX_PATTERN_LENGTH = 8
-const PATTERN_REPLICATION = 50
+const PATTERN_REPLICATION = CACHE_SIZE
+const PATTERN_END_MARKER = "<ENDPATTERN>"
+const MIN_PATTERN_WAIT = 50  // ms
+const MAX_PATTERN_WAIT = 100 // ms
 
 // benchmarking constants -- SMALL
 const NFILES_SMALL = 200
