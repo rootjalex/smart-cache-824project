@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"../config"
+    "../utils"
 )
 
 // ------------------------------------------------------ WORKLOAD GENERATOR
@@ -155,29 +156,34 @@ func newWebWorkload(itemNames []string, numPatterns int, minPatternLength int, m
 
 	// populate different kinds of patterns
 	patterns := [][]int{}
+    utils.DPrintf("NumPatterns %+v", numPatterns)
+    offset := len(itemNames) / numPatterns
 	for i := 0; i < numPatterns; i++ {
 		pLength := minPatternLength + rand.Intn(maxPatternLength-minPatternLength)
-		p := []int{}
-		pStart := len(itemNames) / (i + 1)
+        p := []int{}
+		pStart := i*offset
 		for j := pStart; j < pStart+pLength; j++ {
-			p = append(p, j%len(itemNames))
-		}
+			p = append(p, j)
+        }
 		patterns = append(patterns, p)
+        p = nil
 	}
-	// log.Printf("Patterns %+v", patterns)
+    utils.DPrintf("Patterns %+v", patterns)
 	// randomly pick patterns and extend to the big pattern
 	bigPattern := []int{}
 	for i := 0; i < replicationFactor; i++ {
 		pi := rand.Intn(len(patterns))
 		bigPattern = append(bigPattern, patterns[pi]...)
-		if i < replicationFactor-1 {
-			bigPattern = append(bigPattern, -1)
-		}
 	}
-	// log.Printf("bigPattern %+v", bigPattern)
-	return Workload{
+	utils.DPrintf("bigPattern %+v", bigPattern)
+    groups := [][]int{}
+    for item := range bigPattern {
+        groups = append(groups, []int{item})
+    }
+
+    return Workload{
 		ItemNames:         itemNames,
-		ItemGroupIndices:  [][]int{bigPattern},
+		ItemGroupIndices:  groups,
 		numPatterns:       numPatterns,
 		minPatternLength:  minPatternLength,
 		maxPatternLength:  maxPatternLength,

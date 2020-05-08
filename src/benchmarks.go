@@ -58,11 +58,11 @@ func MakeRandomBenchmark(cacheType config.CacheType, nFiles int, batchSize int, 
 	task.PrintFailure(failed)
 }
 
-func MakeWebBenchmark(cacheType config.CacheType, nFiles int, batchSize int, nClients int, nCaches int, rFactor, cacheSize int, ms int) {
+func MakeWebBenchmark(cacheType config.CacheType, numPatterns int, patternReplication int, nFiles int, batchSize int, nClients int, nCaches int, rFactor, cacheSize int, ms int) {
 	failed := false
 	datastore, _, _, _ := task.MakeDatastore(nFiles)
 	// make and launch new web task
-	webTask := task.NewWebTask(config.NUM_PATTERNS, config.MIN_PATTERN_LENGTH, config.MAX_PATTERN_LENGTH, config.PATTERN_REPLICATION, nClients, nCaches, rFactor, cacheType, cacheSize, datastore, ms)
+	webTask := task.NewWebTask(numPatterns, config.MIN_PATTERN_LENGTH, config.MAX_PATTERN_LENGTH, patternReplication, nClients, nCaches, rFactor, cacheType, cacheSize, datastore, ms)
 	_, taskDuration := webTask.Launch()
 	fmt.Printf("\tTask Duration: %+v\n", taskDuration)
 	task.PrintFailure(failed)
@@ -78,6 +78,8 @@ func TestSmallWebTaskLRU() {
 	fmt.Println("TestSmallWebTaskLRU...")
 	MakeWebBenchmark(
 		config.LRU, // LRU
+        config.NUM_PATTERNS_SMALL,
+		config.PATTERN_REPLICATION_SMALL,
 		config.NFILES_SMALL,
 		config.BATCH_SMALL,
 		config.NCLIENTS_SMALL,
@@ -92,6 +94,8 @@ func TestSmallWebTaskMarkov() {
 	fmt.Println("TestSmallWebTaskMarkov...")
 	MakeWebBenchmark(
 		config.MarkovPrefetch, // MARKOV
+        config.NUM_PATTERNS_SMALL,
+		config.PATTERN_REPLICATION_SMALL,
 		config.NFILES_SMALL,
 		config.BATCH_SMALL,
 		config.NCLIENTS_SMALL,
@@ -106,6 +110,8 @@ func TestMediumWebTaskLRU() {
 	fmt.Println("TestMediumWebTaskLRU...")
 	MakeWebBenchmark(
 		config.LRU, // LRU
+        config.NUM_PATTERNS_MED,
+		config.PATTERN_REPLICATION_MED,
 		config.NFILES_MED,
 		config.BATCH_MED,
 		config.NCLIENTS_MED,
@@ -120,6 +126,8 @@ func TestMediumWebTaskMarkov() {
 	fmt.Println("TestMediumWebTaskMarkov...")
 	MakeWebBenchmark(
 		config.MarkovPrefetch, // MARKOV
+        config.NUM_PATTERNS_MED,
+		config.PATTERN_REPLICATION_MED,
 		config.NFILES_MED,
 		config.BATCH_MED,
 		config.NCLIENTS_MED,
