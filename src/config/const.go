@@ -32,6 +32,12 @@ const CLIENT_COMPUTATION_TIME = time.Duration(1*TIME_MULTIPLIER) * time.Millisec
 
 // latency stuff?
 
+// pattern configs
+const NUM_PATTERNS = 5
+const MIN_PATTERN_LENGTH = 3
+const MAX_PATTERN_LENGTH = 8
+const PATTERN_REPLICATION = 50
+
 // benchmarking constants -- SMALL
 const NFILES_SMALL = 200
 const BATCH_SMALL = 16
@@ -40,6 +46,7 @@ const NCLIENTS_SMALL = 5
 const NCACHES_SMALL = 2
 const RFACTOR_SMALL = 1
 
+// benchmarking constants -- MEDIUM
 const NFILES_MED = 1000
 const BATCH_MED = 32
 const ITERS_MED = 20
