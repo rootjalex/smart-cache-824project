@@ -188,7 +188,10 @@ func Min(a int, b int) int {
 }
 
 func WaitRandomMillis(minMs int, maxMs int) {
-	waitTime := minMs + rand.Intn(maxMs-minMs)
-	waitDuration := time.Duration(1*waitTime) * time.Millisecond
+    waitTime := minMs
+    if maxMs > minMs {
+	    waitTime = minMs + rand.Intn(maxMs-minMs)
+    }
+    waitDuration := time.Duration(1*waitTime) * time.Millisecond
 	time.Sleep(waitDuration)
 }
