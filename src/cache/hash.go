@@ -106,6 +106,7 @@ func (h *Hash) cacheIdToGroupInit(numCaches int, numGroups int) {
 }
 
 func splitAmongstGroups(n int, numGroups int) []int {
+    // splits n files across numGroups groups evenly
     mapping := make([]int, n)
     minpergroup := n / numGroups
 
@@ -114,6 +115,7 @@ func splitAmongstGroups(n int, numGroups int) []int {
             mapping[minpergroup*i + j] = i
         }
     }
+    //maps the overflow if n not divisible by numGroups
     for i := 0; i < n - (numGroups * minpergroup); i++ {
         mapping[minpergroup*numGroups + i] = i
     }
