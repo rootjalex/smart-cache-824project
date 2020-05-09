@@ -3,7 +3,7 @@ package task
 import (
 	"sync"
 	"time"
-
+	"log"
 	"../cache"
 	"../config"
     "../utils"
@@ -19,15 +19,17 @@ type Client struct {
 	mu          sync.Mutex
 	cachedIDMap map[int]*cache.Cache
 	hash        *cache.Hash
-	workload    *Workload
+	// workload    *Workload
+	files		FileBatches
 	id          int
 	startTime   time.Time
 }
 
-func (c *Client) BootstrapClient(cachedIDMap map[int]*cache.Cache, hash *cache.Hash, workload *Workload) {
+func (c *Client) BootstrapClient(cachedIDMap map[int]*cache.Cache, hash *cache.Hash, files FileBatches) {
 	c.cachedIDMap = cachedIDMap
 	c.hash = hash
-	c.workload = workload
+	c.files = files.Copy()
+	// c.workload = workload
 	c.startTime = time.Now()
 }
 
@@ -45,9 +47,8 @@ func (c *Client) Run() []config.DataType {
 	// log.Printf("client %v fetching %+v items", c.id, totalFiles)
 
 	fetched := []config.DataType{}
-	for c.workload.HasNextItemGroup() {
-		nextItemGroup := c.workload.GetNextItemGroup()
-		fetchedItems := c.fetchItemGroup(nextItemGroup)
+	for _, batch := range c.files.batches {
+		fetchedItems := c.fetchBatch(batch)
 		fetched = append(fetched, fetchedItems...)
 	}
 	return fetched
@@ -59,21 +60,21 @@ func (c *Client) GetID() int {
 
 // ----------------------------------------------- UTILS
 
-func (c *Client) fetchItemGroup(itemGroup []string) []config.DataType {
+func (c *Client) fetchBatch(itemGroup []string) []config.DataType {
 	items := make([]config.DataType, 0)
 
 	// fetch each item in the group
 	for _, itemName := range itemGroup {
 		res := c.fetchItem(itemName)
+		if res != config.DataType("good") {
+			log.Printf("FAILED TO FETCH %v", itemName)
+		}
 		items = append(items, res)
+		utils.WaitRandomMillis(c.files.minFileSleep, c.files.maxFileSleep)
 		// at the end of a web workload pattern, we wait
 	}
-	// make client wait to simulate ML computation
-	if c.workload.workloadName == "ml" {
-		time.Sleep(config.CLIENT_COMPUTATION_TIME)
-	} else if c.workload.workloadName == "web" {
-        utils.WaitRandomMillis(config.MIN_PATTERN_WAIT, config.MAX_PATTERN_WAIT)
-    }
+
+	utils.WaitRandomMillis(c.files.minBatchSleep, c.files.maxBatchSleep)
 	return items
 }
 
@@ -81,7 +82,7 @@ func (c *Client) fetchItem(itemName string) config.DataType {
 	cacheIds := c.hash.GetCaches(itemName, c.id)
 	for _, cacheID := range cacheIds {
 		cache := c.cachedIDMap[cacheID]
-		item, err := cache.Fetch(itemName)
+		item, err := cache.Fetch(itemName, c.GetID())
 		if err == nil {
 			return item
 		}

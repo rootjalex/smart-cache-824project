@@ -1,0 +1,4 @@
+ML Benchmark Small completed in 32.039241964s with MarkovPrefetching
+hits: 11880, misses: 120, queries: 120
+ML Benchmark Small completed in 32.008664133s with LRU
+hits: 11880, misses: 120, queries: 120

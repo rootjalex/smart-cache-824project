@@ -65,13 +65,17 @@ func (h *MinHeapInt64) MinHeapifyDown(p int) {
 }
 
 func (h *MinHeapInt64) Insert(label string, key int64) {
-	var i HeapItem
-	i.label = label
-	i.key = key
-	h.items = append(h.items, i)
-	h.labels[label] = h.Size
-	h.Size++
-	h.MinHeapifyUp(h.labels[label])
+	if h.Contains(label) {
+		h.ChangeKey(label, key)
+	} else {
+		var i HeapItem
+		i.label = label
+		i.key = key
+		h.items = append(h.items, i)
+		h.labels[label] = h.Size
+		h.Size++
+		h.MinHeapifyUp(h.labels[label])
+	}
 }
 
 func (h *MinHeapInt64) ExtractMin() string {

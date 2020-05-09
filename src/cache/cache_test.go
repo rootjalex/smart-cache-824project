@@ -52,7 +52,6 @@ func TestCacheKillAlive(t *testing.T) {
 func TestBasicLRUFail(t *testing.T) {
 	fmt.Printf("TestBasicLRUFail ...\n")
 	failed := false
-	misses := 0
 
 	data := datastore.MakeDataStore()
 
@@ -77,7 +76,7 @@ func TestBasicLRUFail(t *testing.T) {
 		}
 	}
 
-	hits, misses := cache.Report()
+	hits, misses, _ := cache.Report()
 	if hits != 0 || misses != (2*config.CACHE_SIZE+2) {
 		t.Errorf("Expected 0 hits and %d miss, got %d hits and %d misses.", (2*config.CACHE_SIZE + 2), hits, misses)
 		failed = true
@@ -93,7 +92,6 @@ func TestBasicLRUFail(t *testing.T) {
 func TestBasicLRUSuccess(t *testing.T) {
 	fmt.Printf("TestBasicLRUSuccess ...\n")
 	failed := false
-	misses := 0
 	data := datastore.MakeDataStore()
 
 	// add files to datastore
@@ -120,7 +118,7 @@ func TestBasicLRUSuccess(t *testing.T) {
 		}
 	}
 
-	hits, misses := cache.Report()
+	hits, misses, _ := cache.Report()
 	if hits != config.CACHE_SIZE || misses != config.CACHE_SIZE {
 		t.Errorf("Expected %d hits and %d miss, got %d hits and %d misses.", config.CACHE_SIZE, config.CACHE_SIZE, hits, misses)
 		failed = true

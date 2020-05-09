@@ -10,32 +10,40 @@ import (
 
 type MarkovChain struct {
 	nodes			map[string]*Node  // filename -> Node (with adjacencies)
-	lastAccess		string
+	lastAccess		map[int]string
 	mu				sync.Mutex
 }
 
 
 // creates empty node for the given name
 func MakeMarkovChain() *MarkovChain {
-	markov := &MarkovChain{lastAccess: "", nodes: make(map[string]*Node)}
+	markov := &MarkovChain{lastAccess: make(map[int]string), nodes: make(map[string]*Node)}
 	// set default MC for first call to markov.Access()
 	markov.nodes[""] = MakeNode("")
 	return markov
 }
 
-func (m *MarkovChain) Access(filename string) {
+func (m *MarkovChain) Access(filename string, id int) {
 	// utils.DPrintf("Entering Access")
 	// defer utils.DPrintf("Leaving Access")
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	m.nodes[m.lastAccess].MakeAccess(filename)
+	last, ok := m.lastAccess[id]
+
+	if !ok {
+		last = ""
+	}
+
+	// log.Printf("FILE: %v, last: %v",  filename, m.lastAccess)
+	m.nodes[last].MakeAccess(filename)
 
 	// check if file has own chain
 	if _, ok := m.nodes[filename]; !ok {
 		m.nodes[filename] = MakeNode(filename)
 	}
-	m.lastAccess = filename
+	m.lastAccess[id] = filename
+	// log.Printf("set FILE: %v, last: %v",  filename, m.lastAccess)
 }
 
 // predict the next n files after filename is accessed
@@ -54,10 +62,11 @@ func (m *MarkovChain) Predict(filename string, n int) []string {
 func (m *MarkovChain) longPaths(source string, n int) []string {
 	// set up min weights
 	prob_log := make(map[string]float64)
-
+	prob_log[source] = 0
 	// store removed nodes so we can fetch the closest values and check if something has been removed
 	var removed heap.MinHeapFloat
 	removed.Init()
+	// removed.Insert(source, 0.0)
 
 	// store current guesses
 	var heap heap.MinHeapFloat
@@ -88,7 +97,7 @@ func (m *MarkovChain) longPaths(source string, n int) []string {
 				prob_log[neighbor.name] = math.Inf(1)
 				heap.Insert(neighbor.name, math.Inf(1))
 			}
-			if !removed.Contains(neighbor.name) {
+			if !removed.Contains(neighbor.name) && neighbor.name != source{
 				// then try to relax weight estimate
 				weight := -math.Log((float64(neighbor.count) / float64(node.size)))
 				if (weight + estimate) < prob_log[neighbor.name] {
@@ -99,6 +108,10 @@ func (m *MarkovChain) longPaths(source string, n int) []string {
 				}
 			}
 		}
+	}
+	// file := removed.ExtractMin() // remove the source
+	if removed.Contains(source) {
+		log.Fatalf("Source: %v, removed: %v", source, removed.GetKeyList())
 	}
 	closest := removed.GetKeyList()
 	return closest
