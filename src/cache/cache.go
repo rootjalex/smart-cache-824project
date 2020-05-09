@@ -134,7 +134,7 @@ func (c *Cache) Fetch(name string, id int) (config.DataType, error) {
 		file = c.AddToCache(name)
 		c.misses++
 	}
-	c.timestamp++
+	
 	if c.timestamp % config.PREFETCH_SIZE == 0 {
 		go c.Prefetch(name)
 	}
@@ -155,6 +155,7 @@ func (c *Cache) replace(name string, file config.DataType) {
 	// defer c.mu.Unlock()
 	c.cache[name] = file
 	c.heap.Insert(name, c.timestamp)
+	c.timestamp++
 	if c.heap.Size > c.cacheSize {
 		// must evict
 		evict := c.heap.ExtractMin()
@@ -192,11 +193,13 @@ func (c *Cache) AddToCache(filename string) config.DataType {
 	file, ok := c.cache[filename]
 	
 	if !ok {
+		// log.Printf("getting file %v", filename)
 		file, ok = c.data.Get(filename)
-		c.replace(filename, file) // handles insertion into heap
 		if !ok {
 			log.Fatalf("Failed to fetch file %v", filename)
 		}
+		
+		c.replace(filename, file) // handles insertion into heap
 	}
 	return file
 }

@@ -46,22 +46,22 @@ func RunMLBenchmark(params MLParams, cacheParams task.CacheParams, nClients int)
 
 	// Markov run-through
 	cacheParams.Datastore = datastore
-	cacheParams.CacheType = config.MarkovPrefetch
+	cacheParams.CacheType = config.LRU
 	// fmt.Printf("%v", fb_list)
 	// fmt.Printf("%v\n", cacheParams)
 	runner := task.CreateRunner(fb_list, nClients, cacheParams)
 
 	_, t := runner.Run()
-	fmt.Printf("ML Benchmark %v completed in %v with MarkovPrefetching\n", params.name, t)
+	fmt.Printf("ML Benchmark %v completed in %v with LRU\n", params.name, t)
 	hits, misses, calls := runner.ReportData()
 	fmt.Printf("hits: %v, misses: %v, queries: %v\n", hits, misses, calls)
 
 	cacheParams.Datastore = datastore.Copy()
-	cacheParams.CacheType = config.LRU
+	cacheParams.CacheType = config.MarkovPrefetch
 	runnerLRU := task.CreateRunner(fb_list, nClients, cacheParams)
 
 	_, t = runnerLRU.Run()
-	fmt.Printf("ML Benchmark %v completed in %v with LRU\n", params.name, t)
+	fmt.Printf("ML Benchmark %v completed in %v with Markov\n", params.name, t)
 	hits, misses, calls = runnerLRU.ReportData()
 	fmt.Printf("hits: %v, misses: %v, queries: %v\n", hits, misses, calls)
 }
@@ -206,9 +206,9 @@ func TestSmallMLTask() {
 		maxFileSleep: 10,
 		minBatchSleep: 10,
 		maxBatchSleep: 20, 
-		nBatches: 4,
-		batchLength: 30,
-		nIterations: 10,
+		nBatches: 5,
+		batchLength: 40,
+		nIterations: 20,
 		name: "Small",
 	}
 	cacheParams := task.CacheParams {
