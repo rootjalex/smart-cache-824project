@@ -19,9 +19,16 @@ Get(file string)
 ********************************************************/
 
 type DataStore struct {
-    mu     sync.Mutex
-    data   map[string]config.DataType
-    n      int
+    mu      sync.Mutex
+    data    map[string]config.DataType
+    n       int
+    calls   int64
+}
+
+func (d *DataStore) CountCalls() int64 {
+    d.mu.Lock()
+    defer d.mu.Unlock()
+    return d.calls
 }
 
 func (d *DataStore) GetFileNames() []string {
@@ -40,6 +47,7 @@ func MakeDataStore() *DataStore {
     d := &DataStore{}
     d.data = make(map[string]config.DataType)
     d.n = 0
+    d.calls = 0
     return d
 }
 
@@ -54,6 +62,7 @@ func (d *DataStore) Get(filename string) (config.DataType, bool) {
     d.mu.Lock()
     defer d.mu.Unlock()
     data, ok := d.data[filename]
+    d.calls++
     // approx time of fetching from underlying datastore
     return data, ok
 }
@@ -81,5 +90,6 @@ func (d *DataStore) Copy() *DataStore {
         c.data[filename] = content
     }
     c.n = len(c.data)
+    c.calls = 0
     return c
 }

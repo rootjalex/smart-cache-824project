@@ -37,37 +37,36 @@ type CacheMaster struct {
 	n           int // number of pieces of data
 	datastore   *datastore.DataStore
 	hash        *cache.Hash
-	ms          int // how often caches are synced
+	sync_time   int // how often caches are synced
     chain       *markov.MarkovChain
 
 }
 
-func StartTask(clientIds []int, cacheType config.CacheType, cacheSize int, numCaches int,
-	replication int, datastore *datastore.DataStore, ms int) (map[int]*cache.Cache, *cache.Hash) {
+func StartTask(clientIds []int, params CacheParams) (map[int]*cache.Cache, *cache.Hash) {
 	// k: number of caches
 	// r: replication factor for data desired
 	// this is trivial (can store everything) if cacheSize >= nr/k (where n is
 	// size of datastore)
 	m := &CacheMaster{}
 	m.clientIds = clientIds
-	m.numCaches = numCaches
-	m.replication = replication
-	m.datastore = datastore
-	m.n = datastore.Size()
+	m.numCaches = params.NCaches
+	m.replication = params.RFactor
+	m.datastore = params.Datastore
+	m.n = m.datastore.Size()
     m.chain = markov.MakeMarkovChain()
-	m.ms = ms
+	m.sync_time = params.Sync_time
 	m.caches = map[int]*cache.Cache{}
 	for i := 0; i < m.numCaches; i++ {
 		c := cache.Cache{}
-		c.Init(i, cacheSize, cacheType, m.datastore)
+		c.Init(i, params.CacheSize, params.CacheType, m.datastore)
 		m.caches[i] = &c
 	}
 
 
 	m.hash = cache.MakeHash(m.numCaches, m.datastore.GetFileNames(), m.n, m.replication, m.clientIds)
 
-    if (cacheType != config.LRU) {
-        go m.syncCaches(ms)
+    if (params.CacheType != config.LRU) {
+        go m.syncCaches(params.Sync_time)
     }
 
 	return m.caches, m.hash

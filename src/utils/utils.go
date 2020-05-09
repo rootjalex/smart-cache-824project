@@ -50,6 +50,17 @@ func JoinInts(a []int, b []int) []int {
 	return res
 }
 
+func JoinStrings(a []string, b []string) []string {
+	var res []string
+	for _, val := range a {
+		res = append(res, val)
+	}
+	for _, val := range b {
+		res = append(res, val)
+	}
+	return res
+}
+
 // Equal tells whether a and b contain the same elements.
 // A nil argument is equivalent to an empty slice.
 func IntArrayEqual(a, b []int) bool {
@@ -188,6 +199,12 @@ func Min(a int, b int) int {
 }
 
 func WaitRandomMillis(minMs int, maxMs int) {
+	if minMs == maxMs && minMs == 0 {
+		return
+	} 
+	// else if minMs > maxMs {
+	// 	log.Fatalf("%v > %v", minMs, maxMs)
+	// }
 	waitTime := minMs + rand.Intn(maxMs-minMs)
 	waitDuration := time.Duration(1*waitTime) * time.Millisecond
 	time.Sleep(waitDuration)
