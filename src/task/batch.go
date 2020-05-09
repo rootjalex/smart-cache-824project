@@ -101,7 +101,7 @@ func (r *Runner) Run() (map[int][]config.DataType, time.Duration) {
 	var wg sync.WaitGroup
 	for i, c := range r.Clients {
 		wg.Add(1)
-		utils.WaitRandomMillis(1000, 2000)
+		// utils.WaitRandomMillis(1000, 2000)
 		go func(client *Client, nc int) {
 			utils.DPrintf("Entering lambda Client %v...", nc)
 			utils.DPrintf("Leaving lambda Client %v...", nc)
