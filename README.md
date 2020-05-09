@@ -29,11 +29,12 @@ go test ./...
 
 * [Go](https://golang.org) - go version go1.13.7 darwin/amd64
 
-## Authors
+## Authors and Contributions
 
-* **Alexander Root** - *Literally just the README so far* - [site](https://rootjalex.github.io)
-* **Meia Alsup** - [site](https://meiaalsup.github.io)
-* **Amir Farhat** - [site](https://github.com/amirfarhat)
+* [**Alexander Root**](https://rootjalex.github.io) - Data structures including
+  Markov Chains and Caches, and Benchmarks.
+* [**Meia Alsup**](https://meiaalsup.github.io) - Cache Master, Hashing, CI, Paper, System Design Diagram.
+* [**Amir Farhat**](https://github.com/amirfarhat) - Clients, Workloads and Task Management.
 
 ## License
 
