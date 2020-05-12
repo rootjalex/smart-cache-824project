@@ -7,8 +7,10 @@
 \usepackage{amsmath}
 \usepackage{pgfplots}
 \usepackage{svg}
+\usepackage{booktabs}% http://ctan.org/pkg/booktabs
 \usepackage{tikz}
 \usepackage{listings}
+\usepackage{multirow}% http://ctan.org/pkg/multirow
 \pgfplotsset{width=10cm,compat=1.9}
 
 \begin{document}
@@ -44,7 +46,7 @@
 \renewcommand{\shortauthors}{Alsup*, Farhat*, Root*}
 
 \begin{abstract}
-Current caching methods for distributed data-stores do not detect patterns in data accesses. Many types of data accesses, such as web page accesses and machine learning workloads have simple patterns that can be detected via a Hidden Markov Model (HMM). This work presents Smart-Cache, a distributed caching model that uses HMMs to predict future data accesses and prefetch data according to some learned patterns. We have implemented this cache and compared it to a \texttt{memcached}-like cache that does no data prefetching. Smart-Cache provides significant speed up on workloads with patterns. The experiments conducted show execution time reduction of 86\% for deterministic workload
+Current caching methods for distributed data-stores do not detect patterns in data accesses. Many types of data accesses, such as web page accesses and machine learning workloads have simple patterns that can be detected via a Hidden Markov Model (HMM). This work presents Smart-Cache, a distributed caching model that uses HMMs to predict future data accesses and prefetch data according to some learned patterns. We have implemented this cache and compared it to a \texttt{memcached}-like cache that does no data prefetching. Smart-Cache provides significant speed up on workloads with patterns. The experiments conducted show execution time reduction of 23\% for deterministic workloads and 8\% for lightly patterned workloads.
 
 \end{abstract}
 
@@ -78,7 +80,7 @@ We assume a static underlying datastore. Smart-Cache takes initial inspiration f
 
 We also assume similar file popularity amongst files in the datastore. This version of Smart-Cache is not resilient to hot files and nodes.
 
-Extensions to Smart-Cache to mitigate the affects of both of these assumptions are discussed in Section \ref{sec:conclusion}.
+Extensions to Smart-Cache to mitigate the effects of both of these assumptions are discussed in Section \ref{sec:conclusion}.
 
 \subsubsection{System Design}
 \label{sec:systemdesign}
@@ -153,7 +155,7 @@ Using this model, we can implement an efficient predictor that takes a source fi
 
 \section{Results}
 \label{sec:results}
-The results from our runs are shown in Table \ref{tab:freq}. As of now, our patterned workloads are broken and as such these results are omitted pending a fix.
+The results from our runs in time are shown in Table \ref{tab:freq}. Hits and misses to the underlying datastore for each of our runs are shown in Table \ref{tab:hits}.
 
 A limitation of the results is that these workloads were run locally on our machines, instead of on a dedicated compute cluster. These results are also for a single run rather than an average across several runs. As such, the difference observed in the Random task between LRU and Markov Chain is likely not statistically significant. However, the result on the Deterministic task is likely significant.
 
@@ -164,11 +166,30 @@ A limitation of the results is that these workloads were run locally on our mach
     \toprule
      & LRU  & Markov Chain \\
     \midrule
- Random & 91 & 86 \\
- Patterned  & 0 & 0 \\
- Deterministic  & 2125 & 359 \\
+ Random & 11.11 & 19.12 \\
+ Patterned  & 30.01 & 27.46 \\
+ Deterministic  & 26.53 & 20.47 \\
   \bottomrule
 \end{tabular}
+\end{table}
+
+
+\begin{table}[h]
+  \caption{ Hits, Misses, and Datastore Queries}
+  \label{tab:hits}
+
+    \begin{tabular}{c@{\qquad}ccc@{\qquad}ccc}
+      \toprule
+      \multirow{2}{*}{\raisebox{-\heavyrulewidth}{Workload Type}} & \multicolumn{2}{c}{LRU} & \multicolumn{2}{c}{Markov Chain} \\
+      \cmidrule{2-5}
+      & Hits & Misses  & Hits & Misses \\
+      \midrule
+      Random & 404 & 2596  & 400 & 2600  \\
+      Patterned & 1112 & 1062 & 1638 & 536  \\
+      Deterministic & 9000 & 1000 & 9898 & 102  \\
+      \bottomrule
+    \end{tabular}
+
 \end{table}
 
 \begin{figure}[h]
@@ -187,9 +208,9 @@ A limitation of the results is that these workloads were run locally on our mach
     ]
     
     % LRU
-    \addplot coordinates {(Random,91) (Deterministic,2125) (Patterned,0)};
+    \addplot coordinates {(Random,11.11) (Deterministic,26.53) (Patterned,30.01)};
     % Markov Chain
-    \addplot coordinates {(Random,86) (Deterministic,359) (Patterned,0)};
+    \addplot coordinates {(Random,19.12) (Deterministic,20.47) (Patterned,27.46)};
     \legend{LRU, Markov Chain}
     \end{axis}
     \end{tikzpicture}
@@ -209,13 +230,14 @@ A limitation of the results is that these workloads were run locally on our mach
         ylabel={\% Speedup of Markov Chain over LRU},
         symbolic x coords={Random,Deterministic,Patterned},
         xtick=data,
+        ytick distance=15
     ]
     
     % Markov Chain
-    \addplot coordinates {(Random,5.49) (Deterministic,83.1) (Patterned,0)};
+    \addplot coordinates {(Random,-72) (Deterministic,22.8) (Patterned,8.5)};
     \end{axis}
     \end{tikzpicture}
-    \caption{\label{fig:test_times}Total time to perform tasks, in seconds, across workloads and caching strategies.}
+    \caption{\label{fig:test_times} \% speedup to perform tasks between caching strategies for each workload}
 \end{figure}
 
 
