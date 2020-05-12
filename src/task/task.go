@@ -123,17 +123,20 @@ package task
 // 	abstractTask *AbstractBaseTask
 // }
 
-// func NewWebTask(numPatterns int, minPatternLength int, maxPatternLength int, patternReplication int, numClients int, numCaches int, replicationFactor int, cacheType config.CacheType, cacheSize int, datastore *datastore.DataStore, ms int) *WebTask {
-// 	// make web workload
-// 	itemNames := datastore.GetFileNames()
-// 	webGen := NewWebWorkloadGenerator(itemNames, numPatterns, minPatternLength, maxPatternLength, patternReplication)
-
-// 	// make abstract task
-// 	t := NewAbstractBaseTask(webGen, numClients, numCaches, replicationFactor, cacheType, cacheSize, datastore, ms)
-// 	return &WebTask{
-// 		abstractTask: t,
-// 	}
-// }
+//func NewWebTask(numPatterns int, minPatternLength int, maxPatternLength int,
+//                patternReplication int, numClients int, numCaches int,
+//                replicationFactor int, cacheType config.CacheType,
+//                cacheSize int, datastore *datastore.DataStore, ms int) *WebTask {
+//	// make web workload
+//	itemNames := datastore.GetFileNames()
+//	webGen := NewWebWorkloadGenerator(itemNames, numPatterns, minPatternLength, maxPatternLength, patternReplication)
+//
+//	// make abstract task
+//	t := NewAbstractBaseTask(webGen, numClients, numCaches, replicationFactor, cacheType, cacheSize, datastore, ms)
+//	return &WebTask{
+//		abstractTask: t,
+//	}
+//}
 
 // func (ml *WebTask) Launch() (map[int][]config.DataType, time.Duration) {
 // 	return ml.abstractTask.Launch()

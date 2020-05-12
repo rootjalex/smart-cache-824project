@@ -77,7 +77,7 @@ func (m *MarkovChain) longPaths(source string, n int) []string {
 	if !ok {
 		log.Fatalf("THIS SHOULDNEVER HAPPEN %v -> %v", source, m.nodes)
 	}
-	
+
 	for _, neighbor := range src_node.adjacencies {
 		weight := -math.Log((float64(neighbor.count) / float64(src_node.size)))
 		// not seen before, set probability estimate and insert into heap
@@ -104,15 +104,14 @@ func (m *MarkovChain) longPaths(source string, n int) []string {
 					// then relax this edge
 					prob_log[neighbor.name] = (weight + estimate)
 					heap.ChangeKey(neighbor.name, (weight + estimate))
-					
 				}
 			}
 		}
 	}
 	// file := removed.ExtractMin() // remove the source
-	if removed.Contains(source) {
-		log.Fatalf("Source: %v, removed: %v", source, removed.GetKeyList())
-	}
+	//if removed.Contains(source) {
+	//	log.Fatalf("Source: %v, removed: %v", source, removed.GetKeyList())
+	//}
 	closest := removed.GetKeyList()
 	return closest
 }
