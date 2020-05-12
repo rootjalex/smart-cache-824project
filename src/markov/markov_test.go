@@ -7,7 +7,7 @@ import (
 
 func MakeAccesses(m *MarkovChain, files []string) {
 	for _, file := range files {
-		m.Access(file)
+		m.Access(file, 1)
 	}
 }
 
@@ -178,9 +178,9 @@ func TestSimpleMarkovPredict(t *testing.T) {
 
 	m := MakeMarkovChain()
 
-	m.Access("A.txt")
-	m.Access("B.txt")
-	m.Access("A.txt")
+	m.Access("A.txt", 1)
+	m.Access("B.txt", 1)
+	m.Access("A.txt", 1)
 
 	got_b := m.Predict("A.txt", 1)
 	got_a := m.Predict("B.txt", 1)
@@ -213,28 +213,28 @@ func TestMultiplePathsMarkovPredict(t *testing.T) {
 
 	m := MakeMarkovChain()
 
-	m.Access("A.txt")
-	m.Access("B.txt")
-	m.Access("C.txt")
+	m.Access("A.txt", 1)
+	m.Access("B.txt", 1)
+	m.Access("C.txt", 1)
 
-	m.Access("A.txt")
-	m.Access("B.txt")
-	m.Access("C.txt")
+	m.Access("A.txt", 1)
+	m.Access("B.txt", 1)
+	m.Access("C.txt", 1)
 
-	m.Access("A.txt")
-	m.Access("B.txt")
-	m.Access("D.txt")
+	m.Access("A.txt", 1)
+	m.Access("B.txt", 1)
+	m.Access("D.txt", 1)
 
-	m.Access("A.txt")
-	m.Access("B.txt")
-	m.Access("E.txt")
+	m.Access("A.txt", 1)
+	m.Access("B.txt", 1)
+	m.Access("E.txt", 1)
 
-	m.Access("B.txt")
-	m.Access("C.txt")
+	m.Access("B.txt", 1)
+	m.Access("C.txt", 1)
 
-	m.Access("A.txt")
-	m.Access("B.txt")
-	m.Access("D.txt")
+	m.Access("A.txt", 1)
+	m.Access("B.txt", 1)
+	m.Access("D.txt", 1)
 
 	got_a := m.Predict("A.txt", 3)
 	got_b := m.Predict("B.txt", 3)
@@ -243,11 +243,11 @@ func TestMultiplePathsMarkovPredict(t *testing.T) {
 	expect_a := make(map[string]bool)
 	expect_a["B.txt"] = true
 	expect_a["C.txt"] = true
-	expect_a["A.txt"] = true
+	expect_a["D.txt"] = true
 	expect_b := make(map[string]bool)
 	expect_b["C.txt"] = true
-	expect_b["B.txt"] = true
 	expect_b["A.txt"] = true
+	expect_b["D.txt"] = true
 
 	if len(got_a) == len(expect_a) {
 		for _, name := range got_a {

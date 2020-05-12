@@ -33,7 +33,7 @@ func TestCacheKillAlive(t *testing.T) {
         failed = true
 		t.Errorf("Cache didn't die")
     }
-    result, err := cache.Fetch("something")
+    result, err := cache.Fetch("something", 1)
     if err == nil || result != config.DATA_DEFAULT {
         failed = true
 		t.Errorf("Cache should be dead but returned nil error and %v", result)
@@ -68,7 +68,7 @@ func TestBasicLRUFail(t *testing.T) {
 	for i := 0; i < 2; i++ {
 		for j := 0; j < (config.CACHE_SIZE + 1); j++ {
 			filename := "fake_" + strconv.Itoa(j) + ".txt"
-			_, err := cache.Fetch(filename)
+			_, err := cache.Fetch(filename, 1)
 			if err != nil {
 				t.Errorf("Could not open %s from cache", filename)
 				failed = true
@@ -110,7 +110,7 @@ func TestBasicLRUSuccess(t *testing.T) {
 	for i := 0; i < 2; i++ {
 		for j := 0; j < config.CACHE_SIZE; j++ {
 			filename := "fake_" + strconv.Itoa(j) + ".txt"
-			_, err := cache.Fetch(filename)
+			_, err := cache.Fetch(filename, 1)
 			if err != nil {
 				t.Errorf("Could not open %s from cache", filename)
 				failed = true
