@@ -120,7 +120,7 @@ func RunWebBenchmark(params task.WebParams, cacheParams task.CacheParams, nClien
 func TestSmallRandomTask() {
 	params := task.RandomParams {
 		MinFileSleep: 10,
-		MaxFileSleep: 20,
+		MaxFileSleep: 15,
 		MinBatchSleep: 1,
 		MaxBatchSleep: 2,
 		NBatches: 300,
@@ -132,7 +132,7 @@ func TestSmallRandomTask() {
 		Name: "Small",
 	}
 	cacheParams := task.CacheParams {
-		NCaches: 2,
+		NCaches: 6,
 		RFactor: config.RFACTOR_SMALL,
 		CacheSize: config.CACHE_SIZE,
 		Sync_time: 100,
@@ -155,7 +155,7 @@ func TestSmallMLTask() {
 		Name: "Small",
 	}
 	cacheParams := task.CacheParams {
-		NCaches: 2,
+		NCaches: 6,
 		RFactor: config.RFACTOR_SMALL,
 		CacheSize: config.CACHE_SIZE,
 		Sync_time: 100,
@@ -168,13 +168,13 @@ func TestSmallWebTask() {
 	params := task.WebParams {
 		MinFileSleep: config.MIN_PATTERN_WAIT,
 		MaxFileSleep: config.MAX_PATTERN_WAIT,
-		MinBatchSleep: 10,
-        MaxBatchSleep: 15,
+		MinBatchSleep: 20,
+        MaxBatchSleep: 25,
 		NBatches: 300,
         NPatterns: config.NUM_PATTERNS_SMALL,
         MinPatternLength: config.MIN_PATTERN_LENGTH,
         MaxPatternLength: config.MAX_PATTERN_LENGTH,
-        MaxFileCount: 400,
+        MaxFileCount: 300,
 		BatchLength: 1,
 		Name: "Small Web",
 	}
@@ -184,7 +184,7 @@ func TestSmallWebTask() {
 		CacheSize: config.CACHE_SIZE,
 		Sync_time: 100,
 	}
-	nClients := 2
+    nClients := 16
 	RunWebBenchmark(params, cacheParams, nClients)
 }
 
@@ -204,11 +204,12 @@ func ml() {
 }
 
 func main() {
+	// Web Benchmarks
+    web()
+
 	// Random Benchmarks
     random()
 
-	// Web Benchmarks
-    web()
 
 	// ML Benchmarks
 	ml()

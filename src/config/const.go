@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-const CACHE_SIZE = 20
+const CACHE_SIZE = 15
 const SYNC_MS = 10
 const PREFETCH_SIZE = 1
 
@@ -48,7 +48,7 @@ const BATCH_SMALL = 16
 const ITERS_SMALL = 10
 const NCLIENTS_SMALL = 10
 const NCACHES_SMALL = 2
-const RFACTOR_SMALL = 1
+const RFACTOR_SMALL = 2
 
 // benchmarking constants -- MEDIUM
 const NFILES_MED = 1000
