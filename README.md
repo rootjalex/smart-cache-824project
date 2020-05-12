@@ -33,7 +33,7 @@ go test ./...
 
 * [**Alexander Root**](https://rootjalex.github.io) - Data structures including
   Markov Chains and Caches, and Benchmarks.
-* [**Meia Alsup**](https://meiaalsup.github.io) - Cache Master, Hashing, CI, Paper, System Design Diagram.
+* [**Meia Alsup**](https://meiaalsup.github.io) - Cache Master, Hashing, CI, Paper, System Diagram.
 * [**Amir Farhat**](https://github.com/amirfarhat) - Clients, Workloads and Task Management.
 
 ## License
