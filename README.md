@@ -1,5 +1,7 @@
 # 6.824 Final Project
 
+**THIS PROJECT IS DEPRECATED.**
+
 [![rootjalex](https://circleci.com/gh/rootjalex/smart-cache.svg?style=shield)](https://app.circleci.com/pipelines/github/rootjalex/smart-cache)
 
 Final project for [Meia Alsup](https://www.linkedin.com/in/meiaalsup/), [Amir Farhat](https://github.com/amirfarhat), and [Alexander Root](https://rootjalex.github.io) for our [Distributed Systems](https://pdos.csail.mit.edu/6.824/) class. We are implementing a smart caching system, for use in large distributed databases, when there are patterns in the data accesses.
